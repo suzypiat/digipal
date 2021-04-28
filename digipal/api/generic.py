@@ -157,7 +157,8 @@ class API(object):
         # TODO: find a more generic way to include other apps than hard-coding
         # the name here
         from digipal_text import models as models2
-        for models in [models1, models2]:
+        from digipal_project import models as models3
+        for models in [models1, models2, models3]:
             for member in dir(models):
                 if member.lower() == content_type:
                     model = getattr(models, member)
