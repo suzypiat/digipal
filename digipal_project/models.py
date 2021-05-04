@@ -79,7 +79,7 @@ class Bonhum_StoryPlaceNameVariant(models.Model):
 
     class Meta:
         ordering = ['name']
-        unique_together = ['name', 'place']
+        unique_together = ['name', 'place', 'language']
         verbose_name = 'story place name variant'
         verbose_name_plural = 'story place name variants'
 
@@ -210,8 +210,15 @@ class Bonhum_StoryCharacter(models.Model):
         verbose_name = 'character'
         verbose_name_plural = 'characters'
 
+    has_absolute_url = True
+
     def __unicode__(self):
         return u'%s' % self.name
+
+    def get_absolute_url(self):
+        # ret = '/%s/%s/%s/' % (self._meta.app_label, 'characters', self.id)
+        ret = '/%s/%s/%s/' % ('digipal', 'characters', self.id)
+        return ret
 
 
 class Bonhum_TextStoryCharacter(models.Model):
@@ -236,7 +243,7 @@ class Bonhum_StoryCharacterNameVariant(models.Model):
 
     class Meta:
         ordering = ['name']
-        unique_together = ['name', 'character']
+        unique_together = ['name', 'character', 'language']
         verbose_name = 'character name variant'
         verbose_name_plural = 'character name variants'
 
@@ -565,8 +572,10 @@ class Bonhum_Catalogue(models.Model):
         return u'%s' % self.reference
 
 
-from digipal.models import set_additional_models_methods
+from digipal.models import set_additional_models_methods, admin_patches, whoosh_patches
 set_additional_models_methods()
+admin_patches()
+whoosh_patches()
 
 
 # LEAVE THIS CALL, this is to make sure the customisations are loaded
