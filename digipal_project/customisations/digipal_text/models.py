@@ -12,7 +12,7 @@ from digipal_text.models import TextContentType, TextContent, \
 # - changed verbose_name in class Meta
 # - changed verbose_name_plural in class Meta
 
-TextContentType._meta.verbose_name = 'Text content types'
+TextContentType._meta.verbose_name = 'Text content type'
 TextContentType._meta.verbose_name_plural = 'Text content types'
 
 ###################################################
