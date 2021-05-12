@@ -1,0 +1,64 @@
+{% extends "pages/record.html" %}
+{% load pages_tags mezzanine_tags i18n %}
+{% load mezzanine_tags pagination_tags %}
+{% load html_escape %}
+
+{% block meta_title %}Character: {{ character.name }}{% endblock %}
+{% block record_title %}
+    Character: {{ character.name }}
+    {% include "digipal/admin_edit.html" with instance=character %}
+{% endblock %}
+
+{% block record_tabs %}
+    <li class="{% if not tabid %}active in{% endif %}">
+        <a href="{{ character.get_absolute_url }}" data-address-bar="1" data-target="#data" data-toggle="tab">Information</a>
+    </li>
+    {% if cansee.textcontentxml %}
+        <li class="{% if tabid == "texts" %}active in{% endif %} {% if text_content_xmls.count > 0 %}{% else %}disabled{% endif %}">
+            <a href="{{ character.get_absolute_url }}texts/" data-address-bar="1" data-target="#texts" data-toggle="tab">Texts ({{ text_content_xmls.count }})</a></li>
+    {% endif %}
+    {% if cansee.image %}
+        <li class="{% if tabid == "pages" %}active in{% endif %} {% if pages|length > 0 %}{% else %}disabled{% endif %}">
+            <a href="{{ character.get_absolute_url }}pages/" data-address-bar="1" data-target="#pages" data-toggle="tab">Manuscript Images ({{ pages|length }})</a>
+        </li>
+    {% endif %}
+{% endblock %}
+
+{% block details %}
+    <div class='tabbable'>
+
+        <div id='record-tab-content' class='tab-content'>
+            <div class='tab-pane fade {% if not tabid %}active in{% endif %}' id='data'>
+                <h3>Character Information</h3>
+
+                <dl class="bs dl-horizontal">
+                    <dt>Name</dt>
+                    <dd>{{ character.name }}</dd>
+                    <dt>Alias</dt>
+                    <dd>{{ character.bonhum_storycharacternamevariant_set.all|join:"; " }}</dd>
+                    <dt>Age</dt>
+                    <dd>{{ character.age }}</dd>
+                    <dt>Gender</dt>
+                    <dd>{{ character.gender }}</dd>
+                    <dt>Religion</dt>
+                    <dd>{{ character.religion }}</dd>
+                    <dt>Type</dt>
+                    <dd>{{ character.type }}</dd>
+                    <dt>Titles</dt>
+                    <dd>{{ character.titles.all|join:"; " }}</dd>
+                    <dt>Professions</dt>
+                    <dd>{{ character.occupations.all|join:"; " }}</dd>
+                    <dt>Traits</dt>
+                    <dd>{{ character.traits.all|join:"; " }}</dd>
+                    <dt>Place</dt>
+                    <dd>{{ character.geographical_origin }}</dd>
+                </dl>
+            </div>
+
+            {% include "pages/tab_texts.html" %}
+
+            {% include "pages/tab_images.html" %}
+
+        </div>
+    </div>
+{% endblock %}

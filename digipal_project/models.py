@@ -210,13 +210,10 @@ class Bonhum_StoryCharacter(models.Model):
         verbose_name = 'character'
         verbose_name_plural = 'characters'
 
-    has_absolute_url = True
-
     def __unicode__(self):
         return u'%s' % self.name
 
     def get_absolute_url(self):
-        # ret = '/%s/%s/%s/' % (self._meta.app_label, 'characters', self.id)
         ret = '/%s/%s/%s/' % ('digipal', 'characters', self.id)
         return ret
 

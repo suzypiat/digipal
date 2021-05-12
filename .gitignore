@@ -16,6 +16,7 @@ digipal_cust/django_cache/
 
 digipal/migrations/0012_*.py
 digipal/migrations/0013_*.py
+digipal_text/migrations/0004_*.py
 digipal_project/static/
 digipal_project/django_cache/
 digipal_project/migrations/
@@ -24,4 +25,3 @@ digipal_project/database/
 digipal_project/images/
 digipal_project/media/
 digipal_project/backups/*.sql
-supervisord.pid

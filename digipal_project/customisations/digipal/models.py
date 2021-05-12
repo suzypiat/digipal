@@ -4,6 +4,7 @@ from django.utils.safestring import mark_safe
 from digipal.models import OntographType, Ontograph, CharacterForm, Character, \
     Allograph, AllographComponent, Text, CurrentItem, Person, Scribe, \
     Idiograph, IdiographComponent, ItemPart, Image, Hand, Graph
+from mezzanine.conf import settings
 
 
 
@@ -157,7 +158,7 @@ AllographComponent._meta.verbose_name_plural = 'motive components'
 # - changed method __unicode__
 # - added fields: title, reference, type, item_part, edition, mythological,
 # story_start_date, story_place, story_characters, images, sources, collaborators
-# - added methods: clean, validate_unique, save, get_itempart_work, get_itempart_currentitem, get_edition_work
+# - added methods: clean, validate_unique, save, get_itempart_work, get_itempart_currentitem, get_edition_work, get_first_image
 
 Text._meta.verbose_name = 'text'
 Text._meta.verbose_name_plural = 'texts'
@@ -247,6 +248,19 @@ def get_edition_work(self):
 get_edition_work.short_description = 'Work'
 
 Text.get_edition_work = get_edition_work
+
+
+# Returns the first non private image for this text
+# If in DEBUG mode permissions are ignored
+def get_first_image(self):
+    ret = Image.sort_query_set_by_locus(self.images.all())
+    if not settings.DEBUG:
+        ret = Image.filter_permissions(ret, [
+            MediaPermission.PERM_PUBLIC, MediaPermission.PERM_THUMB_ONLY])
+    return ret.first()
+
+Text.get_first_image = get_first_image
+
 
 ########################################
 ### END                              ###
