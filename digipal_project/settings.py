@@ -332,3 +332,438 @@ FACETED_SEARCH['types'].append({
     'filter_order': ['type', 'age', 'gender', 'religion', 'place'],
     'column_order': ['url', 'name', 'variants', 'titles', 'occupations', 'traits', 'type', 'place', 'texts'],
 })
+
+TE_COLOR_LITERARY_FUNCTION = '#c5e0b3'
+TE_COLOR_TARGET_AUDIENCE = '#a8d08d'
+TE_COLOR_JUDGMENT = '#538135'
+TE_COLOR_DIRECT_SOURCE = '#f7caac'
+TE_COLOR_INDIRECT_SOURCE = '#f4b083'
+TE_COLOR_PLACE = '#ffe599'
+TE_COLOR_TIME = '#d9d9d9'
+TE_COLOR_PERSON_NAME = '#b4c6e7'
+TE_COLOR_PERSON = '#8eaadb'
+
+TEXT_EDITOR_OPTIONS_CUSTOM = {
+    'buttons': {
+
+        # Literary Function
+        'btnConsolationLiteraryFunction': { 'label': 'Consolation', 'tei': '<seg ana="#LIT-FON-CONS">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
+        'btnSelfKnowledgeLiteraryFunction': { 'label': 'Self Knowledge', 'tei': '<seg ana="#LIT-FON-CONN-SOI">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
+        'btnWorldKnowledgeLiteraryFunction': { 'label': 'World Knowledge', 'tei': '<seg ana="#LIT-FON-CONN-MON">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
+        'btnEntertainmentLiteraryFunction': { 'label': 'Entertainment', 'tei': '<seg ana="#LIT-FON-DIV">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
+        'btnThaumaturgicLiteraryFunction': { 'label': 'Thaumaturgic', 'tei': '<seg ana="#LIT-FON-THAUM">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
+        'btnMetaLiteraryLiteraryFunction': { 'label': 'Metaliterary', 'tei': '<seg ana="#LIT-FON-META">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
+        'btnCivicDimensionLiteraryFunction': { 'label': 'Civic Dimension', 'tei': '<seg ana="#LIT-FON-SOCIOPOL-CIV">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
+        'btnInterpersonalLiteraryFunction': { 'label': 'Interpersonal', 'tei': '<seg ana="#LIT-FON-SOCIOPOL-INTERPERS">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
+
+        'btnLiteraryFunction': { 'label': 'Literary Function', 'buttons': [
+            'btnConsolationLiteraryFunction', 'btnSelfKnowledgeLiteraryFunction',
+            'btnWorldKnowledgeLiteraryFunction', 'btnEntertainmentLiteraryFunction',
+            'btnThaumaturgicLiteraryFunction', 'btnMetaLiteraryLiteraryFunction',
+            'btnCivicDimensionLiteraryFunction', 'btnInterpersonalLiteraryFunction'
+        ]},
+
+        # Target Audience
+        'btnTargetAudience': {
+            'label': 'Target Audience',
+            'tei': '<seg>{}</seg>',
+            'triggerName': 'onClickBtnTargetAudience',
+            'color': TE_COLOR_TARGET_AUDIENCE,
+            'categories': [
+                {
+                    'label': 'Gender',
+                    'items': [
+                        {
+                            'id': 'btnMaleGenderTargetAudience', 'label': 'Male', 'color': TE_COLOR_TARGET_AUDIENCE,
+                            'tag': 'seg', 'attributes': { 'ana': '#LIT-PUBL-GEN-M' }
+                        },
+                        {
+                            'id': 'btnFemaleGenderTargetAudience', 'label': 'Female', 'color': TE_COLOR_TARGET_AUDIENCE,
+                            'tag': 'seg', 'attributes': { 'ana': '#LIT-PUBL-GEN-F' }
+                        }
+                    ]
+                },
+                {
+                    'label': 'Social Status',
+                    'items': [
+                        {
+                            'id': 'btnHighSocialStatusTargetAudience', 'label': 'High', 'color': TE_COLOR_TARGET_AUDIENCE,
+                            'tag': 'seg', 'attributes': { 'ana': '#LIT-PUBL-NSOC-H' }
+                        },
+                        {
+                            'id': 'btnLowSocialStatusTargetAudience', 'label': 'Low', 'color': TE_COLOR_TARGET_AUDIENCE,
+                            'tag': 'seg', 'attributes': { 'ana': '#LIT-PUBL-NSOC-B' }
+                        }
+                    ]
+                },
+                {
+                    'label': 'Function',
+                    'items': [
+                        {
+                            'id': 'btnExegeticFunctionTargetAudience', 'label': 'Exegetic', 'color': TE_COLOR_TARGET_AUDIENCE,
+                            'tag': 'seg', 'attributes': { 'ana': '#LIT-PUBL-FON-EXE' }
+                        },
+                        {
+                            'id': 'btnDidacticFunctionTargetAudience', 'label': 'Didactic', 'color': TE_COLOR_TARGET_AUDIENCE,
+                            'tag': 'seg', 'attributes': { 'ana': '#LIT-PUBL-FON-DID' }
+                        }
+                    ]
+                }
+            ]
+        },
+
+        # Judgment
+        'btnAmbiguousJudgment': { 'label': 'Ambiguous', 'tei': '<seg ana="#BOC-A">{}</seg>', 'color': TE_COLOR_JUDGMENT },
+        'btnPositiveJudgment': { 'label': 'Positive', 'tei': '<seg ana="#BOC-P">{}</seg>', 'color': TE_COLOR_JUDGMENT },
+        'btnNegativeJudgment': { 'label': 'Negative', 'tei': '<seg ana="#BOC-N">{}</seg>', 'color': TE_COLOR_JUDGMENT },
+        'btnNeutralJudgment': { 'label': 'Neutral', 'tei': '<seg ana="#BOC-NEU">{}</seg>', 'color': TE_COLOR_JUDGMENT },
+        'btnIronicJudgment': { 'label': 'Ironic', 'tei': '<seg ana="#BOC-IRO">{}</seg>', 'color': TE_COLOR_JUDGMENT },
+
+        'btnJudgment': { 'label': 'Judgment', 'buttons': [
+            'btnAmbiguousJudgment', 'btnPositiveJudgment', 'btnNegativeJudgment',
+            'btnNeutralJudgment', 'btnIronicJudgment'
+        ]},
+
+        # Source
+        'btnSource': {
+            'label': 'Source',
+            'tei': '<quote>{}</quote>',
+            'triggerName': 'onClickBtnSource',
+            'categories': [
+                {
+                    'label': 'Direct Source',
+                    'items': [
+                        {
+                            'id': 'btnLexiconDirectSource', 'label': 'Lexicon', 'color': TE_COLOR_DIRECT_SOURCE,
+                            'tag': 'quote', 'attributes': { 'corresp': '#ID_SOURCE', 'ana': '#SOUR-EV-LEX', 'n': 'REFERENCE_SOURCE' }
+                        },
+                        {
+                            'id': 'btnContentDirectSource', 'label': 'Content', 'color': TE_COLOR_DIRECT_SOURCE,
+                            'tag': 'quote', 'attributes': { 'corresp': '#ID_SOURCE', 'ana': '#SOUR-EV-CONT', 'n': 'REFERENCE_SOURCE' }
+                        },
+                        {
+                            'id': 'btnAuthorNameDirectSource', 'label': 'Author Name', 'color': TE_COLOR_DIRECT_SOURCE,
+                            'tag': 'quote', 'attributes': { 'corresp': '#ID_SOURCE', 'ana': '#SOUR-EV-AUT', 'n': 'REFERENCE_SOURCE' }
+                        },
+                        {
+                            'id': 'btnTitleDirectSource', 'label': 'Title', 'color': TE_COLOR_DIRECT_SOURCE,
+                            'tag': 'quote', 'attributes': { 'corresp': '#ID_SOURCE', 'ana': '#SOUR-EV-TIT', 'n': 'REFERENCE_SOURCE' }
+                        },
+                        {
+                            'id': 'btnAuthorNameAndTitleDirectSource', 'label': 'Author Name and Title', 'color': TE_COLOR_DIRECT_SOURCE,
+                            'tag': 'quote', 'attributes': { 'corresp': '#ID_SOURCE', 'ana': '#SOUR-EV-AUT-TIT', 'n': 'REFERENCE_SOURCE' }
+                        }
+                    ]
+                },
+                {
+                    'label': 'Indirect Source',
+                    'items': [
+                        {
+                            'id': 'btnLexiconIndirectSource', 'label': 'Lexicon', 'color': TE_COLOR_INDIRECT_SOURCE,
+                            'tag': 'quote', 'attributes': { 'corresp': '#ID_SOURCE', 'ana': '#SOUR-IND-LEX', 'n': 'REFERENCE_SOURCE' }
+                        },
+                        {
+                            'id': 'btnContentIndirectSource', 'label': 'Content', 'color': TE_COLOR_INDIRECT_SOURCE,
+                            'tag': 'quote', 'attributes': { 'corresp': '#ID_SOURCE', 'ana': '#SOUR-IND-CONT', 'n': 'REFERENCE_SOURCE' }
+                        },
+                        {
+                            'id': 'btnAuthorNameIndirectSource', 'label': 'Author Name', 'color': TE_COLOR_INDIRECT_SOURCE,
+                            'tag': 'quote', 'attributes': { 'corresp': '#ID_SOURCE', 'ana': '#SOUR-IND-AUT', 'n': 'REFERENCE_SOURCE' }
+                        },
+                        {
+                            'id': 'btnTitleIndirectSource', 'label': 'Title', 'color': TE_COLOR_INDIRECT_SOURCE,
+                            'tag': 'quote', 'attributes': { 'corresp': '#ID_SOURCE', 'ana': '#SOUR-IND-TIT', 'n': 'REFERENCE_SOURCE' }
+                        },
+                        {
+                            'id': 'btnAuthorNameAndTitleIndirectSource', 'label': 'Author Name and Title', 'color': TE_COLOR_INDIRECT_SOURCE,
+                            'tag': 'quote', 'attributes': { 'corresp': '#ID_SOURCE', 'ana': '#SOUR-IND-AUT-TIT', 'n': 'REFERENCE_SOURCE' }
+                        }
+                    ]
+                }
+            ]
+        },
+
+        # Place
+        'btnPlace': {
+            'label': 'Place',
+            'tei': '<placeName>{}</placeName>',
+            'triggerName': 'onClickBtnPlace',
+            'categories': [
+                {
+                    'label': '',
+                    'items': [
+                        {
+                            'id': 'btnCityPlace', 'label': 'City', 'color': TE_COLOR_PLACE,
+                            'tag': 'placeName', 'attributes': { 'ref': '#ID_PLACE #ID_PERSON', 'ana': '#PROS-L-VIL' }
+                        },
+                        {
+                            'id': 'btnRegionPlace', 'label': 'Region', 'color': TE_COLOR_PLACE,
+                            'tag': 'placeName', 'attributes': { 'ref': '#ID_PLACE #ID_PERSON', 'ana': '#PROS-L-REG' }
+                        },
+                        {
+                            'id': 'btnCountryPlace', 'label': 'Country', 'color': TE_COLOR_PLACE,
+                            'tag': 'placeName', 'attributes': { 'ref': '#ID_PLACE #ID_PERSON', 'ana': '#PROS-L-PAY' }
+                        }
+                    ]
+                }
+            ]
+        },
+
+        # Time
+        'btnTime': {
+            'label': 'Time',
+            'tei': '<date>{}</date>',
+            'triggerName': 'onClickBtnTime',
+            'categories': [
+                {
+                    'label': '',
+                    'items': [
+                        {
+                            'id': 'btnRealTime', 'label': 'Real', 'color': TE_COLOR_TIME,
+                            'tag': 'date', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-CR-TR' }
+                        },
+                        {
+                            'id': 'btnMythologicalTime', 'label': 'Mythological', 'color': TE_COLOR_TIME,
+                            'tag': 'date', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-CR-TM' }
+                        }
+                    ]
+                }
+            ]
+        },
+
+        # Person
+        'btnPerson': {
+            'label': 'Person',
+            'tei': '<rs>{}</rs>',
+            'triggerName': 'onClickBtnPerson',
+            'color': TE_COLOR_PERSON,
+            'categories': [
+                {
+                    'label': 'Person Name',
+                    'items': [
+                        {
+                            'id': 'btnPersonName', 'label': 'Person Name', 'color': TE_COLOR_PERSON_NAME,
+                            'tag': 'persName', 'attributes': { 'ref': '#ID_PERSON' }
+                        }
+                    ]
+                },
+                {
+                    'label': 'Status',
+                    'items': [
+                        {
+                            'id': 'btnSingleStatusPerson', 'label': 'Single', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-ST-C' }
+                        },
+                        {
+                            'id': 'btnMarriedStatusPerson', 'label': 'Married', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-ST-M' }
+                        },
+                        {
+                            'id': 'btnWidowedStatusPerson', 'label': 'Widowed', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-ST-V' }
+                        }
+                    ]
+                },
+                {
+                    'label': 'Physical Aspect',
+                    'items': [
+                        {
+                            'id': 'btnPhysicalAspectPerson', 'label': 'Physical Aspect', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-PHY' }
+                        }
+                    ]
+                },
+                {
+                    'label': 'Psychology',
+                    'items': [
+                        {
+                            'id': 'btnHappinessPsychologyPerson', 'label': 'Happiness', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-PSY-BON' }
+                        },
+                        {
+                            'id': 'btnHardshipPsychologyPerson', 'label': 'Hardship', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-PSY-MAL' }
+                         }
+                    ]
+                },
+                {
+                    'label': 'Socio Economic Status',
+                    'items': [
+                        {
+                            'id': 'btnStatusSocioEconomicStatusPerson', 'label': 'Status', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-S' }
+                        },
+                        {
+                            'id': 'btnAscensionStatusSocioEconomicStatusPerson', 'label': 'Ascension Status', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-S-A' }
+                        },
+                        {
+                            'id': 'btnDeclineStatusSocioEconomicStatusPerson', 'label': 'Decline Status', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-S-D' }
+                        },
+                        {
+                            'id': 'btnClothesSocioEconomicStatusPerson', 'label': 'Clothes', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-HAB' }
+                        },
+                        {
+                            'id': 'btnHouseSocioEconomicStatusPerson', 'label': 'House', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-HABIT' }
+                        },
+                        {
+                            'id': 'btnPropertiesSocioEconomicStatusPerson', 'label': 'Properties', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-PROPR' }
+                        },
+                        {
+                            'id': 'btnCastlePropertiesSocioEconomicStatusPerson', 'label': 'Castle Properties', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-PROPR-C' }
+                        },
+                        {
+                            'id': 'btnCityPropertiesSocioEconomicStatusPerson', 'label': 'City Properties', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-PROPR-V' }
+                        },
+                        {
+                            'id': 'btnLandPropertiesSocioEconomicStatusPerson', 'label': 'Land Properties', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-PROPR-T' }
+                        },
+                        {
+                            'id': 'btnHousePropertiesSocioEconomicStatusPerson', 'label': 'House Properties', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-PROPR-M' }
+                        },
+                        {
+                            'id': 'btnAnimalPropertiesSocioEconomicStatusPerson', 'label': 'Animal Properties', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-PROPR-A' }
+                        }
+                    ]
+                },
+                {
+                    'label': 'Culture',
+                    'items': [
+                        {
+                            'id': 'btnHighCulturePerson', 'label': 'High Language Level', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-CUL-NLANG-H' }
+                        },
+                        {
+                            'id': 'btnLowCulturePerson', 'label': 'Low Language Level', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-CUL-NLANG-B' }
+                        }
+                    ]
+                },
+                {
+                    'label': 'Relation With',
+                    'items': [
+                        {
+                            'id': 'btnRelationWithPerson', 'label': 'Relation With', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON #ID_PERSON_WITH', 'ana': '#PROS-EV-REL-AVEC' }
+                        }
+                    ]
+                },
+                {
+                    'label': 'Family Relationship',
+                    'items': [
+                        {
+                            'id': 'btnFamilyRelationPerson', 'label': 'Family Relation', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM' }
+                        },
+                        {
+                            'id': 'btnChildFamilyRelationPerson', 'label': 'Child', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-ENF' }
+                        },
+                        {
+                            'id': 'btnGrandchildFamilyRelationPerson', 'label': 'Grandchild', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-PTSENF' }
+                        },
+                        {
+                            'id': 'btnParentFamilyRelationPerson', 'label': 'Parent', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-PAR' }
+                        },
+                        {
+                            'id': 'btnGrandparentFamilyRelationPerson', 'label': 'Grandparent', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-GRPAR' }
+                        },
+                        {
+                            'id': 'btnUncleFamilyRelationPerson', 'label': 'Uncle', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-ONC' }
+                        },
+                        {
+                            'id': 'btnAuntFamilyRelationPerson', 'label': 'Aunt', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-TAN' }
+                        },
+                        {
+                            'id': 'btnNephewFamilyRelationPerson', 'label': 'Nephew', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-NEV' }
+                        },
+                        {
+                            'id': 'btnNieceFamilyRelationPerson', 'label': 'Niece', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-NIEC' }
+                        },
+                        {
+                            'id': 'btnSiblingFamilyRelationPerson', 'label': 'Sibling', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-FRA' }
+                        },
+                        {
+                            'id': 'btnMarriageFamilyRelationPerson', 'label': 'Marriage', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-MAR' }
+                        },
+                        {
+                            'id': 'btnGodfatherFamilyRelationPerson', 'label': 'Godfather', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-PARR' }
+                        }
+                    ]
+                },
+                {
+                    'label': 'Social Relationship',
+                    'items': [
+                        {
+                            'id': 'btnSocietyRelationPerson', 'label': 'Social Relation', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC' }
+                        },
+                        {
+                            'id': 'btnInferiorSocietyRelationPerson', 'label': 'With an inferior', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-N-AVECI' }
+                        },
+                        {
+                            'id': 'btnSuperiorSocietyRelationPerson', 'label': 'With a superior', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-N-AVECS' }
+                        },
+                        {
+                            'id': 'btnEqualSocietyRelationPerson', 'label': 'With an equal', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-N-AVECP' }
+                        },
+                        {
+                            'id': 'btnProfessionalSocietyRelationPerson', 'label': 'Professional', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-TY-PRO' }
+                        },
+                        {
+                            'id': 'btnInstitutionalSocietyRelationPerson', 'label': 'Institutional', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-TY-INST' }
+                        },
+                        {
+                            'id': 'btnLoveSocietyRelationPerson', 'label': 'Love', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-TY-AMOR' }
+                        },
+                        {
+                            'id': 'btnFriendshipSocietyRelationPerson', 'label': 'Friendship', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-TY-AMIC' }
+                        },
+                        {
+                            'id': 'btnHostileSocietyRelationPerson', 'label': 'Hostile', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-TY-HOST' }
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    'toolbars': {
+        'default': 'psclear undo redo pssave | psconvert | btnLiteraryFunction | btnTargetAudience | btnPerson | pslocation | btnTime | btnPlace | btnSource | btnJudgment | code ',
+        'edited': 'psclear undo redo pssave | psconvert | btnLiteraryFunction | btnTargetAudience | btnPerson | btnTime | btnPlace | btnSource | btnJudgment | code ',
+    },
+    'panels': {
+        'north': {
+            'ratio': 0.0
+        },
+        'east': {
+            'ratio': 0.5
+        }
+    }
+}

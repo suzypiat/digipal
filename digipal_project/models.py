@@ -460,6 +460,10 @@ class Bonhum_Edition(models.Model):
     def __unicode__(self):
         return u'%s' % self.title
 
+    def get_absolute_url(self):
+        ret = '/%s/%s/%s/' % ('digipal', 'editions', self.id)
+        return ret
+
 
 class Bonhum_TextImage(models.Model):
     text = models.ForeignKey(Text, null=False)

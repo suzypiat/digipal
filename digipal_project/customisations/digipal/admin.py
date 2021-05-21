@@ -379,6 +379,33 @@ admin.site.register(Scribe, ScribeAdmin)
 #############################################
 
 # MODIFICATIONS
+# - added method text_form_action_edit_message
+# - added class TextForm
+
+from digipal_text.admin import MessageField, ModelFormWithMessageFields
+
+def text_form_action_edit_message(text):
+    ret = u''
+    if text and text.pk:
+        from digipal_text.models import TextContent, TextContentXML
+        text_content, created = TextContent.objects.get_or_create(text=text)
+        text_content_xml, created = TextContentXML.objects.get_or_create(text_content=text_content)
+        ret = u'<a href="%s">Edit the Text</a>' % text_content.get_absolute_url()
+    return ret
+
+class TextForm(ModelFormWithMessageFields):
+    action_edit = MessageField(
+        message=text_form_action_edit_message,
+        label='Action'
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Text
+
+
+# MODIFICATIONS
+# - added form
 # - changed list_display to remove name, date
 # - changed list_display to add title, reference, type, item_part, edition
 # - changed list_display_links according to list_display
@@ -387,7 +414,7 @@ admin.site.register(Scribe, ScribeAdmin)
 # - added list_filter with type
 # - changed ordering: replaced name by title
 # - added fieldsets with reference, title, type, item_part, get_itempart_work, get_itempart_currentitem,
-# edition, get_edition_work, mythological, story_start_date, story_place
+# edition, get_edition_work, mythological, story_start_date, story_place, action_edit
 # - added readonly_fields with get_itempart_work, get_itempart_currentitem, get_edition_work
 # - changed inlines to remove TextItemPartInline, CatalogueNumberInline, DescriptionInline
 # - changed inlines to add Bonhum_TextImageInline, Bonhum_TextSourceInline, Bonhum_TextStoryCharacterInline, Bonhum_TextCollaboratorInline
@@ -395,6 +422,7 @@ admin.site.register(Scribe, ScribeAdmin)
 # - added a method get_form to remove the possibility to add or change a text type
 
 class TextAdmin(digipal.admin.TextAdmin):
+    form = TextForm
     list_display = ['title', 'reference', 'type', 'item_part', 'edition', 'created', 'modified']
     list_display_links = list_display
     search_fields = ['title', 'reference', 'type__name', 'item_part__custom_label', 'edition__title']
@@ -403,7 +431,8 @@ class TextAdmin(digipal.admin.TextAdmin):
     fieldsets = (
         (None, { 'fields': ('reference', 'title', 'type') } ),
         (None, { 'fields': ('item_part', 'get_itempart_work', 'get_itempart_currentitem', 'edition', 'get_edition_work') } ),
-        (None, { 'fields': ('mythological', 'story_start_date', 'story_place') } )
+        (None, { 'fields': ('mythological', 'story_start_date', 'story_place') } ),
+        ('Actions', { 'fields': ('action_edit',) } )
     )
     readonly_fields = ('get_itempart_work', 'get_itempart_currentitem', 'get_edition_work')
     inlines = [

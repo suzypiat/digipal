@@ -1,0 +1,771 @@
+{% extends "base.html" %}
+{% load html_escape mezzanine_tags  %}
+
+{% comment %}
+  ----------------------------------------
+  BONHUM - Added condition for meta_title:
+  item_part or edition
+  ----------------------------------------
+{% endcomment %}
+{% block meta_title %}
+  {% if item_part %}
+    {{ item_part.display_label }}: Texts
+  {% else %}
+    {{ edition.title }}: Texts
+  {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+    {{ block.super }}
+    {% comment %}
+        Trick: TinyMCE will load this later dynamically
+        but that happens AFTER our resize calculate the height of the button bar
+        which is unstyled yet and therefore too tall and shrinks the iframe.
+        The solution is to force a load of the stylesheet here so the computation
+        is accurate.
+    {% endcomment %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}digipal_text/tinymce/skins/digipal/skin.min.css"/>
+    <link rel="stylesheet" href="{{ STATIC_URL }}digipal_text/viewer/viewer.css"/>
+    {# We need this for the readonly version although tinymce may also load it a second time for its iframe #}
+    <link rel="stylesheet" href="{{ STATIC_URL }}digipal_text/viewer/tinymce.css?v={% now "U:u" %}"/>
+    <link rel="stylesheet" href="tinymce_generated.css?v={% now "U:u" %}"/>
+    <link rel="stylesheet" href="{{ STATIC_URL }}digipal_text/viewer/tinymce_custom.css?v={% now "U:u" %}"/>
+    <link rel="stylesheet" href="{{ STATIC_URL }}digipal/bs-dd-cb/bootstrap-dropdown-checkbox.css"/>
+    <link rel="stylesheet" href="{{ STATIC_URL }}digipal/openlayers3/ol.css"/>
+{% endblock %}
+
+{% block main %}
+
+{% block viewer_top %}
+    <div class="tv-main-toolbar">
+        {% block viewer_title %}
+            <span class="tvmt-heading">Text Viewer</span>
+            -
+            <span class="tvmt-itempart">
+                {% comment %}
+                  ----------------------------------------
+                  BONHUM - Added condition for the link:
+                  item_part or edition
+                  ----------------------------------------
+                {% endcomment %}
+                {% if item_part %}
+                  <a href="{{ item_part.get_absolute_url }}">
+                      {{ item_part.display_label }}
+                      {% if item_part.is_suspect %}(Suspect){% endif %}
+                  </a>
+                {% else %}
+                  <a href="{{ edition.get_absolute_url }}">
+                      {{ edition.title }}
+                  </a>
+                {% endif %}
+            </span>
+        {% endblock %}
+
+        {% block viewer-title-extra %}
+
+        {% endblock %}
+
+        <div class="ui-layout-above ui-layout-pane-above">
+            <div class="btn-toolbar">
+                <div class="location-buttons btn-group"></div>
+                <span class="location-description">&nbsp</span>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% comment %}
+  ---------------------------------------
+  BONHUM - Added condition for the frame:
+  - item_part: center and east
+  - edition: center
+  ---------------------------------------
+{% endcomment %}
+{# Template for the frame #}
+<div id="text-viewer">
+    <div class="panels">
+        {# <div class="ui-layout-north">Loading Text Viewer...</div> #}
+        {# <div class="ui-layout-west">&nbps;</div> #}
+        <div class="ui-layout-center">&nbps;</div>
+        {% if item_part %}
+          <div class="ui-layout-east">&nbps;</div>
+        {% else %}
+          {# <div class="ui-layout-east"></div> #}
+        {% endif %}
+        {# <div class="ui-layout-south">&nbps;</div> #}
+    </div>
+</div>
+
+
+{# Template for a panel within the frame #}
+<div id="text-viewer-panel" class="text-viewer-panel">
+    <div class="btn-toolbar">
+        <div class="btn-group dropdown-content-type">
+            {% include "bootstrap/dropdown.html" with options=dd_content_types classes="auto-open" %}
+        </div>
+
+        <div class="location-buttons btn-group dpauto-hide">
+            {% include "bootstrap/dropdown.html" with options=dd_location_types classes="dropdown-location-type dphidden auto-open" %}
+            <select name="location" class="dphidden">
+                <option value="1r">1r</option>
+                <option value="1v">1v</option>
+            </select>
+            <button class="btn btn-default btn-sm btn-page-nav btn-page-previous dphidden">
+                <i class="fa fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button class="btn btn-default btn-sm btn-page-nav btn-page-next dphidden">
+                <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div class="dphidden dpauto-hide btn-group presentation-options"></div>
+
+        {% if request.user.is_authenticated %}
+            <div class="btn-group dpauto-hide">
+                <button class="btn btn-default btn-sm toggle-edit dphidden" title="Edit the text" data-toggle="tooltip" data-placement="bottom">
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                </button>
+                {% if statuses.count > 1 %}
+                    <select name="status" class="no-search dphidden">
+                        {% for status in statuses %}
+                            <option value="{{ status.id }}">{{ status.name }}</option>
+                        {% endfor %}
+                    </select>
+                {% endif %}
+            </div>
+            <div class="btn-group dpauto-hide">
+                {% include "bootstrap/dropdown.html" with options=dd_download_formats classes="auto-open dphidden dropdown-download-formats" %}
+                {% comment %}
+                <button class="btn btn-default btn-sm action-download dphidden" title="Download" data-toggle="tooltip" data-placement="right">
+                    <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                </button>
+                {% endcomment %}
+            </div>
+        {% endif %}
+
+        <div class="linker btn-group pull-right dphidden">
+            <span class="linker-image btn btn-default btn-sm">
+                status
+            </span>
+            <select name="linker-text">
+                <option value="markup-clause-address">markup > clause > address</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="panel-content" tabindex="0">
+    </div>
+
+    <div class="status-bar">
+        <span class="status"></span>
+        <span class="message"></span>
+        <span class="time pull-right"></span>
+    </div>
+
+</div>
+
+{% if DEBUG %}
+    <footer class="footer mini-footer">
+       {% if request.user.is_staff %}
+           You are logged in as {{ request.user }}
+           |
+           <a href="/admin/">Database</a>
+           |
+           <a href="/logout/?next={{request.path}}">Log out</a>
+       {% else %}
+           <a href="/login/?next={{request.path}}%3F{{request.META.QUERY_STRING|urlencode}}">Log in to see all the content</a>.
+       {% endif %}
+    </footer>
+{% endif %}
+
+{% comment %}
+  ----------------------------------------------------------
+  BONHUM - Added five modals for the text editor buttons:
+  btnPerson, btnSource, btnPlace, btnTime, btnTargetAudience
+  ----------------------------------------------------------
+{% endcomment %}
+{% include "digipal_text/text_viewer_modals.html" %}
+
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+
+    <script>
+        window.text_editor_options = {{ text_editor_options|safe }};
+    </script>
+
+    <script src="{{ STATIC_URL }}digipal_text/jqlayout/jquery.layout.min.js"></script>
+    {# TODO: include min on production #}
+    <script src="{{ STATIC_URL }}digipal_text/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}digipal/scripts/dpbootstrap.js"></script>
+    <script src="{{ STATIC_URL }}digipal_text/viewer/panelset.tinymce.js"></script>
+    {# TODO: remove now qs #}
+    {# <script src="{{ STATIC_URL }}digipal_text/viewer/panelset.js?v={% now "U:u" %}"></script> #}
+    {# <script src="{{ STATIC_URL }}digipal_text/viewer/panelset.js"></script> #}
+    {% compress js %}
+        <script type="text/javascript" src="{{ STATIC_URL }}js/chosen.jquery.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}digipal/openlayers3/ol-debug.js"></script>
+        <script src="{{ STATIC_URL }}digipal/bs-dd-cb/bootstrap-dropdown-checkbox.min.js"></script>
+
+        <script src="{{ STATIC_URL }}digipal_text/viewer/annotation.ts" type="text/typescript"></script>
+
+        <script src="{{ STATIC_URL }}digipal_text/viewer/panelset/panelset.utils.js"></script>
+        <script src="{{ STATIC_URL }}digipal_text/viewer/panelset/panelset.panelset.js"></script>
+        <script src="{{ STATIC_URL }}digipal_text/viewer/panelset/panelset.located.js"></script>
+        <script src="{{ STATIC_URL }}digipal_text/viewer/panelset/panelset.panel.js"></script>
+        <script src="{{ STATIC_URL }}digipal_text/viewer/panelset/panel.location.js"></script>
+        <script src="{{ STATIC_URL }}digipal_text/viewer/panelset/panel.text.js"></script>
+        <script src="{{ STATIC_URL }}digipal_text/viewer/panelset/panel.image.js"></script>
+        <script src="{{ STATIC_URL }}digipal_text/viewer/panelset/panel.search.js"></script>
+    {% endcompress %}
+
+    <script>
+        jQuery(document).ready(function($) {
+            var panelset = new TextViewer.PanelSet($('#text-viewer'));
+            {% if request.user.is_staff %}
+                panelset.setUserIsStaff(true);
+            {% endif %}
+            window.ps = panelset;
+
+            ////////////////////////////////////
+            /// BONHUM - Changes on panelset ///
+            ///                              ///
+            /// BEGINNING                    ///
+            ////////////////////////////////////
+
+            // BONHUM
+            // itemPartid is set only if there is an item_part,
+            // otherwise editionid is set;
+            // textid is set in both cases
+            {% if item_part %}
+              panelset.setItemPartid('{{ item_partid }}');
+            {% else %}
+              panelset.editionid = '{{ editionid }}';
+            {% endif %}
+            panelset.textid = '{{ textid }}';
+
+            // BONHUM
+            // The method registerPanel is overwritten, in order to set itemPartid
+            // or editionid for a panel, to add textid, and to overwrite the method _ready of the panels
+            // -> cf. digipal_text/static/digipal_text/viewer/panelset.panelset.js, line 25
+            panelset.registerPanel = function(panel) {
+                if (!panel) return;
+                panelset.panels.push(panel);
+                panel.panelSet = panelset;
+
+                if (panelset.itemPartid) {
+                  panel.setItemPartid(panelset.itemPartid);
+                }
+                else if (panelset.editionid) {
+                  panel.editionid = panelset.editionid;
+                }
+                panel.textid = panelset.textid;
+
+                // BONHUM
+                // The method _ready of a panel is overwritten in order
+                // to change the API url used to save a TextContentXML
+                // -> cf. digipal_text/static/digipal_text/viewer/panelset.panel.js, line 323
+                panel._ready = function () {
+                    var me = this;
+
+                    // Remove editing rights is user not logged in
+                    if (!this.panelSet.isUserStaff()) this.editingMode = undefined;
+                    this.initEditingModeIcon();
+
+                    if (this.$contentTypes) {
+                        this.$contentTypes.dpbsdropdown({
+                            onSelect: function ($el, key, $a) {
+                                // the user has selected another view/content type -> we replace this panel
+                                //var options = {contentAddress: key+'/sync/location/'};
+                                var options = { contentAddress: key + '/' + me.getLocationType() + '/' + me.getLocation() + '/' };
+                                me.panelSet.registerPanel(new TextViewer['Panel' + $a.data('class')](me.$root, key, options));
+                            },
+                        });
+                        this.$contentTypes.dpbsdropdown('setOption', this.contentType, true);
+                    }
+
+                    this.loadContent(true, this.loadOptions.contentAddress ? this.panelSet.getBaseAddress() + this.loadOptions.contentAddress : undefined);
+
+                    this.onResize();
+
+                    if (this.$statusSelect) {
+                        this.$statusSelect.on('change', function () {
+                            // digipal/api/textcontentxml/?_text_content__item_part__id=1628&_text_content__type__slug=translation&status__id=7
+                            if (me.itemPartid) {
+                              var ret = TextViewer.callApi('/digipal/api/textcontentxml/', null, null, {
+                                'method': 'PUT',
+                                '_text_content__item_part__id': me.itemPartid,
+                                '_text_content__text__id': me.textid,
+                                '_text_content__type__slug': me.getContentType(),
+                                'status__id': $(this).val(),
+                                '@select': 'id'
+                              });
+                            }
+                            else if (me.editionid) {
+                              var ret = TextViewer.callApi('/digipal/api/textcontentxml/', null, null, {
+                                  'method': 'PUT',
+                                  '_text_content__edition__id': me.editionid,
+                                  '_text_content__text__id': me.textid,
+                                  '_text_content__type__slug': me.getContentType(),
+                                  'status__id': $(this).val(),
+                                  '@select': 'id'
+                              });
+                            }
+                        });
+                    }
+
+                    if (this.$downloadFormats) {
+                        TextViewer.unhide(this.$downloadFormats, this.isDownloadable());
+                    }
+
+                    if (this.$linkerText) {
+                        this.$linkerText.on('change', function () {
+                            me.onLinkerTextChanged();
+                        });
+                    }
+
+                    if (this.$content) {
+                        setInterval(function () {
+                            me.saveContent();
+                        }, 2500);
+                    }
+                };
+
+                if (panelset.isReady) {
+                    panel.componentIsReady('panelset');
+                }
+            };
+
+            // BONHUM
+            // The method getBaseAddress is overwritten, since the url is different
+            // whether the text comes from an item_part or from an edition
+            // -> cf. digipal_text/static/digipal_text/viewer/panelset.panelset.js, line 81
+            panelset.getBaseAddress = function() {
+                let url = ''
+                if (this.itemPartid) {
+                  url = '/digipal/manuscripts/' + this.itemPartid + '/texts/' + this.textid + '/';
+                }
+                else if (this.editionid) {
+                  url = '/digipal/editions/' + this.editionid + '/texts/' + this.textid + '/';
+                }
+                return url;
+            };
+
+            panelset.setLayout($('#text-viewer .panels'));
+            panelset.setMessageBox($('#text-viewer .message-box'));
+            panelset.setExpandButton($('#text-viewer .message-box a'));
+
+            ////panelset.setStateFromUrl('?above=location/&center=transcription/sync/location/&east=translation/sync/location/&north=image/sync/location/');
+
+            panelset.setStateFromUrl('?above=location/&center=transcription/sync/location/&east=translation/sync/location/&north=image/sync/location/');
+
+
+            //panelset.setPanelSize('west', 0.5);
+            panelset.ready();
+            //panelset.setPanelSize('south', 0);
+
+            panelset.setPanelSize('north', window.text_editor_options.panels.north.ratio);
+
+            // BONHUM
+            // The method setPanelSize is only called if the text comes from
+            // an item_part, not an edition
+            {% if item_part %}
+              panelset.setPanelSize('east', window.text_editor_options.panels.east.ratio);
+            {% endif %}
+
+            ////////////////////////////////////
+            /// END                          ///
+            ///                              ///
+            /// BONHUM - Changes on panelset ///
+            ////////////////////////////////////
+
+            // if narrow (992 is bootstrap threshold for medium display)
+            if ($(window).width() <= 800) {
+                $.each(panelset.layout.panes, function(pane) {
+                    if (pane !== false) {
+                      panelset.layout[pane == 'center' ? 'open' : 'close'](pane);
+                    }
+                });
+            }
+        });
+      </script>
+
+
+      <script>
+        jQuery(document).ready(function($) {
+
+            // ajax call to get API data with a specific url as parameter
+            function getAPIData(url) {
+              $.ajax({
+                async: false,
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                  res = data.results;
+                }
+              })
+              return res;
+            };
+            // Get id and name of all story_characters linked to the text
+            let persons = getAPIData('/digipal/api/bonhum_storycharacter/?_texts__id={{ textid }}&@select=name');
+            // Get id and str of all sources linked to the text through textsource relationship, with the canonical_reference of the relation
+            let sources = getAPIData('/digipal/api/bonhum_textsource/?_text__id={{ textid }}&@select=source,canonical_reference');
+            // Get id, name and type of all story_places
+            let places = getAPIData('/digipal/api/bonhum_storyplace/?@select=name,type');
+
+            // Get the name of a button present in text_editor_options as a parameter,
+            // and fill the <div> called <btn_name>_modal_items inside the <btn_name>_modal
+            // with all the categories found for this button and their items:
+            // - insert a <h4> with the label of the category
+            // - insert a <button> for each item inside the category
+            // Specific case: the "btnRelationWithPerson" item needs an <input> and a <select>
+            function fillModalWithItems(btn_name) {
+              let categories = window.text_editor_options.buttons[btn_name].categories;
+              let target = $(`#${btn_name}_modal_items`);
+              $.each(categories, function(index, category) {
+                let res = '<div>';
+                res += `<h4>${category.label}</h4>`;
+                $.each(category.items, function(index, item) {
+                  if (item.id == 'btnRelationWithPerson') {
+                    res += `<input id="btnPerson_relationwith_modal_search_input"
+                                class="modal_search_input" type="text" value=""
+                                placeholder="Filter" style="width:100%;">
+                            <select multiple="multiple" id="btnPerson_relationwith_modal_select"
+                                class="modal_select" style="width:100%;"></select>
+                            <p class="small text-muted">It is mandatory to select
+                                a second person for "Relation With".</p>`;
+                  }
+                  res += `<button id="${item.id}" title="${item.attributes.ana ? item.attributes.ana : item.label}"
+                          type="button" class="${btn_name}_modal_item btn btn-sm"
+                          style="margin: 2px;">${item.label}</button>`;
+                });
+                res += '</div>';
+                if (index != categories.length - 1) {
+                  res += '<hr>';
+                }
+                $(target).append($(res));
+              });
+            }
+            fillModalWithItems('btnPerson');
+            fillModalWithItems('btnSource');
+            fillModalWithItems('btnTargetAudience');
+            fillModalWithItems('btnPlace');
+            fillModalWithItems('btnTime');
+
+            // Fill each <select> inside the modals
+            // with the API data (persons, sources and places)
+            function fillModalSelectsWithAPIData() {
+              let person_options = {};
+              persons.forEach((person) => {
+                person_options[person.id] = person.name;
+              });
+              $.each(person_options, function(id, name) {
+                $(`#btnPerson_modal_select,
+                   #btnPerson_relationwith_modal_select,
+                   #btnPlace_person_modal_select,
+                   #btnTime_modal_select`
+                ).append($('<option></option>').attr('value', id).text(`#${id} ${name}`));
+              });
+
+              let source_options = {};
+              sources.forEach((source) => {
+                source_options[source.source__id] = { title: source.source, reference: source.canonical_reference };
+              });
+              $.each(source_options, function(id, data) {
+                $('#btnSource_modal_select').append($('<option></option>').attr('value', id).text(`#${id} ${data.title} ${data.reference ? '(' + data.reference + ')' : ''}`));
+              });
+
+              let place_options = {};
+              places.forEach((place) => {
+                place_options[place.id] = { name: place.name, type: place.type.toLowerCase() };
+              });
+              $.each(place_options, function(id, data) {
+                $('#btnPlace_place_modal_select').append($('<option></option>').attr('value', id).text(`#${id} ${data.name} (${data.type})`));
+              });
+            }
+            fillModalSelectsWithAPIData();
+
+            // Reset the modal before it is shown
+            // (empty inputs, deselect options and buttons)
+            function cleanModalBeforeShow(btn_name) {
+              $(`#${btn_name}_modal .modal_select option`).each(function(index, option) {
+                $(option).show();
+              });
+              $(`#${btn_name}_modal .modal_search_input`).val('');
+              $(`#${btn_name}_modal .modal_select`).val('');
+              $(`#${btn_name}_modal_message`).text('');
+              $(`.${btn_name}_modal_item`).removeClass('btn-primary');
+            }
+
+            // Filter a <select> options according to the value written
+            // by the user in the related <input>
+            function filterSelect(input_name) {
+              let val = $.trim($(`#${input_name}_modal_search_input`).val().toLowerCase());
+              $(`#${input_name}_modal_select option`).each(function(index, option) {
+                $(option).text().toLowerCase().includes(val) ? $(option).show() : $(option).hide();
+              });
+            }
+
+            // When the user writes inside an <input>, the method filterSelect()
+            // is called to filter the options of the related <select>
+            $('.modal_search_input').on('keyup', function(event) {
+              let input_name = event.target.id.substring(0, event.target.id.indexOf('_modal_search_input'));
+              filterSelect(input_name);
+            });
+
+            // When the user clicks on the button "btnPerson", the related modal is shown;
+            // the user has to choose a person from the list and to select one or several items
+            // inside the modal for the annotation to be done.
+            // The items are cumulative, except for the "btnPersonName" item.
+            // The attribute "ref" is filled with the id of the chosen person (and the id of
+            // a second person if the item "btnRelationWithPerson" is clicked).
+            // The attribute "ana" is filled with all the codes of the selected items (except
+            // for the item "btnPersonName").
+            $(window).on('onClickBtnPerson', function(event, editor, definition, utils) {
+              cleanModalBeforeShow('btnPerson');
+              $('#btnPerson_modal').modal('show');
+              let selected_items = [];
+              let collapsed = editor.selection.isCollapsed();
+              $('#btnPerson_modal_message').text(collapsed ? 'No text is selected.' : 'No button is selected.');
+              $('.btnPerson_modal_item').unbind().click(function(event) {
+                let item = definition.categories.flatMap(category => category.items).find(item => item.id == event.target.id);
+                // If the clicked item is 'btnPersonName',
+                // it becomes the only selected item
+                if (item.id == 'btnPersonName') {
+                  if (selected_items.length != 0 && selected_items[0].id == item.id) {
+                    selected_items = [];
+                    $(event.target).removeClass('btn-primary');
+                  }
+                  else {
+                    selected_items = [item];
+                    $('.btnPerson_modal_item').removeClass('btn-primary');
+                    $(event.target).addClass('btn-primary');
+                  }
+                }
+                // Else, we add or remove the clicked item from the list
+                else {
+                  // If the clicked item is not already in the list of selected items, we add it
+                  if (!selected_items.includes(item)) {
+                    if (selected_items.length != 0 && selected_items[0].id == 'btnPersonName') {
+                      selected_items = [];
+                      $('#btnPersonName').removeClass('btn-primary');
+                    }
+                    selected_items.push(item);
+                    $(event.target).addClass('btn-primary');
+                  }
+                  // Else, the clicked item is already in the list of selected items, we remove it
+                  else {
+                    selected_items.splice(selected_items.indexOf(item), 1);
+                    $(event.target).removeClass('btn-primary');
+                  }
+                }
+                // If there is at least one item selected and if some text is selected,
+                // we show the user the codes of the selected items (except for "btnPersonName")
+                if (selected_items.length != 0 && !collapsed) {
+                  if (selected_items[0].id != 'btnPersonName') {
+                    $('#btnPerson_modal_message').text(`
+                      ana="${selected_items.map(item => item.attributes.ana).join(' ')}"
+                    `);
+                  }
+                  else {
+                    $('#btnPerson_modal_message').text('');
+                  }
+                }
+                else {
+                  $('#btnPerson_modal_message').text(collapsed ? 'No text is selected.' : 'No button is selected.');
+                }
+              });
+              $('#btnPerson_modal_submit').unbind().click(function(event) {
+                $('#btnPerson_modal').modal('hide');
+                let personId = $('#btnPerson_modal_select').val() ? $('#btnPerson_modal_select').val()[0] : '';
+                if (!collapsed && personId && selected_items.length != 0) {
+                  let options = {
+                    'tag': selected_items[0].tag,
+                    'attributes': JSON.parse(JSON.stringify(selected_items[0].attributes))
+                  }
+                  // ref="#ID_PERSON" -> ref="#1"
+                  // ref="#ID_PERSON ID_PERSON_WITH" -> ref="#1 #ID_PERSON_WITH"
+                  options.attributes.ref = options.attributes.ref.replace('ID_PERSON', personId);
+                  if (selected_items.map(item => item.id).includes('btnRelationWithPerson')) {
+                    let personWithId = $('#btnPerson_relationwith_modal_select').val() ? $('#btnPerson_relationwith_modal_select').val()[0] : '';
+                    if (!personWithId) {
+                      return;
+                    }
+                    // ref="#1 #ID_PERSON_WITH" -> ref="#1 #2"
+                    if (options.attributes.ref.includes('ID_PERSON_WITH')) {
+                      options.attributes.ref = options.attributes.ref.replace('ID_PERSON_WITH', personWithId);
+                    }
+                    else {
+                      options.attributes.ref += `#${personWithId}`;
+                    }
+                  }
+                  if (selected_items.length > 1) {
+                    options.attributes.ana = selected_items.map(item => item.attributes.ana).join(' ');
+                  }
+                  utils.addSpan(options);
+                }
+              });
+            });
+
+            // When the user clicks on the button "btnSource", the related modal is shown.
+            // For a direct source, the user has to choose a source from the list
+            // and to select an item inside the modal for the annotation to be done.
+            // For an indirect source, choosing a source from the list is facultative.
+            // If a source is chosen, the attribute "corresp" is filled with the id of the chosen source,
+            // and the attribute "n" is filled with the reference of the chosen source;
+            // the attribute "ana" is filled with the code of the selected item.
+            $(window).on('onClickBtnSource', function(event, editor, definition, utils) {
+              cleanModalBeforeShow('btnSource');
+              $('#btnSource_modal').modal('show');
+              let collapsed = editor.selection.isCollapsed();
+              $('#btnSource_modal_message').text(collapsed ? 'No text is selected.' : '');
+              $('.btnSource_modal_item').unbind().click(function(event) {
+                $('#btnSource_modal').modal('hide');
+                let sourceId = $('#btnSource_modal_select').val() ? $('#btnSource_modal_select').val()[0] : '';
+                if (!collapsed) {
+                  let item = definition.categories.flatMap(category => category.items).find(item => item.id == event.target.id);
+                  let options = {
+                    'tag': item.tag,
+                    'attributes': JSON.parse(JSON.stringify(item.attributes))
+                  }
+                  if (!sourceId) {
+                    if (item.attributes.ana.substring(0,8) == '#SOUR-EV') {
+                      return;
+                    }
+                    delete options.attributes.corresp;
+                    delete options.attributes.n;
+                  }
+                  else {
+                    // corresp="#ID_SOURCE" -> corresp="#1"
+                    options.attributes.corresp = options.attributes.corresp.replace('ID_SOURCE', sourceId);
+                    let reference = sources.find(source => source.source__id == sourceId).canonical_reference;
+                    if (reference) {
+                      // n="REFERENCE_SOURCE" -> n="Ov. Meth., II, 23-34"
+                      options.attributes.n = options.attributes.n.replace('REFERENCE_SOURCE', reference);
+                    }
+                    else {
+                      delete options.attributes.n;
+                    }
+                  }
+                  utils.addSpan(options);
+                }
+              });
+            });
+
+            // When the user clicks on the button "btnPlace", the related modal is shown;
+            // the user has to choose a place from the list and to select an item
+            // inside the modal for the annotation to be done.
+            // The attribute "ref" is filled with the id of the chosen place; it can also contain
+            // the id of a person if a person is chosen from the list.
+            // The attribute "ana" is filled with the code of the selected item.
+            $(window).on('onClickBtnPlace', function(event, editor, definition, utils) {
+              cleanModalBeforeShow('btnPlace');
+              $('#btnPlace_modal').modal('show');
+              let collapsed = editor.selection.isCollapsed();
+              $('#btnPlace_modal_message').text(collapsed ? 'No text is selected.' : '');
+              $('.btnPlace_modal_item').unbind().click(function(event) {
+                $('#btnPlace_modal').modal('hide');
+                let placeId = $('#btnPlace_place_modal_select').val() ? $('#btnPlace_place_modal_select').val()[0] : '';
+                let personId = $('#btnPlace_person_modal_select').val() ? $('#btnPlace_person_modal_select').val()[0] : '';
+                if (!collapsed && placeId) {
+                  let item = definition.categories.flatMap(category => category.items).find(item => item.id == event.target.id);
+                  let options = {
+                    'tag': item.tag,
+                    'attributes': JSON.parse(JSON.stringify(item.attributes))
+                  }
+                  // ref="#ID_PLACE #ID_PERSON" -> ref="#1 #2"
+                  options.attributes.ref = options.attributes.ref.replace('ID_PLACE', placeId)
+                                                                 .replace('ID_PERSON', personId);
+                  if (!personId) {
+                    // ref="#1 #" -> ref="#1"
+                    options.attributes.ref = options.attributes.ref.slice(0, -2);
+                  }
+                  utils.addSpan(options);
+                }
+              });
+            });
+
+            // When the user clicks on the button "btnTime", the related modal is shown.
+            // The attribute "ref" is filled with the id of a person if a person is chosen from the list.
+            // The attribute "ana" is filled with the code of the selected item.
+            $(window).on('onClickBtnTime', function(event, editor, definition, utils) {
+              cleanModalBeforeShow('btnTime');
+              $('#btnTime_modal').modal('show');
+              let collapsed = editor.selection.isCollapsed();
+              $('#btnTime_modal_message').text(collapsed ? 'No text is selected.' : '');
+              $('.btnTime_modal_item').unbind().click(function(event) {
+                $('#btnTime_modal').modal('hide');
+                let personId = $('#btnTime_modal_select').val() ? $('#btnTime_modal_select').val()[0] : '';
+                if (!collapsed) {
+                  let item = definition.categories.flatMap(category => category.items).find(item => item.id == event.target.id);
+                  let options = {
+                    'tag': item.tag,
+                    'attributes': JSON.parse(JSON.stringify(item.attributes))
+                  }
+                  if (personId) {
+                    // ref="#ID_PERSON" -> ref="#1"
+                    options.attributes.ref = options.attributes.ref.replace('ID_PERSON', personId);
+                  }
+                  else {
+                    delete options.attributes.ref;
+                  }
+                  utils.addSpan(options);
+                }
+              });
+            });
+
+            // When the user clicks on the button "btnTargetAudience", the related modal is shown.
+            // The items are cumulative. The attribute "ana" is filled with
+            // all the codes of the selected items.
+            $(window).on('onClickBtnTargetAudience', function(event, editor, definition, utils) {
+              cleanModalBeforeShow('btnTargetAudience');
+              $('#btnTargetAudience_modal').modal('show');
+              let selected_items = [];
+              let collapsed = editor.selection.isCollapsed();
+              $('#btnTargetAudience_modal_message').text(collapsed ? 'No text is selected.' : 'No button is selected.');
+              $('.btnTargetAudience_modal_item').unbind().click(function(event) {
+                let item = definition.categories.flatMap(category => category.items).find(item => item.id == event.target.id);
+                // If the clicked item is not already in the list of selected items, we add it
+                if (!selected_items.includes(item)) {
+                  selected_items.push(item);
+                  $(event.target).addClass('btn-primary');
+                }
+                // If the clicked item is already in the list of selected items, we remove it
+                else {
+                  selected_items.splice(selected_items.indexOf(item), 1);
+                  $(event.target).removeClass('btn-primary');
+                }
+                // If there is at least one item selected and if some text is selected,
+                // we show the user the codes of the selected items
+                if (selected_items.length != 0 && !collapsed) {
+                  $('#btnTargetAudience_modal_message').text(`
+                    ana="${selected_items.map(item => item.attributes.ana).join(' ')}"
+                  `);
+                }
+                else {
+                  $('#btnTargetAudience_modal_message').text(collapsed ? 'No text is selected.' : 'No button is selected.');
+                }
+              });
+              $('#btnTargetAudience_modal_submit').unbind().click(function(event) {
+                $('#btnTargetAudience_modal').modal('hide');
+                if (!collapsed && selected_items.length != 0) {
+                  let tag = selected_items[0].tag;
+                  let ana = selected_items.map(item => item.attributes.ana).join(' ');
+                  let options = {
+                    'tag': tag,
+                    'attributes': { 'ana': ana }
+                  }
+                  utils.addSpan(options);
+                }
+              });
+            });
+
+
+        });
+    </script>
+{% endblock %}
+
+{% block kdl_maintained %}
+{% endblock %}
