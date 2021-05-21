@@ -3,6 +3,7 @@ from models import *
 import reversion
 import admin_inlines
 from customisations.digipal.admin import *
+from customisations.digipal_text.admin import *
 
 #-----------------------------------------------------------
 # TODO: move this to digipal lib
