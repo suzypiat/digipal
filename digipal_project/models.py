@@ -272,7 +272,7 @@ class Bonhum_SourceType(models.Model):
 
 
 class Bonhum_Source(models.Model):
-    title = models.TextField(null=False, unique=True)
+    title = models.TextField(null=False)
     reference = models.TextField(verbose_name='canonical reference', null=False, unique=True)
     type = models.ForeignKey(Bonhum_SourceType, null=False)
     authors = models.ManyToManyField(Person, through='Bonhum_SourceAuthor', related_name='authors_of_source')
@@ -324,7 +324,7 @@ class Bonhum_TextSource(models.Model):
     modified = models.DateTimeField(auto_now=True, editable=False)
 
     class Meta:
-        unique_together = ['source', 'text']
+        unique_together = ['source', 'text', 'canonical_reference']
 
     def __unicode__(self):
         return get_list_as_string(self.source, '/', self.text)

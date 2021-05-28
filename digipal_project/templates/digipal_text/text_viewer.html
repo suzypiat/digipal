@@ -410,8 +410,10 @@
             };
             // Get id and name of all story_characters linked to the text
             let persons = getAPIData('/digipal/api/bonhum_storycharacter/?_texts__id={{ textid }}&@select=name');
-            // Get id and str of all sources linked to the text through textsource relationship, with the canonical_reference of the relation
-            let sources = getAPIData('/digipal/api/bonhum_textsource/?_text__id={{ textid }}&@select=source,canonical_reference');
+            // Get id and canonical_reference of all text/source relationships linked to the text, with the id of the source
+            let text_source_relations = getAPIData('/digipal/api/bonhum_textsource/?_text__id={{ textid }}&@select=source,source__id,canonical_reference');
+            // Get id, title and reference of all sources linked to the text
+            let sources = getAPIData(`/digipal/api/bonhum_source/?_id__in=[${text_source_relations.map(relation => relation.source__id)}]&@select=title,reference`);
             // Get id, name and type of all story_places
             let places = getAPIData('/digipal/api/bonhum_storyplace/?@select=name,type');
 
@@ -435,7 +437,7 @@
                             <select multiple="multiple" id="btnPerson_relationwith_modal_select"
                                 class="modal_select" style="width:100%;"></select>
                             <p class="small text-muted">It is mandatory to select
-                                a second person for "Relation With".</p>`;
+                                a second person for "Relation With".<br>Several persons can be selected.</p>`;
                   }
                   res += `<button id="${item.id}" title="${item.attributes.ana ? item.attributes.ana : item.label}"
                           type="button" class="${btn_name}_modal_item btn btn-sm"
@@ -470,11 +472,17 @@
               });
 
               let source_options = {};
-              sources.forEach((source) => {
-                source_options[source.source__id] = { title: source.source, reference: source.canonical_reference };
+              text_source_relations.forEach((relation) => {
+                let source = sources.find(source => source.id == relation.source__id);
+                source_options[relation.id] = { source_id: source.id, source_title: source.title,
+                                                source_reference: source.reference,
+                                                relation_reference: relation.canonical_reference };
               });
               $.each(source_options, function(id, data) {
-                $('#btnSource_modal_select').append($('<option></option>').attr('value', id).text(`#${id} ${data.title} ${data.reference ? '(' + data.reference + ')' : ''}`));
+                $('#btnSource_modal_select').append($('<option></option>')
+                                            .attr('value', `${id}_${data.source_id}`)
+                                            .text(`#${data.source_id} ${data.source_title} - ${data.source_reference}
+                                                    ${data.relation_reference ? '(' + data.relation_reference + ')' : ''}`));
               });
 
               let place_options = {};
@@ -482,7 +490,9 @@
                 place_options[place.id] = { name: place.name, type: place.type.toLowerCase() };
               });
               $.each(place_options, function(id, data) {
-                $('#btnPlace_place_modal_select').append($('<option></option>').attr('value', id).text(`#${id} ${data.name} (${data.type})`));
+                $('#btnPlace_place_modal_select').append($('<option></option>')
+                                                 .attr('value', id)
+                                                 .text(`#${id} ${data.name} (${data.type})`));
               });
             }
             fillModalSelectsWithAPIData();
@@ -498,6 +508,14 @@
               $(`#${btn_name}_modal_message`).text('');
               $(`.${btn_name}_modal_item`).removeClass('btn-primary');
             }
+
+            // Make sure only one option is selected for btnPerson and btnPlace modal <select>,
+            // since the <select> is "multiple" for the user to be able to see the whole list
+            $('#btnPerson_modal_select, #btnPlace_place_modal_select').on('change', function(event) {
+              if ($(event.target).val() && $(event.target).val().length > 1) {
+                $(event.target).val($(event.target).val()[0]);
+              }
+            });
 
             // Filter a <select> options according to the value written
             // by the user in the related <input>
@@ -518,11 +536,11 @@
             // When the user clicks on the button "btnPerson", the related modal is shown;
             // the user has to choose a person from the list and to select one or several items
             // inside the modal for the annotation to be done.
-            // The items are cumulative, except for the "btnPersonName" item.
-            // The attribute "ref" is filled with the id of the chosen person (and the id of
-            // a second person if the item "btnRelationWithPerson" is clicked).
-            // The attribute "ana" is filled with all the codes of the selected items (except
-            // for the item "btnPersonName").
+            // Items are cumulative, except for the "btnPersonName" item.
+            // The attribute "ref" is filled with the id of the chosen person (and ids of
+            // other persons if the item "btnRelationWithPerson" is clicked).
+            // The attribute "ana" is filled with all the codes of the selected items
+            // (except for the item "btnPersonName").
             $(window).on('onClickBtnPerson', function(event, editor, definition, utils) {
               cleanModalBeforeShow('btnPerson');
               $('#btnPerson_modal').modal('show');
@@ -531,14 +549,15 @@
               $('#btnPerson_modal_message').text(collapsed ? 'No text is selected.' : 'No button is selected.');
               $('.btnPerson_modal_item').unbind().click(function(event) {
                 let item = definition.categories.flatMap(category => category.items).find(item => item.id == event.target.id);
-                // If the clicked item is 'btnPersonName',
-                // it becomes the only selected item
+                // If the clicked item is "btnPersonName"
                 if (item.id == 'btnPersonName') {
+                  // If it was already selected, the list is emptied
                   if (selected_items.length != 0 && selected_items[0].id == item.id) {
                     selected_items = [];
                     $(event.target).removeClass('btn-primary');
                   }
                   else {
+                    // Else, it becomes the only selected item
                     selected_items = [item];
                     $('.btnPerson_modal_item').removeClass('btn-primary');
                     $(event.target).addClass('btn-primary');
@@ -547,6 +566,7 @@
                 // Else, we add or remove the clicked item from the list
                 else {
                   // If the clicked item is not already in the list of selected items, we add it
+                  // (and we remove "btnPersonName" if needed)
                   if (!selected_items.includes(item)) {
                     if (selected_items.length != 0 && selected_items[0].id == 'btnPersonName') {
                       selected_items = [];
@@ -579,26 +599,28 @@
               });
               $('#btnPerson_modal_submit').unbind().click(function(event) {
                 $('#btnPerson_modal').modal('hide');
-                let personId = $('#btnPerson_modal_select').val() ? $('#btnPerson_modal_select').val()[0] : '';
-                if (!collapsed && personId && selected_items.length != 0) {
+                let person_id = $('#btnPerson_modal_select').val() ? $('#btnPerson_modal_select').val()[0] : '';
+                if (!collapsed && person_id && selected_items.length != 0) {
                   let options = {
                     'tag': selected_items[0].tag,
                     'attributes': JSON.parse(JSON.stringify(selected_items[0].attributes))
                   }
                   // ref="#ID_PERSON" -> ref="#1"
-                  // ref="#ID_PERSON ID_PERSON_WITH" -> ref="#1 #ID_PERSON_WITH"
-                  options.attributes.ref = options.attributes.ref.replace('ID_PERSON', personId);
+                  // ref="#ID_PERSON #ID_PERSON_WITH" -> ref="#1 #ID_PERSON_WITH"
+                  options.attributes.ref = options.attributes.ref.replace('ID_PERSON', person_id);
                   if (selected_items.map(item => item.id).includes('btnRelationWithPerson')) {
-                    let personWithId = $('#btnPerson_relationwith_modal_select').val() ? $('#btnPerson_relationwith_modal_select').val()[0] : '';
-                    if (!personWithId) {
+                    let person_with_ids = $('#btnPerson_relationwith_modal_select').val() ? $('#btnPerson_relationwith_modal_select').val() : '';
+                    if (!person_with_ids) {
                       return;
                     }
-                    // ref="#1 #ID_PERSON_WITH" -> ref="#1 #2"
-                    if (options.attributes.ref.includes('ID_PERSON_WITH')) {
-                      options.attributes.ref = options.attributes.ref.replace('ID_PERSON_WITH', personWithId);
+                    person_with_ids = person_with_ids.map(id => `#${id}`).join(' ');
+                    if (options.attributes.ref.includes('#ID_PERSON_WITH')) {
+                      // ref="#1 #ID_PERSON_WITH" -> ref="#1 #2"|ref="#1 #2 #n"
+                      options.attributes.ref = options.attributes.ref.replace('#ID_PERSON_WITH', person_with_ids);
                     }
                     else {
-                      options.attributes.ref += `#${personWithId}`;
+                      // ref="#1" -> ref="#1 #2"|ref="#1 #2 #n"
+                      options.attributes.ref += ` ${person_with_ids}`;
                     }
                   }
                   if (selected_items.length > 1) {
@@ -610,12 +632,16 @@
             });
 
             // When the user clicks on the button "btnSource", the related modal is shown.
-            // For a direct source, the user has to choose a source from the list
+            // For a direct source, the user has to choose at least one source from the list
             // and to select an item inside the modal for the annotation to be done.
-            // For an indirect source, choosing a source from the list is facultative.
+            // For an indirect source, choosing a source from the list is facultative
+            // (then the attributes "corresp" and "n" are removed).
             // If a source is chosen, the attribute "corresp" is filled with the id of the chosen source,
-            // and the attribute "n" is filled with the reference of the chosen source;
-            // the attribute "ana" is filled with the code of the selected item.
+            // and the attribute "n" is filled with both the reference of the chosen source and the reference
+            // of its relation with the text (if there is one).
+            // If several sources are chosen, the attribute "corresp" is filled with all the ids,
+            // and the attribute "n" is filled with all the references.
+            // The attribute "ana" is filled with the code of the selected item.
             $(window).on('onClickBtnSource', function(event, editor, definition, utils) {
               cleanModalBeforeShow('btnSource');
               $('#btnSource_modal').modal('show');
@@ -623,31 +649,61 @@
               $('#btnSource_modal_message').text(collapsed ? 'No text is selected.' : '');
               $('.btnSource_modal_item').unbind().click(function(event) {
                 $('#btnSource_modal').modal('hide');
-                let sourceId = $('#btnSource_modal_select').val() ? $('#btnSource_modal_select').val()[0] : '';
+                let relation_source_ids = $('#btnSource_modal_select').val() ? $('#btnSource_modal_select').val() : '';
                 if (!collapsed) {
                   let item = definition.categories.flatMap(category => category.items).find(item => item.id == event.target.id);
                   let options = {
                     'tag': item.tag,
                     'attributes': JSON.parse(JSON.stringify(item.attributes))
                   }
-                  if (!sourceId) {
+                  if (!relation_source_ids) {
+                    // If the selected item is for a direct source, and there is no source
+                    // selected in the <select>, the annotation is not done
                     if (item.attributes.ana.substring(0,8) == '#SOUR-EV') {
                       return;
                     }
+                    // If the selected item is for an indirect source, and there is no source
+                    // selected in the <select>, the attributes "corresp" and "n" are removed
                     delete options.attributes.corresp;
                     delete options.attributes.n;
                   }
                   else {
-                    // corresp="#ID_SOURCE" -> corresp="#1"
-                    options.attributes.corresp = options.attributes.corresp.replace('ID_SOURCE', sourceId);
-                    let reference = sources.find(source => source.source__id == sourceId).canonical_reference;
-                    if (reference) {
-                      // n="REFERENCE_SOURCE" -> n="Ov. Meth., II, 23-34"
-                      options.attributes.n = options.attributes.n.replace('REFERENCE_SOURCE', reference);
+                    // source_ids will be used for the attribute "corresp"
+                    let source_ids = [];
+                    // source_refs will be used for the attribute "n"
+                    let source_refs = {};
+
+                    // relation_source_ids is an array of strings with two elements: '<relation_id>_<source_id>';
+                    // it is the list of sources selected by the user in the <select>
+                    // For each selected source, we get the id of the source and its reference; then, we get
+                    // the id of the relation with the text and the reference of the relation
+                    relation_source_ids.forEach((compound_id) => {
+                      let source_id = compound_id.split('_')[1];
+                      if (!source_ids.includes(source_id)) {
+                        source_ids.push(source_id);
+                      }
+                      let source = sources.find(source => source.id == source_id);
+                      if (!Object.keys(source_refs).includes(source.reference)) {
+                        // OV-MET = []
+                        source_refs[source.reference] = [];
+                      }
+                      let relation_id = compound_id.split('_')[0];
+                      let relation = text_source_relations.find(relation => relation.id == relation_id);
+                      if (relation.canonical_reference) {
+                        // OV-MET = ['XIII, 568-571']
+                        // OV-MET = ['XIII, 568-571', 'XIII, 415']
+                        source_refs[source.reference].push(relation.canonical_reference);
+                      }
+                    });
+
+                    // corresp="#ID_SOURCE" -> corresp="#1"|corresp="#1 #n"
+                    options.attributes.corresp = options.attributes.corresp.replace('#ID_SOURCE', source_ids.map(id => `#${id}`).join(' '));
+                    let n_content = [];
+                    for (let [key, value] of Object.entries(source_refs)) {
+                      n_content.push(`${key}${value.length != 0 ? ' (' + value.join(' ; ') + ')' : ''}`);
                     }
-                    else {
-                      delete options.attributes.n;
-                    }
+                    // n="REFERENCE_SOURCE" -> n="OV-MET (XIII, 568-571 ; XIII, 415) ; DANT-INF (XXX, 13-21) ; VIRG-AEN"
+                    options.attributes.n = options.attributes.n.replace('REFERENCE_SOURCE', n_content.join(' ; '));
                   }
                   utils.addSpan(options);
                 }
@@ -658,7 +714,7 @@
             // the user has to choose a place from the list and to select an item
             // inside the modal for the annotation to be done.
             // The attribute "ref" is filled with the id of the chosen place; it can also contain
-            // the id of a person if a person is chosen from the list.
+            // ids of persons chosen from the list.
             // The attribute "ana" is filled with the code of the selected item.
             $(window).on('onClickBtnPlace', function(event, editor, definition, utils) {
               cleanModalBeforeShow('btnPlace');
@@ -667,20 +723,23 @@
               $('#btnPlace_modal_message').text(collapsed ? 'No text is selected.' : '');
               $('.btnPlace_modal_item').unbind().click(function(event) {
                 $('#btnPlace_modal').modal('hide');
-                let placeId = $('#btnPlace_place_modal_select').val() ? $('#btnPlace_place_modal_select').val()[0] : '';
-                let personId = $('#btnPlace_person_modal_select').val() ? $('#btnPlace_person_modal_select').val()[0] : '';
-                if (!collapsed && placeId) {
+                let place_id = $('#btnPlace_place_modal_select').val() ? $('#btnPlace_place_modal_select').val()[0] : '';
+                let person_ids = $('#btnPlace_person_modal_select').val() ? $('#btnPlace_person_modal_select').val() : '';
+                if (!collapsed && place_id) {
                   let item = definition.categories.flatMap(category => category.items).find(item => item.id == event.target.id);
                   let options = {
                     'tag': item.tag,
                     'attributes': JSON.parse(JSON.stringify(item.attributes))
                   }
-                  // ref="#ID_PLACE #ID_PERSON" -> ref="#1 #2"
-                  options.attributes.ref = options.attributes.ref.replace('ID_PLACE', placeId)
-                                                                 .replace('ID_PERSON', personId);
-                  if (!personId) {
-                    // ref="#1 #" -> ref="#1"
-                    options.attributes.ref = options.attributes.ref.slice(0, -2);
+                  // ref="#ID_PLACE #ID_PERSON" -> ref="#1 #ID_PERSON"
+                  options.attributes.ref = options.attributes.ref.replace('ID_PLACE', place_id);
+                  if (!person_ids) {
+                    // ref="#1 #ID_PERSON" -> ref="#1"
+                    options.attributes.ref = options.attributes.ref.slice(0, -11);
+                  }
+                  else {
+                    // ref="#1 #ID_PERSON" -> ref="#1 #2"|ref="#1 #2 #n"
+                    options.attributes.ref = options.attributes.ref.replace('#ID_PERSON', person_ids.map(id => `#${id}`).join(' '));
                   }
                   utils.addSpan(options);
                 }
@@ -688,7 +747,8 @@
             });
 
             // When the user clicks on the button "btnTime", the related modal is shown.
-            // The attribute "ref" is filled with the id of a person if a person is chosen from the list.
+            // The attribute "ref" is filled with ids of persons chosen from the list;
+            // if no person is selected, the attribute "ref" is removed.
             // The attribute "ana" is filled with the code of the selected item.
             $(window).on('onClickBtnTime', function(event, editor, definition, utils) {
               cleanModalBeforeShow('btnTime');
@@ -697,16 +757,16 @@
               $('#btnTime_modal_message').text(collapsed ? 'No text is selected.' : '');
               $('.btnTime_modal_item').unbind().click(function(event) {
                 $('#btnTime_modal').modal('hide');
-                let personId = $('#btnTime_modal_select').val() ? $('#btnTime_modal_select').val()[0] : '';
+                let person_ids = $('#btnTime_modal_select').val() ? $('#btnTime_modal_select').val() : '';
                 if (!collapsed) {
                   let item = definition.categories.flatMap(category => category.items).find(item => item.id == event.target.id);
                   let options = {
                     'tag': item.tag,
                     'attributes': JSON.parse(JSON.stringify(item.attributes))
                   }
-                  if (personId) {
-                    // ref="#ID_PERSON" -> ref="#1"
-                    options.attributes.ref = options.attributes.ref.replace('ID_PERSON', personId);
+                  if (person_ids) {
+                    // ref="#ID_PERSON" -> ref="#1"|ref="#1 #n"
+                    options.attributes.ref = options.attributes.ref.replace('#ID_PERSON', person_ids.map(id => `#${id}`).join(' '));
                   }
                   else {
                     delete options.attributes.ref;
@@ -717,7 +777,7 @@
             });
 
             // When the user clicks on the button "btnTargetAudience", the related modal is shown.
-            // The items are cumulative. The attribute "ana" is filled with
+            // Items are cumulative. The attribute "ana" is filled with
             // all the codes of the selected items.
             $(window).on('onClickBtnTargetAudience', function(event, editor, definition, utils) {
               cleanModalBeforeShow('btnTargetAudience');

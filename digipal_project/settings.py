@@ -333,6 +333,8 @@ FACETED_SEARCH['types'].append({
     'column_order': ['url', 'name', 'variants', 'titles', 'occupations', 'traits', 'type', 'place', 'texts'],
 })
 
+
+# TEXT_EDITOR
 TE_COLOR_LITERARY_FUNCTION = '#c5e0b3'
 TE_COLOR_TARGET_AUDIENCE = '#a8d08d'
 TE_COLOR_JUDGMENT = '#538135'
