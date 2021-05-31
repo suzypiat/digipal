@@ -207,18 +207,24 @@ texts.addField(title)
 # Add Edition
 edition = {
     'key': 'edition', 'label': 'Edition',
-    'path': 'text_content.edition.title',
+    'path': 'text_content.text.edition.title',
     'viewable': True, 'type': 'title', 'count': True, 'search': True
 }
 texts.addField(edition)
 
-# Add Languages
-languages = {
-    'key': 'languages', 'label': 'Languages',
-    'path': 'text_content.languages.all.name',
-    'viewable': True, 'type': 'title', 'count': True, 'search': True, 'multivalued': True
+# Add Language
+def get_language(text):
+    if text and text.item_part:
+        return text.item_part.work_current_item.work.language.name
+    elif text and text.edition:
+        return text.edition.work.language.name
+
+language = {
+    'key': 'language', 'label': 'Language',
+    'path': 'text_content.text', 'transform': get_language,
+    'viewable': True, 'type': 'title', 'count': True, 'search': True
 }
-texts.addField(languages)
+texts.addField(language)
 
 # Change path for Text Type
 text_type = texts.getField('text_type')
@@ -237,10 +243,11 @@ thumbnail = texts.getField('thumbnail')
 thumbnail['path'] = 'text_content.text'
 thumbnail['transform'] = get_thumbnail
 
+
 # Remove field hi_type
-# Add fields title, edition, languages
-texts.options['filter_order'] = ['repo_place', 'repo_city', 'edition', 'languages', 'text_type', 'hi_date']
-texts.options['column_order'] = ['url', 'title', 'languages', 'text_type', 'hi_date', 'shelfmark',
+# Add fields title, edition, language
+texts.options['filter_order'] = ['repo_place', 'repo_city', 'edition', 'language', 'text_type', 'hi_date']
+texts.options['column_order'] = ['url', 'title', 'language', 'text_type', 'hi_date', 'shelfmark',
                                  'repo_place', 'repo_city', 'edition', 'thumbnail']
 
 # FACETED SEARCH: GRAPHS (= ICONOGRAPHY)
