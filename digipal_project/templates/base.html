@@ -1,0 +1,17 @@
+{% extends "base_default.html" %}
+{% comment %}
+    You can override this template in your customisation app.
+    Any block in base_default.html can be customised individually.
+{% endcomment %}
+
+{% block logo %}
+  <span id="logo">
+      {% spaceless %}
+          <span class="logo-brand logo-brand-digi">{{ settings.SITE_TITLE }}</span>
+          <span class="logo-separator hidden-sm hidden-xs">&nbsp;</span>
+          <span class="logo-sub hidden-sm hidden-xs">
+            <span>Boccace </span><span>Numérique </span><span>Humaniste</span>
+          </span>
+      {% endspaceless %}
+  </span>
+{% endblock %}
