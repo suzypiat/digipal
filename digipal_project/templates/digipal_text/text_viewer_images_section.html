@@ -1,0 +1,17 @@
+{% for image in images %}
+    <div class="centered">
+        <div class="panel panel-thumb">
+            <span class="folio-image-wrapper">
+                {{ image.thumbnail }}
+                <br><br>
+                <span>
+                  {% if image.locus %}
+                    {{ image.locus }}
+                  {% else %}
+                    #{{ image.id }}
+                  {% endif %}
+                </span>
+            </span>
+        </div>
+    </div>
+{% endfor %}

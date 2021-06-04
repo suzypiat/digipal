@@ -120,20 +120,27 @@ def text_viewer_view(request, object_type, object_id=0, text_id=0,
     if not is_model_visible('textcontentxml', request):
         raise Http404('The Text Viewer is not enabled on this site')
 
+    from digipal.models import Text
     if object_type == 'manuscripts':
         from digipal.models import ItemPart
-        context = {'item_partid': object_id,
-                   'textid': text_id,
-                   'item_part': ItemPart.objects.filter(id=object_id).first()}
+        context = {
+                    'item_partid': object_id,
+                    'item_part': ItemPart.objects.filter(id=object_id).first(),
+                    'textid': text_id,
+                    'text': Text.objects.filter(id=text_id).first()
+                   }
         if not context['item_part']:
             raise Http404('This document doesn\'t exist')
         if not can_user_see_main_text('manuscripts', context['item_part'], text_id, request):
             raise Http404('This document is not publicly accessible')
     elif object_type == 'editions':
         from digipal_project.models import Bonhum_Edition
-        context = {'editionid': object_id,
-                   'textid': text_id,
-                   'edition': Bonhum_Edition.objects.filter(id=object_id).first()}
+        context = {
+                    'editionid': object_id,
+                    'edition': Bonhum_Edition.objects.filter(id=object_id).first(),
+                    'textid': text_id,
+                    'text': Text.objects.filter(id=text_id).first()
+                   }
         if not context['edition']:
             raise Http404('This document doesn\'t exist')
         if not can_user_see_main_text('editions', context['edition'], text_id, request):
@@ -174,6 +181,34 @@ def text_viewer_view(request, object_type, object_id=0, text_id=0,
     context['text_editor_options'] = settings.TEXT_EDITOR_OPTIONS
 
     update_viewer_context(context, request)
+
+    from digipal.models import Text, Image
+    if object_type == 'manuscripts':
+        text_images = Image.sort_query_set_by_locus(Image.filter_permissions_from_request(Text.objects.filter(id=text_id).first().images, request, True))
+        text_images_thumbnails = [
+            {
+                'id': image.id, 'locus': image.locus,
+                'thumbnail': Image.thumbnail_with_link(image, None, 400)
+            } for image in text_images
+        ]
+        item_part_images = Image.sort_query_set_by_locus(Image.filter_permissions_from_request(Image.objects.filter(item_part__id=object_id), request, True))
+        item_part_images_thumbnails = [
+            {
+                'id': image.id, 'locus': image.locus,
+                'thumbnail': Image.thumbnail_with_link(image, None, 400)
+            } for image in item_part_images
+        ]
+        context['text_images'] = text_images_thumbnails
+        context['item_part_images'] = item_part_images_thumbnails
+    elif object_type == 'editions':
+        text_images = Image.sort_query_set_by_locus(Image.filter_permissions_from_request(Text.objects.filter(id=text_id).first().images, request, True))
+        text_images_thumbnails = [
+            {
+                'id': image.id, 'locus': image.locus,
+                'thumbnail': Image.thumbnail_with_link(image, None, 400)
+            } for image in text_images
+        ]
+        context['text_images'] = text_images_thumbnails
 
     return render(request, 'digipal_text/text_viewer.html', context)
 
@@ -274,7 +309,7 @@ viewer.tinymce_generated_css_view = tinymce_generated_css_view
 
 # Changed parameters: request, object_type, object_id, text_id, content_type, location_type=u'default', location=''
 # instead of: request, item_partid, content_type, location_type=u'default', location=''
-# Changed parameters for text_api_view_content_type() call
+# Changed parameters for text_api_view_content_type() call and added a condition for editions (on location and image)
 def text_api_view(request, object_type, object_id, text_id, content_type,
                   location_type=u'default', location=''):
 
@@ -309,9 +344,12 @@ def text_api_view(request, object_type, object_id, text_id, content_type,
             text_api_view_content_type = text_api_view_text
 
     if text_api_view_content_type:
-        response = text_api_view_content_type(
-            request, object_type, object_id, text_id, content_type,
-            location_type, location, content_type_record, max_size=max_size)
+        if object_type == 'editions' and (content_type == 'location' or content_type == 'image'):
+            response = None
+        else:
+            response = text_api_view_content_type(
+                request, object_type, object_id, text_id, content_type,
+                location_type, location, content_type_record, max_size=max_size)
 
     # we didn't find a custom function for this content type
     if response is None:
@@ -517,6 +555,7 @@ viewer.get_or_create_text_content_records = get_or_create_text_content_records
 # Changed parameters: request, object_type, object_id, text_id, content_type, location_type, location, user=None, max_size=MAX_FRAGMENT_SIZE
 # instead of: request, item_partid, content_type, location_type, location, user=None, max_size=MAX_FRAGMENT_SIZE
 # Added condition: resolve_master_location() is called when object_type=="manuscripts", not "editions"
+# Added filter on locus array, to remove empty strings
 def text_api_view_location(request, object_type, object_id, text_id, content_type,
                            location_type, location, user=None, max_size=MAX_FRAGMENT_SIZE):
     '''This content type is for the list of all available locations (text, images)
@@ -541,7 +580,7 @@ def text_api_view_location(request, object_type, object_id, text_id, content_typ
             'location_type': location_type,
             'location': location,
         }
-
+    ret['locations']['locus'] = filter(None, ret['locations']['locus'])
     return ret
 
 viewer.text_api_view_location = text_api_view_location

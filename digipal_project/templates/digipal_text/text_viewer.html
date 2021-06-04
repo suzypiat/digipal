@@ -9,9 +9,9 @@
 {% endcomment %}
 {% block meta_title %}
   {% if item_part %}
-    {{ item_part.display_label }}: Texts
+    {{ item_part.display_label }} - {{ text.title }}
   {% else %}
-    {{ edition.title }}: Texts
+    {{ edition.title }} - {{ text.title }}
   {% endif %}
 {% endblock %}
 
@@ -39,25 +39,29 @@
 {% block viewer_top %}
     <div class="tv-main-toolbar">
         {% block viewer_title %}
+            {% comment %}
+            -----------------------------------------
+            BONHUM - Added condition for the heading:
+            item_part or edition
+            -----------------------------------------
+            {% endcomment %}
             <span class="tvmt-heading">Text Viewer</span>
-            -
+            <br><br>
             <span class="tvmt-itempart">
-                {% comment %}
-                  ----------------------------------------
-                  BONHUM - Added condition for the link:
-                  item_part or edition
-                  ----------------------------------------
-                {% endcomment %}
                 {% if item_part %}
+                  <strong>Item part:</strong>
                   <a href="{{ item_part.get_absolute_url }}">
                       {{ item_part.display_label }}
                       {% if item_part.is_suspect %}(Suspect){% endif %}
                   </a>
                 {% else %}
-                  <a href="{{ edition.get_absolute_url }}">
-                      {{ edition.title }}
-                  </a>
+                  <strong>Edition:</strong>
+                  {{ edition.title }}
                 {% endif %}
+                <br><br>
+                <strong>Text:</strong>
+                {{ text.title }}
+                <br><br>
             </span>
         {% endblock %}
 
@@ -65,12 +69,20 @@
 
         {% endblock %}
 
-        <div class="ui-layout-above ui-layout-pane-above">
-            <div class="btn-toolbar">
-                <div class="location-buttons btn-group"></div>
-                <span class="location-description">&nbsp</span>
-            </div>
-        </div>
+        {% comment %}
+          ----------------------------------------------
+          BONHUM - Added condition for location-buttons:
+          not displayed for an edition
+          ----------------------------------------------
+        {% endcomment %}
+        {% if item_part %}
+          <div class="ui-layout-above ui-layout-pane-above">
+              <div class="btn-toolbar">
+                  <div class="location-buttons btn-group"></div>
+                  <span class="location-description">&nbsp</span>
+              </div>
+          </div>
+        {% endif %}
     </div>
 {% endblock %}
 
@@ -79,23 +91,62 @@
   BONHUM - Added condition for the frame:
   - item_part: center and east
   - edition: center
+  BONHUM - Added a column on the right
+  to display related images
   ---------------------------------------
 {% endcomment %}
 {# Template for the frame #}
-<div id="text-viewer">
-    <div class="panels">
-        {# <div class="ui-layout-north">Loading Text Viewer...</div> #}
-        {# <div class="ui-layout-west">&nbps;</div> #}
-        <div class="ui-layout-center">&nbps;</div>
-        {% if item_part %}
-          <div class="ui-layout-east">&nbps;</div>
-        {% else %}
-          {# <div class="ui-layout-east"></div> #}
-        {% endif %}
-        {# <div class="ui-layout-south">&nbps;</div> #}
+<div class="row">
+  <div class="col-xs-9">
+    <div id="text-viewer">
+        <div class="panels">
+            {# <div class="ui-layout-north">Loading Text Viewer...</div> #}
+            {# <div class="ui-layout-west">&nbps;</div> #}
+            <div class="ui-layout-center">&nbps;</div>
+            {% if item_part %}
+              <div class="ui-layout-east">&nbps;</div>
+            {% else %}
+              {# <div class="ui-layout-east"></div> #}
+            {% endif %}
+            {# <div class="ui-layout-south">&nbps;</div> #}
+        </div>
     </div>
-</div>
+  </div>
+  <div id="images_col" class="col-xs-3" hidden style="overflow: auto;">
+    {% if item_part %}
 
+      <h4>Images associated to this manuscript</h4>
+      {% if item_part_images %}
+        {% include "digipal_text/text_viewer_images_section.html" with images=item_part_images %}
+      {% else %}
+        <div class="alert alert-warning">
+            No image associated to this manuscript.
+        </div>
+      {% endif %}
+
+      <h4>Images associated to this text</h4>
+      {% if text_images %}
+        {% include "digipal_text/text_viewer_images_section.html" with images=text_images %}
+      {% else %}
+        <div class="alert alert-warning">
+            No image associated to this text.
+        </div>
+      {% endif %}
+
+    {% else %}
+
+      <h4>Images associated to this text</h4>
+      {% if text_images %}
+        {% include "digipal_text/text_viewer_images_section.html" with images=text_images %}
+      {% else %}
+        <div class="alert alert-warning">
+            No image associated to this text.
+        </div>
+      {% endif %}
+
+    {% endif %}
+  </div>
+</div>
 
 {# Template for a panel within the frame #}
 <div id="text-viewer-panel" class="text-viewer-panel">
@@ -106,10 +157,10 @@
 
         <div class="location-buttons btn-group dpauto-hide">
             {% include "bootstrap/dropdown.html" with options=dd_location_types classes="dropdown-location-type dphidden auto-open" %}
-            <select name="location" class="dphidden">
-                <option value="1r">1r</option>
-                <option value="1v">1v</option>
-            </select>
+              <select name="location" class="dphidden">
+                  <option value="1r">1r</option>
+                  <option value="1v">1v</option>
+              </select>
             <button class="btn btn-default btn-sm btn-page-nav btn-page-previous dphidden">
                 <i class="fa fa-chevron-left" aria-hidden="true"></i>
             </button>
@@ -369,8 +420,8 @@
             panelset.setPanelSize('north', window.text_editor_options.panels.north.ratio);
 
             // BONHUM
-            // The method setPanelSize is only called if the text comes from
-            // an item_part, not an edition
+            // The method setPanelSize for the east panel is only called if
+            // the text comes from an item_part, not an edition
             {% if item_part %}
               panelset.setPanelSize('east', window.text_editor_options.panels.east.ratio);
             {% endif %}
@@ -395,6 +446,33 @@
 
       <script>
         jQuery(document).ready(function($) {
+
+            // IMPORTANT
+            // We let the text-viewer load FIRST, in order to get its height
+            // and assign it to the column dedicated to images AFTER
+            $(window).on('load', function() {
+              let height = $('#text-viewer').height();
+              $('#images_col').css('height', height);
+              $('#images_col').css('max-height', height);
+              $('#images_col').show();
+            });
+
+            // IMPORTANT
+            // We let the text-viewer be resized FIRST, in order to get its new height
+            // and assign it to the column dedicated to images AFTER
+            $(window).resize(function() {
+              let height = $('#text-viewer').height();
+              $('#images_col').css('height', height);
+              $('#images_col').css('max-height', height);
+
+              if ($(window).width() <= 800 || $(window).height() <= 800) {
+                $.each(window.ps.layout.panes, function(pane) {
+                  if (pane !== false) {
+                    window.ps.layout[pane == 'center' ? 'open' : 'close'](pane);
+                  }
+                });
+              }
+            });
 
             // ajax call to get API data with a specific url as parameter
             function getAPIData(url) {
@@ -821,7 +899,6 @@
                 }
               });
             });
-
 
         });
     </script>
