@@ -194,6 +194,7 @@ class Bonhum_StoryCharacterTrait(models.Model):
 
 class Bonhum_StoryCharacter(models.Model):
     name = models.CharField(max_length=150, null=False, unique=True)
+    id_viaf = models.IntegerField(blank=True, null=True, verbose_name='VIAF identifier')
     type = models.ForeignKey(Bonhum_StoryCharacterType, blank=True, null=True)
     gender = models.ForeignKey(Bonhum_StoryCharacterGender, blank=True, null=True)
     age = models.ForeignKey(Bonhum_StoryCharacterAge, blank=True, null=True)
@@ -230,6 +231,15 @@ class Bonhum_StoryCharacter(models.Model):
             ret = None
 
         return ret
+
+    def get_viaf_url(self):
+        ret = u''
+        if self.id_viaf:
+            url = u'https://viaf.org/viaf/%s/' % self.id_viaf
+            result = u'<a href="%s" target="_blank">%s</a>' % (escape(url), 'Link to the VIAF page of this character')
+            ret = mark_safe(result)
+        return ret
+    get_viaf_url.short_description = 'VIAF link'
 
 
 class Bonhum_MotiveStoryCharacter(Allograph):
@@ -301,6 +311,7 @@ class Bonhum_StoryCharacterNameVariant(models.Model):
 #   Source              #
 #   Work                #
 #   Edition             #
+#   Text                #
 #                       #
 #########################
 
@@ -583,7 +594,6 @@ class Bonhum_TextCollaborator(models.Model):
 #########################
 #                       #
 #   Contributor         #
-#   Hand                #
 #                       #
 #########################
 
@@ -625,10 +635,8 @@ class Bonhum_Catalogue(models.Model):
         return u'%s' % self.reference
 
 
-from digipal.models import set_additional_models_methods, admin_patches, whoosh_patches
+from digipal.models import set_additional_models_methods
 set_additional_models_methods()
-admin_patches()
-whoosh_patches()
 
 
 # LEAVE THIS CALL, this is to make sure the customisations are loaded

@@ -333,8 +333,23 @@ CurrentItem.get_item_parts = get_item_parts
 
 # MODIFICATIONS
 # - added field sources
+# - added field id_viaf
+# - added method get_viaf_url
 
 Person.add_to_class('sources', models.ManyToManyField('digipal_project.Bonhum_Source', through='digipal_project.Bonhum_SourceAuthor', related_name='sources_of_person'))
+Person.add_to_class('id_viaf', models.IntegerField(blank=True, null=True, verbose_name='VIAF identifier'))
+
+
+def get_viaf_url(self):
+    ret = u''
+    if self.id_viaf:
+        url = u'https://viaf.org/viaf/%s/' % self.id_viaf
+        result = u'<a href="%s" target="_blank">%s</a>' % (escape(url), 'Link to the VIAF page of this person')
+        ret = mark_safe(result)
+    return ret
+get_viaf_url.short_description = 'VIAF link'
+
+Person.get_viaf_url = get_viaf_url
 
 ##########################################
 ### END                                ###

@@ -276,12 +276,18 @@ admin.site.register(Image, ImageAdmin)
 ###############################################
 
 # MODIFICATIONS
-# - excluded field legacy_id
+# - added fieldsets with name, id_viaf and get_viaf_url
+# - excluded legacy_id from fieldsets
+# - added readonly_fields with get_viaf_url
 # - removed inlines with OwnerInline
 
 class PersonAdmin(digipal.admin.PersonAdmin):
     inlines = []
-    exclude = ['legacy_id']
+    fieldsets = (
+        (None, {'fields': ('name',)}),
+        (None, {'fields': ('id_viaf', 'get_viaf_url')})
+    )
+    readonly_fields = ['get_viaf_url']
 
 
 admin.site.unregister(Person)

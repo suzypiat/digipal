@@ -140,11 +140,13 @@ class Bonhum_StoryCharacterAdmin(reversion.VersionAdmin):
     list_filter = ['type', 'gender', 'age', 'religion', 'titles', 'traits', 'occupations']
     fieldsets = (
         (None, {'fields': ('name', 'type', 'gender', 'age', 'religion', 'geographical_origin')}),
+        (None, {'fields': ('id_viaf', 'get_viaf_url')}),
         (None, {'fields': ('titles',)}),
         (None, {'fields': ('occupations',)}),
         (None, {'fields': ('traits',)})
     )
     filter_horizontal = ['occupations', 'traits', 'titles']
+    readonly_fields = ['get_viaf_url']
     inlines = [
         admin_inlines.Bonhum_StoryCharacterNameVariantInline,
         admin_inlines.Bonhum_StoryCharacterTextInline,
