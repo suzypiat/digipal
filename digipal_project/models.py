@@ -4,7 +4,8 @@ import os
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from digipal.models import Language, Text, Person, CurrentItem, ItemPart, Image, \
-    get_list_as_string
+    Allograph, Character, get_list_as_string
+
 
 #########################
 #                       #
@@ -202,6 +203,7 @@ class Bonhum_StoryCharacter(models.Model):
     titles = models.ManyToManyField(Bonhum_StoryCharacterTitle, blank=True)
     traits = models.ManyToManyField(Bonhum_StoryCharacterTrait, blank=True)
     texts = models.ManyToManyField(Text, through='Bonhum_TextStoryCharacter', related_name='texts_of_story_character')
+    images = models.ManyToManyField(Image, through='Bonhum_ImageStoryCharacter', related_name='images_of_story_character')
     created = models.DateTimeField(auto_now_add=True, editable=False)
     modified = models.DateTimeField(auto_now=True, editable=False)
 
@@ -217,6 +219,50 @@ class Bonhum_StoryCharacter(models.Model):
         ret = '/%s/%s/%s/' % ('digipal', 'characters', self.id)
         return ret
 
+    def get_thumbnail(self, request=None):
+        from digipal.models import Annotation
+        motives_ids = Bonhum_MotiveStoryCharacter.objects.filter(story_character__id=self.id).values_list('id')
+        annotations = Annotation.objects.filter(graph__idiograph__allograph__id__in=motives_ids)
+        ret = annotations.first()
+
+        # returns None if request user doesn't have permission
+        if request and ret and ret.image.is_private_for_user(request):
+            ret = None
+
+        return ret
+
+
+class Bonhum_MotiveStoryCharacter(Allograph):
+    story_character = models.ForeignKey(Bonhum_StoryCharacter, null=False)
+
+    def __unicode__(self):
+        return get_list_as_string(self.character, ', ', self.name)
+
+
+class Bonhum_ImageStoryCharacter(models.Model):
+    image = models.ForeignKey(Image, null=False)
+    story_character = models.ForeignKey(Bonhum_StoryCharacter, null=False, verbose_name='character')
+    category = models.ForeignKey(Character, null=False)
+    created = models.DateTimeField(auto_now_add=True, editable=False)
+    modified = models.DateTimeField(auto_now=True, editable=False)
+
+    class Meta:
+        unique_together = ['image', 'story_character', 'category']
+        verbose_name = 'image-character relationship'
+        verbose_name_plural = 'image-character relationships'
+
+    def __unicode__(self):
+        return get_list_as_string(self.image, '/', self.story_character)
+
+    def save(self, *args, **kwargs):
+        if self.story_character and self.category:
+            story_character = Bonhum_StoryCharacter.objects.filter(id=self.story_character.id).first()
+            motive, created = Bonhum_MotiveStoryCharacter.objects.get_or_create(
+                story_character=self.story_character, character=self.category,
+                defaults={ 'name': story_character.name }
+            )
+        super(Bonhum_ImageStoryCharacter, self).save(*args, **kwargs)
+
 
 class Bonhum_TextStoryCharacter(models.Model):
     text = models.ForeignKey(Text, null=False)
@@ -226,6 +272,8 @@ class Bonhum_TextStoryCharacter(models.Model):
 
     class Meta:
         unique_together = ['text', 'story_character']
+        verbose_name = 'text-character relationship'
+        verbose_name_plural = 'text-character relationships'
 
     def __unicode__(self):
         return get_list_as_string(self.text, '/', self.story_character)
@@ -297,6 +345,8 @@ class Bonhum_SourceAuthor(models.Model):
 
     class Meta:
         unique_together = ['source', 'author']
+        verbose_name = 'source-author relationship'
+        verbose_name_plural = 'source-author relationships'
 
     def __unicode__(self):
         return get_list_as_string(self.source, '/', self.author)
@@ -325,6 +375,8 @@ class Bonhum_TextSource(models.Model):
 
     class Meta:
         unique_together = ['source', 'text', 'canonical_reference']
+        verbose_name = 'text-source relationship'
+        verbose_name_plural = 'text-source relationships'
 
     def __unicode__(self):
         return get_list_as_string(self.source, '/', self.text)
@@ -433,8 +485,8 @@ class Bonhum_WorkCurrentItem(models.Model):
     class Meta:
         ordering = ['work', 'current_item']
         unique_together = ['work', 'current_item']
-        verbose_name = 'Current item/work relationship'
-        verbose_name_plural = 'Current item/work relationships'
+        verbose_name = 'current item-work relationship'
+        verbose_name_plural = 'current item-work relationships'
 
     def __unicode__(self):
         return get_list_as_string(self.current_item, ' - ', self.work)
@@ -521,8 +573,8 @@ class Bonhum_TextCollaborator(models.Model):
     class Meta:
         ordering = ['text']
         unique_together = ['text', 'collaborator', 'activity']
-        verbose_name = 'Text/collaborator relationship'
-        verbose_name_plural = 'Text/collaborator relationships'
+        verbose_name = 'text-collaborator relationship'
+        verbose_name_plural = 'text-collaborator relationships'
 
     def __unicode__(self):
         return get_list_as_string(self.text, ' - ', self.collaborator, ', ', self.activity)

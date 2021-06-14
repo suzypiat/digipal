@@ -249,12 +249,13 @@ admin.site.register(ItemPart, ItemPartAdmin)
 ##############################################
 
 # MODIFICATIONS
-# - changed inlines to add Bonhum_ImageTextInline
+# - changed inlines to add Bonhum_ImageTextInline and Bonhum_ImageStoryCharacterInline
 
 class ImageAdmin(digipal.admin.ImageAdmin):
     inlines = [
         digipal.admin_inlines.HandsInline,
-        digipal_project.admin_inlines.Bonhum_ImageTextInline
+        digipal_project.admin_inlines.Bonhum_ImageTextInline,
+        digipal_project.admin_inlines.Bonhum_ImageStoryCharacterInline,
     ]
 
 

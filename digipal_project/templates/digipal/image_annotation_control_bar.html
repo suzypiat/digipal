@@ -45,6 +45,7 @@
                   to add labels for Hand (Type) and Allograph (Motive)
                   --------------------------------------------------------------------------------
                 {% endcomment %}
+                <br>
                 {{ form }}
             </ul>
             {% comment %}
@@ -58,7 +59,33 @@
                 <i class='fa fa-eye'></i>
                 <span class='number-allographs'></span>
             </span>
+
+            {% comment %}
+            ------------------------------------------------------------------------
+            BONHUM - Added three buttons to filter the list of allographs (motives):
+            cf. digipal_project/static/digipal/scripts/filter-annotator-motives.js
+            ------------------------------------------------------------------------
+            {% endcomment %}
+            <br>
+            <div>
+              Filter motives by:
+              <button id="filter_by_all" class="filter_motives_button btn btn-sm btn-primary" type="button">All</button>
+              <button id="filter_by_only_characters" class="filter_motives_button btn btn-sm" type="button">Only characters</button>
+              <button id="filter_by_no_characters" class="filter_motives_button btn btn-sm" type="button">No characters</button>
+            </div>
+
         </div>
     </form>
 
 </div>
+
+{% comment %}
+------------------------------------------------------------------
+BONHUM - Added a custom js file to filter allographs (motives):
+digipal_project/static/digipal/scripts/filter-annotator-motives.js
+------------------------------------------------------------------
+{% endcomment %}
+{% block extra_js %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}digipal/scripts/filter-annotator-motives.js"></script>
+{% endblock %}

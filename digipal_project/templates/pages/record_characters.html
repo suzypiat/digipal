@@ -18,8 +18,8 @@
             <a href="{{ character.get_absolute_url }}texts/" data-address-bar="1" data-target="#texts" data-toggle="tab">Texts ({{ text_content_xmls.count }})</a></li>
     {% endif %}
     {% if cansee.image %}
-        <li class="{% if tabid == "pages" %}active in{% endif %} {% if pages|length > 0 %}{% else %}disabled{% endif %}">
-            <a href="{{ character.get_absolute_url }}pages/" data-address-bar="1" data-target="#pages" data-toggle="tab">Manuscript Images ({{ pages|length }})</a>
+        <li class="{% if tabid == "pages" %}active in{% endif %} {% if images|length > 0 %}{% else %}disabled{% endif %}">
+            <a href="{{ character.get_absolute_url }}pages/" data-address-bar="1" data-target="#pages" data-toggle="tab">Manuscript Images ({{ images|length }})</a>
         </li>
     {% endif %}
 {% endblock %}

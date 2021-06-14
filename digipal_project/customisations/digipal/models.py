@@ -472,8 +472,10 @@ ItemPart.get_workcurrentitem_currentitem = get_workcurrentitem_currentitem
 
 # MODIFICATIONS
 # - added field texts
+# - added field story_characters
 
 Image.add_to_class('texts', models.ManyToManyField(Text, through='digipal_project.Bonhum_TextImage', related_name='texts_of_image'))
+Image.add_to_class('story_characters', models.ManyToManyField('digipal_project.Bonhum_StoryCharacter', through='digipal_project.Bonhum_ImageStoryCharacter', related_name='story_characters_of_image'))
 
 #########################################
 ### END                               ###

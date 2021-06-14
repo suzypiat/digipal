@@ -58,14 +58,26 @@ class Bonhum_StoryPlaceTextInline(DigiPalInline):
 
 class Bonhum_StoryCharacterTextInline(DigiPalInline):
     model = Text.story_characters.through
-    verbose_name = 'Character-Texts Relationship'
-    verbose_name_plural = 'Character-Texts Relationships'
+    verbose_name = 'Character-Text Relationship'
+    verbose_name_plural = 'Character-Text Relationships'
 
 
 class Bonhum_TextStoryCharacterInline(DigiPalInline):
     model = Bonhum_StoryCharacter.texts.through
     verbose_name = 'Text-Character Relationship'
     verbose_name_plural = 'Text-Character Relationships'
+
+
+class Bonhum_StoryCharacterImageInline(DigiPalInline):
+    model = Image.story_characters.through
+    verbose_name = 'Character-Image Relationship'
+    verbose_name_plural = 'Character-Image Relationships'
+
+
+class Bonhum_ImageStoryCharacterInline(DigiPalInline):
+    model = Bonhum_StoryCharacter.images.through
+    verbose_name = 'Image-Character Relationship'
+    verbose_name_plural = 'Image-Character Relationships'
 
 
 class Bonhum_TextSourceInline(DigiPalInline):

@@ -29,11 +29,10 @@ class SearchCharacters(SearchContentType):
         character = Bonhum_StoryCharacter.objects.get(id=context['id'])
         context['character'] = character
 
-        # images = Image.filter_permissions_from_request(Image.objects.all(), request)
-        # context['images'] = Image.sort_query_set_by_locus(images)
+        images = Image.filter_permissions_from_request(Image.objects.filter(id__in=character.images.values_list('id')), request)
+        context['images'] = Image.sort_query_set_by_locus(images)
 
-        texts = Text.objects.filter(id__in=map(lambda text: text.id, character.texts.all()))
-        text_content_xmls = TextContentXML.objects.filter(text_content__text__id__in=texts)
+        text_content_xmls = TextContentXML.objects.filter(text_content__text__id__in=character.texts.values_list('id'))
         context['text_content_xmls'] = text_content_xmls
 
     def get_model(self):

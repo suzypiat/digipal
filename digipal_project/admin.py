@@ -132,7 +132,6 @@ class Bonhum_StoryCharacterNameVariantAdmin(reversion.VersionAdmin):
     search_fields = ['name', 'character__name']
     list_filter = ['language']
 
-
 class Bonhum_StoryCharacterAdmin(reversion.VersionAdmin):
     model = Bonhum_StoryCharacter
     list_display = ['name', 'type', 'gender', 'age', 'religion', 'geographical_origin', 'created', 'modified']
@@ -148,7 +147,8 @@ class Bonhum_StoryCharacterAdmin(reversion.VersionAdmin):
     filter_horizontal = ['occupations', 'traits', 'titles']
     inlines = [
         admin_inlines.Bonhum_StoryCharacterNameVariantInline,
-        admin_inlines.Bonhum_StoryCharacterTextInline
+        admin_inlines.Bonhum_StoryCharacterTextInline,
+        admin_inlines.Bonhum_StoryCharacterImageInline
     ]
 
     # FIELDS TYPE, GENDER, AGE, RELIGION, TITLES, OCCUPATIONS, TRAITS

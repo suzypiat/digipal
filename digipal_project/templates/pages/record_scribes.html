@@ -45,9 +45,14 @@
           </li>
       {% endif %}
     {% endcomment %}
+    {% comment %}
+      --------------------------------------------------
+      BONHUM - Changed 'pages|length' to 'images|length'
+      --------------------------------------------------
+    {% endcomment %}
     {% if cansee.image %}
-        <li class="{% if tabid == "pages" %}active in{% endif %} {% if pages|length > 0 %}{% else %}disabled{% endif %}">
-            <a href="{{ scribe.get_absolute_url }}pages/" data-address-bar="1" data-target="#pages" data-toggle="tab">Manuscript Images ({{ pages|length }})</a>
+        <li class="{% if tabid == "pages" %}active in{% endif %} {% if images|length > 0 %}{% else %}disabled{% endif %}">
+            <a href="{{ scribe.get_absolute_url }}pages/" data-address-bar="1" data-target="#pages" data-toggle="tab">Manuscript Images ({{ images|length }})</a>
         </li>
     {% endif %}
     {% comment %}

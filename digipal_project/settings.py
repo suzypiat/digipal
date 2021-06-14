@@ -8,6 +8,7 @@ INSTALLED_APPS = INSTALLED_APPS + ('digipal_project',)
 # ITEM PART ADD FORM
 USE_ITEM_PART_QUICK_ADD_FORM = False
 
+
 # ADMIN DASHBOARD
 ADMIN_MENU_ORDER = (
     ('Web Content',
@@ -128,8 +129,10 @@ ADMIN_MENU_ORDER = (
     )
 )
 
+
 # MODELS EXPOSURE
-MODELS_PRIVATE = ['itempart', 'image', 'graph', 'scribe', 'textcontentxml', 'bonhum_storycharacter']
+MODELS_PRIVATE = ['itempart', 'image', 'graph', 'scribe', 'textcontentxml',
+                  'bonhum_storycharacter']
 MODELS_PUBLIC = MODELS_PRIVATE
 
 
@@ -140,14 +143,16 @@ manuscripts = FacettedType.fromKey('manuscripts')
 
 # Remove fields hi_type, hi_format, hi_has_images
 manuscripts.options['filter_order'] = ['hi_date', 'repo_city', 'repo_place']
-manuscripts.options['column_order'] = ['url', 'repo_city', 'repo_place', 'shelfmark', 'locus', 'hi_index', 'hi_date', 'hi_image_count']
+manuscripts.options['column_order'] = ['url', 'repo_city', 'repo_place', 'shelfmark',
+                                       'locus', 'hi_index', 'hi_date', 'hi_image_count']
 
 # FACETED SEARCH: IMAGES
 images = FacettedType.fromKey('images')
 
 # Remove fields mp_permission, hi_type, hi_format
 images.options['filter_order'] = ['hi_date', 'repo_city', 'repo_place']
-images.options['column_order'] = ['url', 'repo_city', 'repo_place', 'shelfmark', 'locus', 'hi_date', 'annotations', 'thumbnail']
+images.options['column_order'] = ['url', 'repo_city', 'repo_place', 'shelfmark',
+                                  'locus', 'hi_date', 'annotations', 'thumbnail']
 
 # FACETED SEARCH: HANDS
 hands = FacettedType.fromKey('hands')
@@ -243,12 +248,13 @@ thumbnail = texts.getField('thumbnail')
 thumbnail['path'] = 'text_content.text'
 thumbnail['transform'] = get_thumbnail
 
-
 # Remove field hi_type
 # Add fields title, edition, language
-texts.options['filter_order'] = ['repo_place', 'repo_city', 'edition', 'language', 'text_type', 'hi_date']
-texts.options['column_order'] = ['url', 'title', 'language', 'text_type', 'hi_date', 'shelfmark',
-                                 'repo_place', 'repo_city', 'edition', 'thumbnail']
+texts.options['filter_order'] = ['repo_place', 'repo_city', 'edition', 'language',
+                                 'text_type', 'hi_date']
+texts.options['column_order'] = ['url', 'title', 'language', 'text_type', 'hi_date',
+                                 'shelfmark', 'repo_place', 'repo_city', 'edition',
+                                 'thumbnail']
 
 # FACETED SEARCH: GRAPHS (= ICONOGRAPHY)
 graphs = FacettedType.fromKey('graphs')
@@ -272,10 +278,40 @@ ontograph = {
 }
 graphs.addField(ontograph)
 
+# Add Motive (motive without a story character)
+def get_generic_motive(allograph):
+    if allograph and not hasattr(allograph, 'bonhum_motivestorycharacter'):
+        return allograph.name
+    else:
+        return ''
+
+generic_motive = {
+    'key': 'generic_motive', 'label': 'Motive',
+    'path': 'idiograph.allograph', 'transform': get_generic_motive,
+    'viewable': True, 'type': 'id', 'count': True, 'search': True
+}
+graphs.addField(generic_motive)
+
+# Add Character Motive (motive with a story character)
+def get_story_character_motive(allograph):
+    if allograph and hasattr(allograph, 'bonhum_motivestorycharacter'):
+        return allograph.bonhum_motivestorycharacter.name
+    else:
+        return ''
+
+story_character_motive = {
+    'key': 'story_character_motive', 'label': 'Character Motive',
+    'path': 'idiograph.allograph', 'transform': get_story_character_motive,
+    'viewable': True, 'type': 'id', 'count': True, 'search': True
+}
+graphs.addField(story_character_motive)
+
 # Remove fields hand_label, hand_date, hand_place, is_described, chartype, character_form
-# Add field ontograph
-graphs.options['filter_order'] = ['ontograph', 'character', 'allograph', 'repo_place', 'repo_city']
-graphs.options['column_order'] = ['url', 'repo_city', 'repo_place', 'shelfmark', 'locus', 'hi_date', 'allograph', 'thumbnail']
+# Add fields ontograph, generic_motive, story_character_motive
+graphs.options['filter_order'] = ['ontograph', 'character', 'generic_motive',
+                                  'story_character_motive', 'repo_place', 'repo_city']
+graphs.options['column_order'] = ['url', 'repo_city', 'repo_place', 'shelfmark',
+                                  'locus', 'hi_date', 'allograph', 'thumbnail']
 
 # FACETED SEARCH: PEOPLE
 FACETED_SEARCH['types'].append({
@@ -325,19 +361,21 @@ FACETED_SEARCH['types'].append({
          'path': 'religion.name',
          'type': 'title', 'viewable': True, 'search': True, 'count': True},
 
-        {'key': 'place', 'label': 'Place', 'path':
-         'geographical_origin.name',
+        {'key': 'place', 'label': 'Place',
+         'path': 'geographical_origin.name',
          'type': 'title', 'viewable': True, 'search': True, 'count': True},
 
         {'key': 'texts', 'label': 'Texts',
          'path': 'texts.all.title',
          'type': 'title', 'viewable': True, 'search': True, 'multivalued': True},
 
-        # {'key': 'thumbnail', 'label': 'Thumbnail',
-        #  'path': '', 'viewable': True, 'type': 'image'},
+        {'key': 'thumbnail', 'label': 'Thumbnail',
+         'path': 'get_thumbnail',
+         'viewable': True, 'type': 'image'}
     ],
     'filter_order': ['type', 'age', 'gender', 'religion', 'place'],
-    'column_order': ['url', 'name', 'variants', 'titles', 'occupations', 'traits', 'type', 'place', 'texts'],
+    'column_order': ['url', 'name', 'variants', 'titles', 'occupations', 'traits',
+                     'type', 'place', 'texts', 'thumbnail']
 })
 
 
