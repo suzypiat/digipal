@@ -659,26 +659,6 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                         {
                             'id': 'btnPropertiesSocioEconomicStatusPerson', 'label': 'Properties', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-PROPR' }
-                        },
-                        {
-                            'id': 'btnCastlePropertiesSocioEconomicStatusPerson', 'label': 'Castle Properties', 'color': TE_COLOR_PERSON,
-                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-PROPR-C' }
-                        },
-                        {
-                            'id': 'btnCityPropertiesSocioEconomicStatusPerson', 'label': 'City Properties', 'color': TE_COLOR_PERSON,
-                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-PROPR-V' }
-                        },
-                        {
-                            'id': 'btnLandPropertiesSocioEconomicStatusPerson', 'label': 'Land Properties', 'color': TE_COLOR_PERSON,
-                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-PROPR-T' }
-                        },
-                        {
-                            'id': 'btnHousePropertiesSocioEconomicStatusPerson', 'label': 'House Properties', 'color': TE_COLOR_PERSON,
-                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-PROPR-M' }
-                        },
-                        {
-                            'id': 'btnAnimalPropertiesSocioEconomicStatusPerson', 'label': 'Animal Properties', 'color': TE_COLOR_PERSON,
-                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-PROPR-A' }
                         }
                     ]
                 },
@@ -812,5 +792,6 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
         'east': {
             'ratio': 0.5
         }
-    }
+    },
+    'show_highlights_in_preview': 0
 }

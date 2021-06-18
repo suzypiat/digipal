@@ -11,13 +11,13 @@ OUT: show the list of texts in the document with links to the Text Viewer
                 {% for text_content_xml in text_content_xmls %}
                     <li class="list-group-item">
                       {% comment %}
-                        --------------------------------------
+                        -----------------------------
                         BONHUM - Changed link to text
-                        --------------------------------------
+                        -----------------------------
                         <a href="{{ text_content_xml.get_absolute_url }}">
                             {{ text_content_xml.text_content.type }}
                         </a>
-                      {% endcomment %}                      
+                      {% endcomment %}
                         <a href="{{ text_content_xml.get_absolute_url }}">
                             {{ text_content_xml.text_content.text.title }}
                             ({{ text_content_xml.text_content.type|lower }})

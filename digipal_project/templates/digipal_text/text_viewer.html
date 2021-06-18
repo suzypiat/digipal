@@ -49,7 +49,7 @@
             <br><br>
             <span class="tvmt-itempart">
                 {% if item_part %}
-                  <strong>Item part:</strong>
+                  <strong>Manuscript:</strong>
                   <a href="{{ item_part.get_absolute_url }}">
                       {{ item_part.display_label }}
                       {% if item_part.is_suspect %}(Suspect){% endif %}
@@ -171,6 +171,13 @@
 
         <div class="dphidden dpauto-hide btn-group presentation-options"></div>
 
+        {% comment %}
+          --------------------------------------------------
+          BONHUM - Moved download options outside the block
+          'if request.user.is_authenticated', to allow users
+          to download the text without being authenticated
+          --------------------------------------------------
+        {% endcomment %}
         {% if request.user.is_authenticated %}
             <div class="btn-group dpauto-hide">
                 <button class="btn btn-default btn-sm toggle-edit dphidden" title="Edit the text" data-toggle="tooltip" data-placement="bottom">
@@ -184,15 +191,15 @@
                     </select>
                 {% endif %}
             </div>
-            <div class="btn-group dpauto-hide">
-                {% include "bootstrap/dropdown.html" with options=dd_download_formats classes="auto-open dphidden dropdown-download-formats" %}
-                {% comment %}
-                <button class="btn btn-default btn-sm action-download dphidden" title="Download" data-toggle="tooltip" data-placement="right">
-                    <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                </button>
-                {% endcomment %}
-            </div>
         {% endif %}
+        <div class="btn-group dpauto-hide">
+            {% include "bootstrap/dropdown.html" with options=dd_download_formats classes="auto-open dphidden dropdown-download-formats" %}
+            {% comment %}
+            <button class="btn btn-default btn-sm action-download dphidden" title="Download" data-toggle="tooltip" data-placement="right">
+                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+            </button>
+            {% endcomment %}
+        </div>
 
         <div class="linker btn-group pull-right dphidden">
             <span class="linker-image btn btn-default btn-sm">
@@ -315,8 +322,9 @@
                 panel.textid = panelset.textid;
 
                 // BONHUM
-                // The method _ready of a panel is overwritten in order
-                // to change the API url used to save a TextContentXML
+                // The method _ready of a panel is overwritten in order to:
+                // 1. Hide the presentation_options of text panels when entering editing mode
+                // 2. Change the API url used to save a TextContentXML
                 // -> cf. digipal_text/static/digipal_text/viewer/panelset.panel.js, line 323
                 panel._ready = function () {
                     var me = this;
@@ -324,6 +332,12 @@
                     // Remove editing rights is user not logged in
                     if (!this.panelSet.isUserStaff()) this.editingMode = undefined;
                     this.initEditingModeIcon();
+
+                    // BONHUM
+                    // Hide the presentation_options of text panels when entering editing mode
+                    if (this.panelType == 'Text' && this.editingMode) {
+                      $(this.$presentationOptions.selector).hide();
+                    }
 
                     if (this.$contentTypes) {
                         this.$contentTypes.dpbsdropdown({
@@ -341,6 +355,9 @@
 
                     this.onResize();
 
+                    // BONHUM
+                    // The API url used to save a TextContentXML is different
+                    // whether the text comes from an item_part or from an edition
                     if (this.$statusSelect) {
                         this.$statusSelect.on('change', function () {
                             // digipal/api/textcontentxml/?_text_content__item_part__id=1628&_text_content__type__slug=translation&status__id=7
@@ -491,7 +508,8 @@
             // Get id and canonical_reference of all text/source relationships linked to the text, with the id of the source
             let text_source_relations = getAPIData('/digipal/api/bonhum_textsource/?_text__id={{ textid }}&@select=source,source__id,canonical_reference');
             // Get id, title and reference of all sources linked to the text
-            let sources = getAPIData(`/digipal/api/bonhum_source/?_id__in=[${text_source_relations.map(relation => relation.source__id)}]&@select=title,reference`);
+            let sources_ids = [...new Set(text_source_relations.map(relation => relation.source__id))];
+            let sources = getAPIData(`/digipal/api/bonhum_source/?_id__in=[${sources_ids}]&@select=title,reference`);
             // Get id, name and type of all story_places
             let places = getAPIData('/digipal/api/bonhum_storyplace/?@select=name,type');
 

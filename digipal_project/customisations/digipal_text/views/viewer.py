@@ -23,7 +23,6 @@ def custom_tinymce_generated_css_view():
             categories = options.get('buttons')[button].get('categories')
             items = [ item for category in categories for item in category['items'] ]
             for item in items:
-
                 color_int = 0
                 color_darker = item['color']
                 try:
@@ -113,6 +112,7 @@ viewer.can_user_see_main_text = can_user_see_main_text
 # instead of: request, item_partid=0, master_location_type='', master_location=''
 # Changed the content of context, according to the object_type ("manuscripts" or "editions")
 # Changed parameters for can_user_see_main_text() call
+# Removed 'Plain Text' from context['dd_download_formats']
 def text_viewer_view(request, object_type, object_id=0, text_id=0,
                      master_location_type='', master_location=''):
 
@@ -171,7 +171,7 @@ def text_viewer_view(request, object_type, object_id=0, text_id=0,
     context['dd_download_formats'] = [
         {'key': 'html', 'label': 'HTML', 'icon': 'download'},
         {'key': 'tei', 'label': 'TEI', 'icon': 'download'},
-        {'key': 'plain', 'label': 'Plain Text', 'icon': 'download'},
+        # {'key': 'plain', 'label': 'Plain Text', 'icon': 'download'},
     ]
     context['statuses'] = TextContentXMLStatus.objects.all(
     ).order_by('sort_order')
@@ -589,6 +589,7 @@ viewer.text_api_view_location = text_api_view_location
 # Changed parameters: request, object_type, object_id, text_id, content_type, location_type, location, content_type_record, user=None, max_size=MAX_FRAGMENT_SIZE
 # instead of: request, item_partid, content_type, location_type, location, content_type_record, user=None, max_size=MAX_FRAGMENT_SIZE
 # Changed the call to get_or_create_text_content_records() according to the object_type ("manuscripts" or "editions")
+# Added 'presentation_options' with 'highlight'
 
 # TODO: content_type_record makes this signature non-polymorphic and even incompatible with image
 # need to use optional parameter for it
@@ -770,6 +771,9 @@ def text_api_view_text(request, object_type, object_id, text_id, content_type, l
             message = attribution.get_short_message()
             if message:
                 ret['attribution_short'] = message
+
+    ret['presentation_options'] = [
+        ['highlight', 'Highlight Text Units']]
 
     return ret
 
