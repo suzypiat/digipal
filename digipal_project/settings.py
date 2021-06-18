@@ -177,11 +177,16 @@ scribe_date['label'] = 'Date assigned to Painter'
 scriptorium = scribes.getField('scriptorium')
 scriptorium['label'] = 'Workshop'
 
+def filter_empty(result):
+    if len(result) > 0:
+        return result
+
 # Add Repository
 repo_place = {
     'key': 'repo_place', 'label': 'Repository',
     'path': 'hands.all.item_part.current_item.repository.human_readable',
     'path_result': 'hands.all.item_part.current_item.repository.name',
+    'transform': filter_empty,
     'count': True, 'search': True, 'viewable': True, 'type': 'title', 'multivalued': True
 }
 scribes.addField(repo_place)
@@ -190,6 +195,7 @@ scribes.addField(repo_place)
 repo_city = {
     'key': 'repo_city', 'label': 'Repository City',
     'path': 'hands.all.item_part.current_item.repository.place.name',
+    'transform': filter_empty,
     'count': True, 'search': True, 'viewable': True, 'type': 'title', 'multivalued': True
 }
 scribes.addField(repo_city)
@@ -282,8 +288,6 @@ graphs.addField(ontograph)
 def get_generic_motive(allograph):
     if allograph and not hasattr(allograph, 'bonhum_motivestorycharacter'):
         return allograph.name
-    else:
-        return ''
 
 generic_motive = {
     'key': 'generic_motive', 'label': 'Motive',
@@ -296,8 +300,6 @@ graphs.addField(generic_motive)
 def get_story_character_motive(allograph):
     if allograph and hasattr(allograph, 'bonhum_motivestorycharacter'):
         return allograph.bonhum_motivestorycharacter.name
-    else:
-        return ''
 
 story_character_motive = {
     'key': 'story_character_motive', 'label': 'Character Motive',
