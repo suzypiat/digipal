@@ -185,7 +185,6 @@ def __unicode__(self):
 Text.__unicode__ = __unicode__
 
 
-
 def validate_unique(self, exclude=None):
     super(Text, self).validate_unique(exclude)
     from django.core.exceptions import ValidationError
@@ -397,12 +396,14 @@ Scribe.add_to_class('type', models.ForeignKey('digipal_project.Bonhum_Contributo
 # - added verbose_name_plural in class Meta
 # - added verbose_name to field allograph
 # - added verbose_name to field scribe
+# - changed max_length of field display_label
 
 Idiograph._meta.verbose_name = 'attribution'
 Idiograph._meta.verbose_name_plural = 'attributions'
 
 Idiograph._meta.get_field('allograph').verbose_name = 'motive'
 Idiograph._meta.get_field('scribe').verbose_name = 'contributor'
+Idiograph._meta.get_field('display_label').max_length = 518
 
 #############################################
 ### END                                   ###
@@ -527,8 +528,10 @@ Hand._meta.get_field('scribe').blank = False
 
 # MODIFICATIONS
 # - added verbose_name to field idiograph
+# - changed max_length of field display_label
 
 Graph._meta.get_field('idiograph').verbose_name = 'attribution'
+Graph._meta.get_field('display_label').max_length = 600
 
 #########################################
 ### END                               ###
