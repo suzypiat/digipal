@@ -446,36 +446,52 @@ def get_tei_from_text_response(response, object_type, object_id, text_id, conten
 
     #
     from django.template.loader import render_to_string
-    if object_type == 'manuscripts':
-        context = {
-            'meta': {
-                'title': '%s of %s' % (content_type.title(), itempart),
-                'ms': {
-                    'place': itempart.current_item.repository.place.name,
-                    'repository': itempart.current_item.repository.name,
-                    'shelfmark': itempart.current_item.shelfmark,
-                },
-                'edition': {
-                    'date': tcx.modified
-                },
-                'project': settings.SITE_TITLE,
-                'authority': settings.SITE_TITLE,
-            },
+
+    from digipal.models import Text
+    from digipal_project.models import Bonhum_StoryCharacter, Bonhum_Source, \
+    Bonhum_StoryPlace, Bonhum_TextCollaborator
+    text = Text.objects.filter(id=text_id).first()
+    characters = Bonhum_StoryCharacter.objects.filter(texts__id=text_id)
+    sources = Bonhum_Source.objects.filter(texts__id=text_id).distinct()
+    places_ids = []
+    for place_ref in re.findall(ur'<span data-dpt="placeName" data-dpt-ref="(.*?)" data-dpt-ana=".*?">.*?</span>', ret):
+        place_id = place_ref.split(' ')[0][1:]
+        if place_id not in places_ids:
+            places_ids.append(place_id)
+    places = Bonhum_StoryPlace.objects.filter(id__in=places_ids)
+    collaborations = Bonhum_TextCollaborator.objects.filter(text__id=text_id)
+
+    context = {
+        'meta': {
+            'title': text.edition.work.title if text.edition else text.item_part.work_current_item.work.title,
+            'author': 'Giovanni Boccacio',
+            'availability': 'Internal use',
+            'text': {
+                'title': text.title,
+                'type': text.type,
+                'story_start_date': text.story_start_date,
+                'characters': characters,
+                'sources': sources,
+                'places': places,
+                'collaborations': collaborations
+            }
         }
-    elif object_type == 'editions':
-        context = {
-            'meta': {
-                'title': '%s of %s' % (content_type.title(), edition),
-                'ms': {
-                    'place': edition.editor.name,
-                },
-                'edition': {
-                    'date': tcx.modified
-                },
-                'project': settings.SITE_TITLE,
-                'authority': settings.SITE_TITLE,
-            },
+    }
+    if text.edition:
+        context['meta']['edition'] = {
+            'title': text.edition.title,
+            'author': 'Giovanni Boccacio',
+            'editor': text.edition.editor,
+            'date': text.edition.date,
+            'publisher': text.edition.publisher
         }
+    elif text.item_part:
+        context['meta']['manuscript'] = {
+            'place': text.item_part.work_current_item.current_item.repository.place.name,
+            'repository': text.item_part.work_current_item.current_item.repository.name,
+            'shelfmark': text.item_part.work_current_item.current_item.shelfmark,
+        }
+
     template = render_to_string('digipal_text/tei_from_xhtml.xslt', context)
     ret = dputils.get_xslt_transform('<root>%s</root>' % ret, template)
 
@@ -483,6 +499,9 @@ def get_tei_from_text_response(response, object_type, object_id, text_id, conten
 
     # convert XML to string
     #ret = dputils.get_unicode_from_xml(xml, remove_root=True)
+
+    ret = ret.replace('<TEI xmlns="http://www.tei-c.org/ns/1.0">',
+                      '<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:id="' + text.reference + '">')
 
     return ret
 

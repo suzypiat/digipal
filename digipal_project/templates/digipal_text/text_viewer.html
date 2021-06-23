@@ -593,8 +593,8 @@
             }
             fillModalSelectsWithAPIData();
 
-            // Reset the modal before it is shown
-            // (empty inputs, deselect options and buttons)
+            // Reset the modal before it is shown:
+            // show all options, empty inputs and message, deselect options and buttons
             function cleanModalBeforeShow(btn_name) {
               $(`#${btn_name}_modal .modal_select option`).each(function(index, option) {
                 $(option).show();
