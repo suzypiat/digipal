@@ -307,8 +307,8 @@
         <interGrp type="place" xml:id="PROS-L">
           <desc>Place</desc>
           <interp xml:id="PROS-L-VIL">City</interp>
-          <interp xml:id="PROS-L-REG">Region</interp>
           <interp xml:id="PROS-L-PAY">Country</interp>
+          <interp xml:id="PROS-L-CONT">Continent</interp>
         </interGrp>
       </classCode>
       <classCode scheme="ann-interp">

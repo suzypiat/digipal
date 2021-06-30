@@ -454,7 +454,7 @@ def get_tei_from_text_response(response, object_type, object_id, text_id, conten
     characters = Bonhum_StoryCharacter.objects.filter(texts__id=text_id)
     sources = Bonhum_Source.objects.filter(texts__id=text_id).distinct()
     places_ids = []
-    for place_ref in re.findall(ur'<span data-dpt="placeName" data-dpt-ref="(.*?)" data-dpt-ana=".*?">.*?</span>', ret):
+    for place_ref in re.findall(ur'<span data-dpt="placeName" data-dpt-ref="(.*?)" data-dpt-ana=".*?">', ret):
         place_id = place_ref.split(' ')[0][1:]
         if place_id not in places_ids:
             places_ids.append(place_id)

@@ -668,12 +668,12 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                             'tag': 'placeName', 'attributes': { 'ref': '#ID_PLACE #ID_PERSON', 'ana': '#PROS-L-VIL' }
                         },
                         {
-                            'id': 'btnRegionPlace', 'label': 'Region', 'color': TE_COLOR_PLACE,
-                            'tag': 'placeName', 'attributes': { 'ref': '#ID_PLACE #ID_PERSON', 'ana': '#PROS-L-REG' }
-                        },
-                        {
                             'id': 'btnCountryPlace', 'label': 'Country', 'color': TE_COLOR_PLACE,
                             'tag': 'placeName', 'attributes': { 'ref': '#ID_PLACE #ID_PERSON', 'ana': '#PROS-L-PAY' }
+                        },
+                        {
+                            'id': 'btnContinentPlace', 'label': 'Continent', 'color': TE_COLOR_PLACE,
+                            'tag': 'placeName', 'attributes': { 'ref': '#ID_PLACE #ID_PERSON', 'ana': '#PROS-L-CONT' }
                         }
                     ]
                 }
