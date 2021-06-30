@@ -509,7 +509,10 @@
             let text_source_relations = getAPIData('/digipal/api/bonhum_textsource/?_text__id={{ textid }}&@select=source,source__id,canonical_reference');
             // Get id, title and reference of all sources linked to the text
             let sources_ids = [...new Set(text_source_relations.map(relation => relation.source__id))];
-            let sources = getAPIData(`/digipal/api/bonhum_source/?_id__in=[${sources_ids}]&@select=title,reference`);
+            let sources = [];
+            if (sources_ids.length > 0) {
+              sources = getAPIData(`/digipal/api/bonhum_source/?_id__in=[${sources_ids}]&@select=title,reference`);
+            }
             // Get id, name and type of all story_places
             let places = getAPIData('/digipal/api/bonhum_storyplace/?@select=name,type');
 

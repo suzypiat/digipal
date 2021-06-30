@@ -236,10 +236,17 @@ class Bonhum_StoryCharacter(models.Model):
         ret = u''
         if self.id_viaf:
             url = u'https://viaf.org/viaf/%s/' % self.id_viaf
-            result = u'<a href="%s" target="_blank">%s</a>' % (escape(url), 'Link to the VIAF page of this character')
-            ret = mark_safe(result)
+            ret = escape(url)
         return ret
-    get_viaf_url.short_description = 'VIAF link'
+
+    def get_viaf_url_with_link(self):
+        ret = u''
+        if self.get_viaf_url():
+            ret = u'<a href="%s" target="_blank">%s</a>' % (self.get_viaf_url(),
+                   'Link to the VIAF page of this character')
+            ret = mark_safe(ret)
+        return ret
+    get_viaf_url_with_link.short_description = 'VIAF link'
 
 
 class Bonhum_MotiveStoryCharacter(Allograph):
@@ -346,6 +353,10 @@ class Bonhum_Source(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.title
+
+    def get_absolute_url(self):
+        ret = '/%s/%s/%s/' % ('digipal', 'sources', self.id)
+        return ret
 
 
 class Bonhum_SourceAuthor(models.Model):

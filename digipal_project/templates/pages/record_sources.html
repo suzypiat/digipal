@@ -1,0 +1,51 @@
+{% extends "pages/record.html" %}
+{% load pages_tags mezzanine_tags i18n pagination_tags %}
+{% load html_escape %}
+
+{% block meta_title %}Source: {{ source.title }}{% endblock %}
+{% block record_title %}
+    Source: {{ source.title }}
+    {% include "digipal/admin_edit.html" with instance=source %}
+{% endblock %}
+
+{% block record_tabs %}
+    <li class="{% if not tabid %}active in{% endif %}">
+        <a href="{{ source.get_absolute_url }}" data-address-bar="1" data-target="#data" data-toggle="tab">Information</a>
+    </li>
+    {% if cansee.textcontentxml %}
+        <li class="{% if tabid == "texts" %}active in{% endif %} {% if texts|length > 0 %}{% else %}disabled{% endif %}">
+            <a href="{{ source.get_absolute_url }}texts/" data-address-bar="1" data-target="#texts" data-toggle="tab">Texts ({{ texts|length }})</a>
+        </li>
+    {% endif %}
+{% endblock %}
+
+{% block details %}
+    <div class='tabbable'>
+
+        <div id='record-tab-content' class='tab-content'>
+            <div class='tab-pane fade {% if not tabid %}active in{% endif %}' id='data'>
+
+                <dl class="bs dl-horizontal">
+                    <dt>Title</dt>
+                    <dd>{{ source.title }}</dd>
+                    <dt>Authors</dt>
+                    <dd>
+                        {% for author in source.authors.all %}
+                          {{ author.name }}
+                          {% if author.get_viaf_url %}
+                            <a class="btn btn-default btn-xs" href="{{ author.get_viaf_url }}"
+                            title="Link to VIAF page" target="_blank">VIAF</a>
+                          {% endif %}
+                          <br>
+                        {% endfor %}
+                    </dd>
+                    <dt>Type</dt>
+                    <dd>{{ source.type }}</dd>
+                </dl>
+            </div>
+
+            {% include "pages/tab_texts_for_sources.html" %}
+
+        </div>
+    </div>
+{% endblock %}

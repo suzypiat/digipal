@@ -132,26 +132,26 @@ ADMIN_MENU_ORDER = (
 
 # MODELS EXPOSURE
 MODELS_PRIVATE = ['itempart', 'image', 'graph', 'scribe', 'textcontentxml',
-                  'bonhum_storycharacter']
+                  'bonhum_storycharacter', 'bonhum_source']
 MODELS_PUBLIC = MODELS_PRIVATE
 
 
-from digipal.views.faceted_search.settings import FACETED_SEARCH, FacettedType
+from digipal.views.faceted_search.settings import FACETED_SEARCH, FacettedType, get_fragment
 
 # FACETED SEARCH: MANUSCRIPTS
 manuscripts = FacettedType.fromKey('manuscripts')
 
-# Remove fields hi_type, hi_format, hi_has_images
-manuscripts.options['filter_order'] = ['hi_date', 'repo_city', 'repo_place']
-manuscripts.options['column_order'] = ['url', 'repo_city', 'repo_place', 'shelfmark',
-                                       'locus', 'hi_index', 'hi_date', 'hi_image_count']
+# Remove fields hi_index, hi_type, hi_format, hi_has_images
+manuscripts.options['filter_order'] = ['hi_date', 'repo_place', 'repo_city']
+manuscripts.options['column_order'] = ['url', 'repo_place', 'repo_city', 'shelfmark',
+                                       'locus', 'hi_date', 'hi_image_count']
 
 # FACETED SEARCH: IMAGES
 images = FacettedType.fromKey('images')
 
 # Remove fields mp_permission, hi_type, hi_format
-images.options['filter_order'] = ['hi_date', 'repo_city', 'repo_place']
-images.options['column_order'] = ['url', 'repo_city', 'repo_place', 'shelfmark',
+images.options['filter_order'] = ['hi_date', 'repo_place', 'repo_city']
+images.options['column_order'] = ['url', 'repo_place', 'repo_city', 'shelfmark',
                                   'locus', 'hi_date', 'annotations', 'thumbnail']
 
 # FACETED SEARCH: HANDS
@@ -200,9 +200,26 @@ repo_city = {
 }
 scribes.addField(repo_city)
 
-# Add fields repo_place, repo_city
+# Add Shelfmark
+shelfmark = {
+    'key': 'shelfmark', 'label': 'Shelfmark',
+    'path': 'hands.all.item_part.current_item.shelfmark',
+    'search': True, 'viewable': True, 'type': 'code', 'multivalued': True
+}
+scribes.addField(shelfmark)
+
+# Add MS Date
+hi_date = {
+    'key': 'hi_date', 'label': 'MS Date',
+    'path': 'hands.all.item_part.historical_item.get_date_sort',
+    'search': True, 'viewable': True, 'type': 'date', 'multivalued': True
+}
+scribes.addField(hi_date)
+
+# Add fields repo_place, repo_city, shelfmark, hi_date
 scribes.options['filter_order'] = ['scribe_date', 'scriptorium', 'repo_place', 'repo_city']
-scribes.options['column_order'] = ['url', 'scribe', 'scribe_date', 'scriptorium']
+scribes.options['column_order'] = ['url', 'scribe', 'scribe_date', 'scriptorium',
+                                   'repo_place', 'repo_city', 'shelfmark', 'hi_date']
 
 # FACETED SEARCH: TEXTS
 texts = FacettedType.fromKey('texts')
@@ -223,8 +240,22 @@ edition = {
 }
 texts.addField(edition)
 
+# Add Work
+def get_text_work(text):
+    if text and text.item_part:
+        return text.item_part.work_current_item.work.title
+    elif text and text.edition:
+        return text.edition.work.title
+
+work = {
+    'key': 'work', 'label': 'Work',
+    'path': 'text_content.text', 'transform': get_text_work,
+    'viewable': True, 'type': 'title', 'count': True, 'search': True
+}
+texts.addField(work)
+
 # Add Language
-def get_language(text):
+def get_text_language(text):
     if text and text.item_part:
         return text.item_part.work_current_item.work.language.name
     elif text and text.edition:
@@ -232,7 +263,7 @@ def get_language(text):
 
 language = {
     'key': 'language', 'label': 'Language',
-    'path': 'text_content.text', 'transform': get_language,
+    'path': 'text_content.text', 'transform': get_text_language,
     'viewable': True, 'type': 'title', 'count': True, 'search': True
 }
 texts.addField(language)
@@ -244,7 +275,7 @@ text_type['path'] = 'text_content.text.type.name'
 # Change path for Thumbnail
 # (if the text comes from an item part, it is the first image linked to this item part;
 # if the text comes from an edition, it is the first image linked to the text)
-def get_thumbnail(text):
+def get_text_thumbnail(text):
     if text and text.item_part:
         return text.item_part.get_first_image()
     elif text and text.edition:
@@ -252,15 +283,13 @@ def get_thumbnail(text):
 
 thumbnail = texts.getField('thumbnail')
 thumbnail['path'] = 'text_content.text'
-thumbnail['transform'] = get_thumbnail
+thumbnail['transform'] = get_text_thumbnail
 
-# Remove field hi_type
-# Add fields title, edition, language
-texts.options['filter_order'] = ['repo_place', 'repo_city', 'edition', 'language',
-                                 'text_type', 'hi_date']
-texts.options['column_order'] = ['url', 'title', 'language', 'text_type', 'hi_date',
-                                 'shelfmark', 'repo_place', 'repo_city', 'edition',
-                                 'thumbnail']
+# Remove fields hi_type, repo_city
+# Add fields title, work, edition, language
+texts.options['filter_order'] = ['work', 'language','text_type', 'hi_date', 'repo_place']
+texts.options['column_order'] = ['url', 'title', 'language', 'text_type', 'edition', 'work',
+                                 'hi_date', 'shelfmark', 'repo_place', 'thumbnail']
 
 # FACETED SEARCH: GRAPHS (= ICONOGRAPHY)
 graphs = FacettedType.fromKey('graphs')
@@ -285,25 +314,25 @@ ontograph = {
 graphs.addField(ontograph)
 
 # Add Motive (motive without a story character)
-def get_generic_motive(allograph):
+def get_graph_generic_motive(allograph):
     if allograph and not hasattr(allograph, 'bonhum_motivestorycharacter'):
         return allograph.name
 
 generic_motive = {
     'key': 'generic_motive', 'label': 'Motive',
-    'path': 'idiograph.allograph', 'transform': get_generic_motive,
+    'path': 'idiograph.allograph', 'transform': get_graph_generic_motive,
     'viewable': True, 'type': 'id', 'count': True, 'search': True
 }
 graphs.addField(generic_motive)
 
 # Add Character Motive (motive with a story character)
-def get_story_character_motive(allograph):
+def get_graph_story_character_motive(allograph):
     if allograph and hasattr(allograph, 'bonhum_motivestorycharacter'):
         return allograph.bonhum_motivestorycharacter.name
 
 story_character_motive = {
     'key': 'story_character_motive', 'label': 'Character Motive',
-    'path': 'idiograph.allograph', 'transform': get_story_character_motive,
+    'path': 'idiograph.allograph', 'transform': get_graph_story_character_motive,
     'viewable': True, 'type': 'id', 'count': True, 'search': True
 }
 graphs.addField(story_character_motive)
@@ -312,14 +341,14 @@ graphs.addField(story_character_motive)
 # Add fields ontograph, generic_motive, story_character_motive
 graphs.options['filter_order'] = ['ontograph', 'character', 'generic_motive',
                                   'story_character_motive', 'repo_place', 'repo_city']
-graphs.options['column_order'] = ['url', 'repo_city', 'repo_place', 'shelfmark',
+graphs.options['column_order'] = ['url', 'repo_place', 'repo_city', 'shelfmark',
                                   'locus', 'hi_date', 'allograph', 'thumbnail']
 
 # FACETED SEARCH: PEOPLE
 FACETED_SEARCH['types'].append({
     'disabled': False,
     'key': 'characters',
-    'label': 'People',
+    'label': 'Character',
     'label_plural': 'People',
     'model': 'digipal_project.models.Bonhum_StoryCharacter',
     'fields': [
@@ -378,6 +407,99 @@ FACETED_SEARCH['types'].append({
     'filter_order': ['type', 'age', 'gender', 'religion', 'place'],
     'column_order': ['url', 'name', 'variants', 'titles', 'occupations', 'traits',
                      'type', 'place', 'texts', 'thumbnail']
+})
+
+# FACETED SEARCH: SOURCES
+def filter_none_values(result):
+    if result and isinstance(result, list):
+        result = filter(None, result)
+    return result
+
+def get_source_work(result):
+    if result:
+        # result is a single text
+        if not isinstance(result, list):
+            if result.edition:
+                return result.edition.work.title
+            elif result.item_part:
+                return result.item_part.work_current_item.work.title
+        # result is a list of works
+        return result
+
+def get_source_grid_authors():
+    from digipal_project.models import Bonhum_Source
+    from digipal.models import Person
+    authors = []
+    authors_ids = filter(None, Bonhum_Source.objects.values_list('authors', flat=True))
+    for id in authors_ids:
+        author = Person.objects.get(pk=id)
+        if author not in authors:
+            authors.append(author)
+    authors = sorted(authors, key=lambda author: author.name)
+    return authors
+
+def get_source_grid_works():
+    from digipal_project.models import Bonhum_Source, Bonhum_Work
+    works = Bonhum_Work.objects.all()
+    ret = {}
+    for work in works:
+        ret[work.title] = []
+    sources = Bonhum_Source.objects.all()
+    for source in sources:
+        for text in source.texts.all():
+            if text.edition:
+                work = text.edition.work
+            elif text.item_part:
+                work = text.item_part.work_current_item.work
+            if source not in ret[work.title]:
+                ret[work.title].append(source)
+    ret = { work_title: sources for work_title, sources in ret.items() if len(sources) > 0 }
+    return ret
+
+FACETED_SEARCH['types'].append({
+    'disabled': False,
+    'key': 'sources',
+    'label': 'Source',
+    'model': 'digipal_project.models.Bonhum_Source',
+    'fields': [
+        {'key': 'url', 'label': 'Address', 'label_col': ' ',
+         'path': 'get_absolute_url',
+         'type': 'url', 'viewable': True},
+
+        {'key': 'title', 'label': 'Title',
+         'path': 'title',
+         'type': 'title', 'viewable': True, 'search': True},
+
+        {'key': 'authors', 'label': 'Authors',
+         'path': 'authors.all.name',
+         'type': 'title', 'viewable': True, 'search': True, 'multivalued': True},
+
+        {'key': 'type', 'label': 'Type',
+         'path': 'type.name',
+         'type': 'title', 'viewable': True, 'search': True, 'count': True},
+
+        {'key': 'texts', 'label': 'Texts',
+         'path': 'texts.all.title',
+         'type': 'title', 'viewable': True, 'search': True, 'multivalued': True},
+
+        {'key': 'editions', 'label': 'Editions',
+         'path': 'texts.all.edition.title',
+         'transform': filter_none_values,
+         'type': 'title', 'viewable': True, 'search': True, 'multivalued': True},
+
+        {'key': 'work', 'label': 'Work',
+         'path': 'texts.all',
+         'transform': get_source_work,
+         'type': 'title', 'viewable': True, 'search': True, 'count': True, 'multivalued': True}
+    ],
+    'filter_order': ['type', 'work'],
+    'column_order': ['url', 'title', 'authors', 'type', 'work', 'texts', 'editions'],
+    'views': [
+        get_fragment('view_default'),
+        {'icon': 'list-alt', 'label': 'Grouped Grid View', 'key': 'ggrid',
+         'type': 'ggrid', 'template': 'source_grid_grouped',
+         'params': {'authors': get_source_grid_authors, 'works': get_source_grid_works}}
+    ]
 })
 
 

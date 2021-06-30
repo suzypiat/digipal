@@ -1,0 +1,73 @@
+<div class="row">
+
+  <div class="col-md-4">
+    <h4>Grouped by type</h4>
+    <table class="table table-condensed table-striped table-bordered table-hover">
+      {% regroup result|dictsort:"type.name" by type.name as type_list %}
+      {% for type in type_list %}
+        <tr>
+          <td>
+            {{ type.grouper }}
+          </td>
+        </tr>
+        <tr>
+          <td colspan="50">
+            {% for source in type.list %}
+              {{ source.title }}
+              <br>
+            {% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="col-md-4">
+    <h4>Grouped by work</h4>
+    <table class="table table-condensed table-striped table-bordered table-hover">
+      {% for work_title, sources in works.items|dictsort:"0.lower" %}
+      <tr>
+        <td>
+          {{ work_title }}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="50">
+          {% for source in result %}
+            {% if source in sources %}
+              {{ source.title }}
+              <br>
+            {% endif %}
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="col-md-4">
+    <h4>Grouped by author</h4>
+    <table class="table table-condensed table-striped table-bordered table-hover">
+      {% for author in authors %}
+      <tr>
+        <td>
+          {{ author.name }}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="50">
+          {% for source in result %}
+            {% if author in source.authors.all %}
+              {{ source.title }}
+              <br>
+            {% endif %}
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+</div>
+
+<p><em>Sources inside each group are listed in no particular order</em></p>

@@ -21,7 +21,7 @@ from digipal_text.views import viewer
 urlpatterns = patterns(
     '',
     url(
-        r'^digipal/(?P<content_type>characters)/(?P<objectid>[^/]+)(/(?P<tabid>[^/]+))?(?:/|$)',
+        r'^digipal/(?P<content_type>characters|sources)/(?P<objectid>[^/]+)(/(?P<tabid>[^/]+))?(?:/|$)',
         search.record_view,
     ),
     url(
