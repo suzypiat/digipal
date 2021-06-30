@@ -34,7 +34,7 @@ class SearchSources(SearchContentType):
         texts = []
         for tcx in text_content_xmls:
             references_in_db = Bonhum_TextSource.objects.filter(source__id=source.id).filter(text__id=tcx.text_content.text.id).values_list('canonical_reference', flat=True)
-            soup = BeautifulSoup(str(tcx.content), 'lxml')
+            soup = BeautifulSoup(tcx.content, 'lxml')
             quotes = soup.find_all('span', attrs={ 'data-dpt': 'quote',
                                                    'data-dpt-corresp': re.compile(ur'.*?#'
                                                    + str(source.id) + ur'\b.*?')})
