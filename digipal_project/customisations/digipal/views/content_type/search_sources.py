@@ -1,7 +1,6 @@
 from django import forms
 from digipal.views.content_type.search_content_type import SearchContentType, get_form_field_from_queryset
-from digipal.models import Image, Text
-from digipal_text.models import TextContent, TextContentXML
+from digipal_text.models import TextContentXML
 from digipal_project.models import Bonhum_Source, Bonhum_TextSource
 from django.db.models import Q
 import re
@@ -32,22 +31,33 @@ class SearchSources(SearchContentType):
                                 text_content__text__id__in=source.texts.values_list('id')
                             )
         texts = []
+        # For each text_content_xml linked to the source
         for tcx in text_content_xmls:
+            # We get the references of its links with the source
             references_in_db = Bonhum_TextSource.objects.filter(source__id=source.id).filter(text__id=tcx.text_content.text.id).values_list('canonical_reference', flat=True)
             soup = BeautifulSoup(tcx.content, 'lxml')
+            # We get the annotations including the source id
             quotes = soup.find_all('span', attrs={ 'data-dpt': 'quote',
                                                    'data-dpt-corresp': re.compile(ur'.*?#'
                                                    + str(source.id) + ur'\b.*?')})
             annotations = {}
+            # For each annotation found in the text_content_xml
             for quote in quotes:
-                n = str(quote.attrs.get('data-dpt-n'))
                 content = quote.get_text()
+                # We get all the references in the annotation
+                n = str(quote.attrs.get('data-dpt-n'))
+                # We get the specific references concerning the source
                 references_in_tcx = re.findall(source.reference + ur' \((.*?)\)|' + source.reference, n)[0]
+                # If the source has been annotated without a reference,
+                # we add the text segment with the label "no reference"
                 if len(references_in_tcx) == 0:
                     annotations.setdefault('No reference', []).append(content)
+                # Else, we get each reference and add the related text segment
                 else:
                     for reference in references_in_tcx.split(' ; '):
                         annotations.setdefault(reference, []).append(content)
+            # We check if there are references in the database that have not
+            # been used to annotate, and we add them
             for reference in references_in_db:
                 if len(reference) > 0 and reference not in annotations:
                     annotations[reference] = []
