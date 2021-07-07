@@ -141,6 +141,11 @@ from digipal.views.faceted_search.settings import FACETED_SEARCH, FacettedType, 
 # FACETED SEARCH: MANUSCRIPTS
 manuscripts = FacettedType.fromKey('manuscripts')
 
+# Change MS Date min and max
+hi_date = manuscripts.getField('hi_date')
+hi_date['min'] = 1330
+hi_date['max'] = 1500
+
 # Remove fields hi_index, hi_type, hi_format, hi_has_images
 manuscripts.options['filter_order'] = ['hi_date', 'repo_place', 'repo_city']
 manuscripts.options['column_order'] = ['url', 'repo_place', 'repo_city', 'shelfmark',
@@ -148,6 +153,11 @@ manuscripts.options['column_order'] = ['url', 'repo_place', 'repo_city', 'shelfm
 
 # FACETED SEARCH: IMAGES
 images = FacettedType.fromKey('images')
+
+# Change MS Date min and max
+hi_date = images.getField('hi_date')
+hi_date['min'] = 1330
+hi_date['max'] = 1500
 
 # Remove fields mp_permission, hi_type, hi_format
 images.options['filter_order'] = ['hi_date', 'repo_place', 'repo_city']
@@ -171,11 +181,15 @@ scribes.options['django_filter'] = {'type__name': 'Peintre'}
 scribe = scribes.getField('scribe')
 scribe['label'] = 'Painter'
 
+scriptorium = scribes.getField('scriptorium')
+scriptorium['label'] = 'Workshop'
+
 scribe_date = scribes.getField('scribe_date')
 scribe_date['label'] = 'Date assigned to Painter'
 
-scriptorium = scribes.getField('scriptorium')
-scriptorium['label'] = 'Workshop'
+# Change Date min and max
+scribe_date['min'] = 1330
+scribe_date['max'] = 1500
 
 def filter_empty(result):
     if len(result) > 0:
@@ -184,8 +198,8 @@ def filter_empty(result):
 # Add Repository
 repo_place = {
     'key': 'repo_place', 'label': 'Repository',
-    'path': 'hands.all.item_part.current_item.repository.human_readable',
-    'path_result': 'hands.all.item_part.current_item.repository.name',
+    'path': 'hands.all.item_part.work_current_item.current_item.repository.human_readable',
+    'path_result': 'hands.all.item_part.work_current_item.current_item.repository.name',
     'transform': filter_empty,
     'count': True, 'search': True, 'viewable': True, 'type': 'title', 'multivalued': True
 }
@@ -194,7 +208,7 @@ scribes.addField(repo_place)
 # Add Repository City
 repo_city = {
     'key': 'repo_city', 'label': 'Repository City',
-    'path': 'hands.all.item_part.current_item.repository.place.name',
+    'path': 'hands.all.item_part.work_current_item.current_item.repository.place.name',
     'transform': filter_empty,
     'count': True, 'search': True, 'viewable': True, 'type': 'title', 'multivalued': True
 }
@@ -203,23 +217,25 @@ scribes.addField(repo_city)
 # Add Shelfmark
 shelfmark = {
     'key': 'shelfmark', 'label': 'Shelfmark',
-    'path': 'hands.all.item_part.current_item.shelfmark',
+    'path': 'hands.all.item_part.work_current_item.current_item.shelfmark',
     'search': True, 'viewable': True, 'type': 'code', 'multivalued': True
 }
 scribes.addField(shelfmark)
 
 # Add MS Date
-hi_date = {
-    'key': 'hi_date', 'label': 'MS Date',
-    'path': 'hands.all.item_part.historical_item.get_date_sort',
-    'search': True, 'viewable': True, 'type': 'date', 'multivalued': True
-}
-scribes.addField(hi_date)
+# hi_date = {
+#     'key': 'hi_date', 'label': 'MS Date',
+#     'path': 'hands.all.item_part.historical_item.get_date_sort',
+#     'search': True, 'viewable': True, 'type': 'title', 'multivalued': True
+# }
+# scribes.addField(hi_date)
 
 # Add fields repo_place, repo_city, shelfmark, hi_date
 scribes.options['filter_order'] = ['scribe_date', 'scriptorium', 'repo_place', 'repo_city']
+# scribes.options['column_order'] = ['url', 'scribe', 'scribe_date', 'scriptorium',
+#                                    'repo_place', 'repo_city', 'shelfmark', 'hi_date']
 scribes.options['column_order'] = ['url', 'scribe', 'scribe_date', 'scriptorium',
-                                   'repo_place', 'repo_city', 'shelfmark', 'hi_date']
+                                   'repo_place', 'repo_city', 'shelfmark']
 
 # FACETED SEARCH: TEXTS
 texts = FacettedType.fromKey('texts')
@@ -287,7 +303,7 @@ thumbnail['transform'] = get_text_thumbnail
 
 # Remove fields hi_type, repo_city
 # Add fields title, work, edition, language
-texts.options['filter_order'] = ['work', 'language','text_type', 'hi_date', 'repo_place']
+texts.options['filter_order'] = ['work', 'language','text_type', 'repo_place']
 texts.options['column_order'] = ['url', 'title', 'language', 'text_type', 'edition', 'work',
                                  'hi_date', 'shelfmark', 'repo_place', 'thumbnail']
 
@@ -410,11 +426,6 @@ FACETED_SEARCH['types'].append({
 })
 
 # FACETED SEARCH: SOURCES
-def filter_none_values(result):
-    if result and isinstance(result, list):
-        result = filter(None, result)
-    return result
-
 def get_source_work(result):
     if result:
         # result is a single text
@@ -432,7 +443,7 @@ def get_source_grid_authors():
     authors = []
     authors_ids = filter(None, Bonhum_Source.objects.values_list('authors', flat=True))
     for id in authors_ids:
-        author = Person.objects.get(pk=id)
+        author = Person.objects.get(id=id)
         if author not in authors:
             authors.append(author)
     authors = sorted(authors, key=lambda author: author.name)
@@ -482,18 +493,13 @@ FACETED_SEARCH['types'].append({
          'path': 'texts.all.title',
          'type': 'title', 'viewable': True, 'search': True, 'multivalued': True},
 
-        {'key': 'editions', 'label': 'Editions',
-         'path': 'texts.all.edition.title',
-         'transform': filter_none_values,
-         'type': 'title', 'viewable': True, 'search': True, 'multivalued': True},
-
         {'key': 'work', 'label': 'Work',
          'path': 'texts.all',
          'transform': get_source_work,
          'type': 'title', 'viewable': True, 'search': True, 'count': True, 'multivalued': True}
     ],
     'filter_order': ['type', 'work'],
-    'column_order': ['url', 'title', 'authors', 'type', 'work', 'texts', 'editions'],
+    'column_order': ['url', 'title', 'authors', 'type', 'work', 'texts'],
     'views': [
         get_fragment('view_default'),
         {'icon': 'list-alt', 'label': 'Grouped Grid View', 'key': 'ggrid',
