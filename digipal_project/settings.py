@@ -192,7 +192,9 @@ scribe_date['min'] = 1330
 scribe_date['max'] = 1500
 
 def filter_empty(result):
-    if len(result) > 0:
+    if result :
+        if isinstance(result, list):
+            result = filter(None, result)
         return result
 
 # Add Repository
@@ -218,24 +220,24 @@ scribes.addField(repo_city)
 shelfmark = {
     'key': 'shelfmark', 'label': 'Shelfmark',
     'path': 'hands.all.item_part.work_current_item.current_item.shelfmark',
+    'transform': filter_empty,
     'search': True, 'viewable': True, 'type': 'code', 'multivalued': True
 }
 scribes.addField(shelfmark)
 
 # Add MS Date
-# hi_date = {
-#     'key': 'hi_date', 'label': 'MS Date',
-#     'path': 'hands.all.item_part.historical_item.get_date_sort',
-#     'search': True, 'viewable': True, 'type': 'title', 'multivalued': True
-# }
-# scribes.addField(hi_date)
+hi_date = {
+    'key': 'hi_date', 'label': 'MS Date',
+    'path': 'hands.all.item_part.historical_item.get_date_sort',
+    'transform': filter_empty,
+    'search': True, 'viewable': True, 'type': 'date', 'multivalued': True
+}
+scribes.addField(hi_date)
 
 # Add fields repo_place, repo_city, shelfmark, hi_date
 scribes.options['filter_order'] = ['scribe_date', 'scriptorium', 'repo_place', 'repo_city']
-# scribes.options['column_order'] = ['url', 'scribe', 'scribe_date', 'scriptorium',
-#                                    'repo_place', 'repo_city', 'shelfmark', 'hi_date']
 scribes.options['column_order'] = ['url', 'scribe', 'scribe_date', 'scriptorium',
-                                   'repo_place', 'repo_city', 'shelfmark']
+                                   'repo_place', 'repo_city', 'shelfmark', 'hi_date']
 
 # FACETED SEARCH: TEXTS
 texts = FacettedType.fromKey('texts')
