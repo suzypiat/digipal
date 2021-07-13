@@ -44,7 +44,46 @@
                 </dl>
             </div>
 
-            {% include "pages/tab_texts_for_sources.html" %}
+            {% if cansee.textcontentxml %}
+                <div class='tab-pane fade {% if tabid == "texts" or url = "texts" %}active in{% endif %}' id='texts'>
+                    {% if texts|length > 0 %}
+                        <ul class="list-group">
+                            {% for txt in texts %}
+                                <li class="list-group-item">
+                                  <a style="margin: 10px;" href="{{ txt.text_content_xml.get_absolute_url }}">
+                                      {{ txt.text_content_xml.text_content.text.title }}
+                                      ({{ txt.text_content_xml.text_content.type|lower }})
+                                  </a>
+                                  <table width=100% style="border-collapse: separate; border-spacing: 10px;">
+                                    {% for reference, segments in txt.annotations.items %}
+                                      <tr>
+                                        <td class="text-center" style="width: 150px; padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px;">
+                                          {{ reference }}
+                                        </td>
+                                        <td>
+                                          {% if segments|length > 0 %}
+                                            {% for segment in segments %}
+                                              <span class="list-group-item">
+                                                <a href="{{ txt.text_content_xml.get_absolute_url }}">
+                                                  {{ segment }}
+                                                </a>
+                                              </span>
+                                            {% endfor %}
+                                          {% else %}
+                                            <span class="list-group-item">No annotation</span>
+                                          {% endif%}
+                                        </td>
+                                      </tr>
+                                    {% endfor %}
+                                  </table>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        {% include "digipal/empty_tab.html" with type="text" %}
+                    {% endif %}
+                </div>
+            {% endif %}
 
         </div>
     </div>

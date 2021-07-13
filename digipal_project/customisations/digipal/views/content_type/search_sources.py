@@ -36,16 +36,16 @@ class SearchSources(SearchContentType):
             # We get the references of its links with the source
             references_in_db = Bonhum_TextSource.objects.filter(source__id=source.id).filter(text__id=tcx.text_content.text.id).values_list('canonical_reference', flat=True)
             soup = BeautifulSoup(tcx.content, 'lxml')
-            # We get the annotations including the source id
-            quotes = soup.find_all('span', attrs={ 'data-dpt': 'quote',
+            # We get the <quote> annotations including the source id
+            spans = soup.find_all('span', attrs={ 'data-dpt': 'quote',
                                                    'data-dpt-corresp': re.compile(ur'.*?#'
                                                    + str(source.id) + ur'\b.*?')})
             annotations = {}
-            # For each annotation found in the text_content_xml
-            for quote in quotes:
-                content = quote.get_text()
+            # For each <quote> annotation found in the text_content_xml
+            for span in spans:
+                content = span.get_text()
                 # We get all the references in the annotation
-                n = str(quote.attrs.get('data-dpt-n'))
+                n = str(span.attrs.get('data-dpt-n'))
                 # We get the specific references concerning the source
                 references_in_tcx = re.findall(source.reference + ur' \((.*?)\)|' + source.reference, n)[0]
                 # If the source has been annotated without a reference,
@@ -91,7 +91,7 @@ class SearchSources(SearchContentType):
 
     def _build_queryset_django(self, request, term):
         type = self.key
-        query_characters = Bonhum_StoryCharacter.objects.filter(
+        query_sources = Bonhum_Source.objects.filter(
                     Q(title__icontains=term) | \
                     Q(type__name__icontains=term) | \
                     Q(authors__name__icontains=term))
