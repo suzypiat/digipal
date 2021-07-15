@@ -4,7 +4,7 @@ import os
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from digipal.models import Language, Text, Person, CurrentItem, ItemPart, Image, \
-    Allograph, Character, get_list_as_string
+    Allograph, Character, Graph, get_list_as_string
 
 
 #########################
@@ -220,16 +220,17 @@ class Bonhum_StoryCharacter(models.Model):
         ret = '/%s/%s/%s/' % ('digipal', 'characters', self.id)
         return ret
 
-    def get_thumbnail(self, request=None):
-        from digipal.models import Annotation
+    def get_graphs(self):
         motives_ids = Bonhum_MotiveStoryCharacter.objects.filter(story_character__id=self.id).values_list('id')
-        annotations = Annotation.objects.filter(graph__idiograph__allograph__id__in=motives_ids)
-        ret = annotations.first()
+        graphs = Graph.objects.filter(idiograph__allograph__id__in=motives_ids)
+        return graphs
 
+    def get_thumbnail(self, request=None):
+        graphs = self.get_graphs()
+        ret = graphs.first().annotation if len(graphs) > 0 else None
         # returns None if request user doesn't have permission
         if request and ret and ret.image.is_private_for_user(request):
             ret = None
-
         return ret
 
     def get_viaf_url(self):
@@ -477,7 +478,7 @@ class Bonhum_Work(models.Model):
         int_table_ids = Bonhum_WorkCurrentItem.objects.filter(work_id=self.id).values_list('id')
         item_parts = ItemPart.objects.filter(work_current_item_id__in=int_table_ids)
         for item_part in item_parts:
-            item_part.current_item = CurrentItem.objects.get(pk=item_part.work_current_item.current_item_id)
+            item_part.current_item = CurrentItem.objects.get(id=item_part.work_current_item.current_item_id)
 
         def get_item_part_with_link(item_part):
             url_item_part = u'/admin/digipal/itempart/%s/' % item_part.id

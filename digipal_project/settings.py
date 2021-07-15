@@ -529,19 +529,19 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
 
         # Literary Function
         'btnConsolationLiteraryFunction': { 'label': 'Consolation', 'tei': '<seg ana="#LIT-FON-CONS">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
-        'btnSelfKnowledgeLiteraryFunction': { 'label': 'Self Knowledge', 'tei': '<seg ana="#LIT-FON-CONN-SOI">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
+        'btnSelfAwarenessLiteraryFunction': { 'label': 'Self Awareness', 'tei': '<seg ana="#LIT-FON-CONN-SOI">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
         'btnWorldKnowledgeLiteraryFunction': { 'label': 'World Knowledge', 'tei': '<seg ana="#LIT-FON-CONN-MON">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
         'btnEntertainmentLiteraryFunction': { 'label': 'Entertainment', 'tei': '<seg ana="#LIT-FON-DIV">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
         'btnThaumaturgicLiteraryFunction': { 'label': 'Thaumaturgic', 'tei': '<seg ana="#LIT-FON-THAUM">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
         'btnMetaLiteraryLiteraryFunction': { 'label': 'Metaliterary', 'tei': '<seg ana="#LIT-FON-META">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
-        'btnCivicDimensionLiteraryFunction': { 'label': 'Civic Dimension', 'tei': '<seg ana="#LIT-FON-SOCIOPOL-CIV">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
+        'btnCivicFunctionLiteraryFunction': { 'label': 'Civic Function', 'tei': '<seg ana="#LIT-FON-SOCIOPOL-CIV">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
         'btnInterpersonalLiteraryFunction': { 'label': 'Interpersonal', 'tei': '<seg ana="#LIT-FON-SOCIOPOL-INTERPERS">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
 
         'btnLiteraryFunction': { 'label': 'Literary Function', 'buttons': [
-            'btnConsolationLiteraryFunction', 'btnSelfKnowledgeLiteraryFunction',
+            'btnConsolationLiteraryFunction', 'btnSelfAwarenessLiteraryFunction',
             'btnWorldKnowledgeLiteraryFunction', 'btnEntertainmentLiteraryFunction',
             'btnThaumaturgicLiteraryFunction', 'btnMetaLiteraryLiteraryFunction',
-            'btnCivicDimensionLiteraryFunction', 'btnInterpersonalLiteraryFunction'
+            'btnCivicFunctionLiteraryFunction', 'btnInterpersonalLiteraryFunction'
         ]},
 
         # Target Audience
@@ -615,7 +615,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     'label': 'Direct Source',
                     'items': [
                         {
-                            'id': 'btnLexiconDirectSource', 'label': 'Lexicon', 'color': TE_COLOR_DIRECT_SOURCE,
+                            'id': 'btnLexicalDirectSource', 'label': 'Lexical', 'color': TE_COLOR_DIRECT_SOURCE,
                             'tag': 'quote', 'attributes': { 'corresp': '#ID_SOURCE', 'ana': '#SOUR-EV-LEX', 'n': 'REFERENCE_SOURCE' }
                         },
                         {
@@ -640,7 +640,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     'label': 'Indirect Source',
                     'items': [
                         {
-                            'id': 'btnLexiconIndirectSource', 'label': 'Lexicon', 'color': TE_COLOR_INDIRECT_SOURCE,
+                            'id': 'btnLexicalIndirectSource', 'label': 'Lexical', 'color': TE_COLOR_INDIRECT_SOURCE,
                             'tag': 'quote', 'attributes': { 'corresp': '#ID_SOURCE', 'ana': '#SOUR-IND-LEX', 'n': 'REFERENCE_SOURCE' }
                         },
                         {
@@ -740,7 +740,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-ST-M' }
                         },
                         {
-                            'id': 'btnWidowedStatusPerson', 'label': 'Widowed', 'color': TE_COLOR_PERSON,
+                            'id': 'btnWidowedStatusPerson', 'label': 'Widower/Widow', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-ST-V' }
                         }
                     ]
@@ -762,7 +762,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-PSY-BON' }
                         },
                         {
-                            'id': 'btnHardshipPsychologyPerson', 'label': 'Hardship', 'color': TE_COLOR_PERSON,
+                            'id': 'btnUnhappinessPsychologyPerson', 'label': 'Unhappiness', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-PSY-MAL' }
                          }
                     ]
@@ -775,11 +775,11 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-S' }
                         },
                         {
-                            'id': 'btnAscensionStatusSocioEconomicStatusPerson', 'label': 'Ascension Status', 'color': TE_COLOR_PERSON,
+                            'id': 'btnAscensionSocioEconomicStatusPerson', 'label': 'Ascension', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-S-A' }
                         },
                         {
-                            'id': 'btnDeclineStatusSocioEconomicStatusPerson', 'label': 'Decline Status', 'color': TE_COLOR_PERSON,
+                            'id': 'btnDeclineSocioEconomicStatusPerson', 'label': 'Decline', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-S-D' }
                         },
                         {
@@ -787,7 +787,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-HAB' }
                         },
                         {
-                            'id': 'btnHouseSocioEconomicStatusPerson', 'label': 'House', 'color': TE_COLOR_PERSON,
+                            'id': 'btnBuildingEstateSocioEconomicStatusPerson', 'label': 'Building Estate', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-NSOCIO-EC-HABIT' }
                         },
                         {
@@ -800,11 +800,11 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     'label': 'Culture',
                     'items': [
                         {
-                            'id': 'btnHighCulturePerson', 'label': 'High Language Level', 'color': TE_COLOR_PERSON,
+                            'id': 'btnHighCulturePerson', 'label': 'High Level of Language', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-CUL-NLANG-H' }
                         },
                         {
-                            'id': 'btnLowCulturePerson', 'label': 'Low Language Level', 'color': TE_COLOR_PERSON,
+                            'id': 'btnLowCulturePerson', 'label': 'Low Level of Language', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-CUL-NLANG-B' }
                         }
                     ]
@@ -822,7 +822,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     'label': 'Family Relationship',
                     'items': [
                         {
-                            'id': 'btnFamilyRelationPerson', 'label': 'Family Relation', 'color': TE_COLOR_PERSON,
+                            'id': 'btnFamilyRelationPerson', 'label': 'Unspecified', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM' }
                         },
                         {
@@ -866,7 +866,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-MAR' }
                         },
                         {
-                            'id': 'btnGodfatherFamilyRelationPerson', 'label': 'Godfather', 'color': TE_COLOR_PERSON,
+                            'id': 'btnGodparentFamilyRelationPerson', 'label': 'Godparent', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-PARR' }
                         }
                     ]
@@ -875,40 +875,40 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     'label': 'Social Relationship',
                     'items': [
                         {
-                            'id': 'btnSocietyRelationPerson', 'label': 'Social Relation', 'color': TE_COLOR_PERSON,
+                            'id': 'btnSocialRelationPerson', 'label': 'Unspecified', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC' }
                         },
                         {
-                            'id': 'btnInferiorSocietyRelationPerson', 'label': 'With an inferior', 'color': TE_COLOR_PERSON,
-                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-N-AVECI' }
-                        },
-                        {
-                            'id': 'btnSuperiorSocietyRelationPerson', 'label': 'With a superior', 'color': TE_COLOR_PERSON,
-                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-N-AVECS' }
-                        },
-                        {
-                            'id': 'btnEqualSocietyRelationPerson', 'label': 'With an equal', 'color': TE_COLOR_PERSON,
-                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-N-AVECP' }
-                        },
-                        {
-                            'id': 'btnProfessionalSocietyRelationPerson', 'label': 'Professional', 'color': TE_COLOR_PERSON,
+                            'id': 'btnProfessionalSocialRelationPerson', 'label': 'Professional', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-TY-PRO' }
                         },
                         {
-                            'id': 'btnInstitutionalSocietyRelationPerson', 'label': 'Institutional', 'color': TE_COLOR_PERSON,
+                            'id': 'btnInstitutionalSocialRelationPerson', 'label': 'Institutional', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-TY-INST' }
                         },
                         {
-                            'id': 'btnLoveSocietyRelationPerson', 'label': 'Love', 'color': TE_COLOR_PERSON,
+                            'id': 'btnLoveSocialRelationPerson', 'label': 'Love', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-TY-AMOR' }
                         },
                         {
-                            'id': 'btnFriendshipSocietyRelationPerson', 'label': 'Friendship', 'color': TE_COLOR_PERSON,
+                            'id': 'btnFriendshipSocialRelationPerson', 'label': 'Friendship', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-TY-AMIC' }
                         },
                         {
-                            'id': 'btnHostileSocietyRelationPerson', 'label': 'Hostile', 'color': TE_COLOR_PERSON,
+                            'id': 'btnHostilitySocialRelationPerson', 'label': 'Hostility', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-TY-HOST' }
+                        },
+                        {
+                            'id': 'btnInferiorSocialRelationPerson', 'label': 'With an inferior', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-N-AVECI' }
+                        },
+                        {
+                            'id': 'btnSuperiorSocialRelationPerson', 'label': 'With a superior', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-N-AVECS' }
+                        },
+                        {
+                            'id': 'btnEqualSocialRelationPerson', 'label': 'With an equal', 'color': TE_COLOR_PERSON,
+                            'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-SOC-N-AVECP' }
                         }
                     ]
                 }
