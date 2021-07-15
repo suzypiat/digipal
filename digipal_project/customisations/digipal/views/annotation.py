@@ -51,8 +51,9 @@ AllographSelect.render_option = render_option
 
 # MODIFICATIONS
 # - added labels for fields Hand (Type) and Allograph (Motive)
-# - added the allographs (motives) related to the story_characters linked
-# to the image to the list of allographs (motives)
+# - changed the list of allographs (motives) to display:
+#   . allographs not linked to a story_character
+#   . allographs of the story_characters linked to the image
 
 from digipal.views import annotation
 
@@ -133,19 +134,17 @@ def image(request, image_id):
 
     # Get all the motives related to story_characters
     # - Bonhum_MotiveStoryCharacter inherits from Allograph and has only one property of its own: story_character
-    # - 'story_character' refers to digipal_project.Bonhum_StoryCharacter
     # - 'character' refers to digipal.Character
     character_motives = Bonhum_MotiveStoryCharacter.objects.all().values('id', 'story_character__id', 'character__id')
 
     # Get all the relationships between the image and story_characters
     # - Bonhum_ImageStoryCharacter is an intermediary table between digipal.Image
     # and digipal_project.Bonhum_StoryCharacter
-    # - 'story_character' refers to digipal_project.Bonhum_StoryCharacter
     # - 'category' refers to digipal.Character
     character_image_relations = Bonhum_ImageStoryCharacter.objects.filter(image__id=image_id).values('story_character__id', 'category__id')
 
-    # For each relation between the image and a story_character,
-    # we get the motive that matches the relation, ie story_character and category/character are the same
+    # For each relation between the image and a story_character, we get the motive
+    # that matches the relation, ie story_character and category/character are the same
     related_character_motives_ids = []
     for relation in character_image_relations:
         for motive in character_motives:
@@ -201,9 +200,6 @@ def image(request, image_id):
         'hide_annotations': int(not is_model_visible('graph', request)),
         'PAGE_IMAGE_SHOW_MSDATE': settings.PAGE_IMAGE_SHOW_MSDATE,
         'text_content_xmls': TextContentXML.objects.filter(text_content__item_part=image.item_part),
-        ########
-        # 'character_motives_ids': related_character_motives_ids
-        ########
     }
 
     if settings.PAGE_IMAGE_SHOW_MSSUMMARY:
