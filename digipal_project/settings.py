@@ -192,9 +192,11 @@ scribe_date['min'] = 1330
 scribe_date['max'] = 1500
 
 def filter_empty(result):
-    if result :
+    if result and len(result) > 0:
         if isinstance(result, list):
             result = filter(None, result)
+            if len(result) == 0:
+                return
         return result
 
 # Add Repository
