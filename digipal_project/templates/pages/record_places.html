@@ -1,0 +1,136 @@
+{% extends "pages/record.html" %}
+{% load pages_tags mezzanine_tags i18n pagination_tags %}
+{% load html_escape %}
+
+{% block meta_title %}Place: {{ place.name }}{% endblock %}
+{% block record_title %}
+  Place: {{ place.name }}
+  {% include "digipal/admin_edit.html" with instance=place %}
+{% endblock %}
+
+{% block record_tabs %}
+  <li class="{% if not tabid %}active in{% endif %}">
+    <a href="{{ place.get_absolute_url }}" data-address-bar="1" data-target="#data" data-toggle="tab">Information</a>
+  </li>
+  {% if cansee.textcontentxml %}
+    <li class="{% if tabid == "texts" %}active in{% endif %} {% if texts|length > 0 %}{% else %}disabled{% endif %}">
+      <a href="{{ place.get_absolute_url }}texts/" data-address-bar="1" data-target="#texts" data-toggle="tab">Texts ({{ texts|length }})</a>
+    </li>
+  {% endif %}
+  <li class="{% if tabid == "characters" %}active in{% endif %} {% if nb_characters > 0 %}{% else %}disabled{% endif %}">
+    <a href="{{ place.get_absolute_url }}characters/" data-address-bar="1" data-target="#characters" data-toggle="tab">Characters ({{ nb_characters }})</a>
+  </li>
+{% endblock %}
+
+{% block details %}
+  <div class='tabbable'>
+    <div id='record-tab-content' class='tab-content'>
+
+      <div class='tab-pane fade {% if not tabid %}active in{% endif %}' id='data'>
+        <dl class="bs dl-horizontal">
+          <dt>Name</dt>
+          <dd>{{ place.name }}</dd>
+          <dt>Alias</dt>
+          <dd>
+            {% for alias in place.bonhum_storyplacenamevariant_set.all %}
+              {{ alias.name }} ({{ alias.language|lower }})
+              <br>
+            {% endfor %}
+          </dd>
+          <dt>Type</dt>
+          <dd>{{ place.type }}</dd>
+          <dt>Nature</dt>
+          <dd>{{ place.nature }}</dd>
+        </dl>
+      </div>
+
+      {% if cansee.textcontentxml %}
+        <div class='tab-pane fade {% if tabid == "texts" or url = "texts" %}active in{% endif %}' id='texts'>
+          {% if texts|length > 0 %}
+            <ul class="list-group">
+              {% for txt in texts %}
+                <li class="list-group-item">
+                  <a style="margin-left: 10px;" href="{{ txt.text_content_xml.get_absolute_url }}">
+                    {{ txt.text_content_xml.text_content.text.title }}
+                    ({{ txt.text_content_xml.text_content.type|lower }})
+                  </a>
+                  ({{ txt.annotations|length }})
+                  <span class="list-group">
+                    {% for annotation in txt.annotations %}
+                      <span class="list-group-item" style="margin-left: 10px; margin-right: 10px;
+                        {% if annotation == txt.annotations|first %}margin-top: 10px;{% endif %}
+                        {% if annotation == txt.annotations|last %}margin-bottom: 10px;{% endif %}">
+                        <a href="{{ txt.text_content_xml.get_absolute_url }}">
+                          {{ annotation.content }}
+                        </a>
+                        {% if annotation.in_relation_with|length > 0 %}
+                          <span class="pull-right">
+                            In relation with:
+                              {% for relation in annotation.in_relation_with %}
+                                <a href="{{ relation.get_absolute_url }}">
+                                  {{ relation.name }}
+                                </a>
+                                {% if forloop.counter != annotation.in_relation_with|length %} ; {% endif %}
+                              {% endfor %}
+                          </span>
+                        {% endif %}
+                      </span>
+                    {% endfor %}
+                  </span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            {% include "digipal/empty_tab.html" with type="text" %}
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <div class='tab-pane fade {% if tabid == "characters" or url = "characters" %}active in{% endif %}' id='characters'>
+        {% if nb_characters > 0 %}
+          <div class="row">
+            <div class="col-md-6">
+              <h4>By geographical origin ({{ characters.by_geographical_origin|length }})</h4>
+              <ul class="list-group">
+                {% if characters.by_geographical_origin|length > 0 %}
+                  {% for character in characters.by_geographical_origin %}
+                    <li class="list-group-item">
+                      <a href="{{ character.get_absolute_url }}">
+                        {{ character.name }}
+                      </a>
+                    </li>
+                  {% endfor %}
+                {% else %}
+                  <li class="list-group-item">
+                    No character
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h4>By text ({{ characters.by_text|length }})</h4>
+              <ul class="list-group">
+                {% if characters.by_text|length > 0 %}
+                  {% for character in characters.by_text %}
+                    <li class="list-group-item">
+                      <a href="{{ character.get_absolute_url }}">
+                        {{ character.name }}
+                      </a>
+                    </li>
+                  {% endfor %}
+                {% else %}
+                <li class="list-group-item">
+                  No character
+                </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        {% else %}
+          {% include "digipal/empty_tab.html" with type="character" %}
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

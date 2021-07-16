@@ -14,15 +14,18 @@ from digipal_project.customisations.digipal.views.content_type.search_graphs imp
 # digipal_text views
 from digipal_project.customisations.digipal_text.views.viewer import *
 
-
 from digipal.views import search
 from digipal_text.views import viewer
 
 urlpatterns = patterns(
     '',
     url(
-        r'^digipal/(?P<content_type>characters|sources)/(?P<objectid>[^/]+)(/(?P<tabid>[^/]+))?(?:/|$)',
-        search.record_view,
+        r'^digipal/(?P<content_type>characters|sources|places)/(?P<objectid>[^/]+)(/(?P<tabid>[^/]+))?(?:/|$)',
+        search.record_view
+    ),
+    url(
+        r'^digipal/(?P<content_type>characters|sources|places)(?:/|$)',
+        search.index_view
     ),
     url(
         r'^digipal/(?P<object_type>editions|manuscripts)/(?P<object_id>\d+)/texts/(?P<text_id>\d+)/view/tinymce_generated.css',

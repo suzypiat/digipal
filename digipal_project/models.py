@@ -70,6 +70,10 @@ class Bonhum_StoryPlace(models.Model):
         if self.parent and self.parent.type.level != self.type.level - 1:
             raise ValidationError('A story place parent must have a direct inferior type level.')
 
+    def get_absolute_url(self):
+        ret = '/%s/%s/%s/' % ('digipal', 'places', self.id)
+        return ret
+
 
 class Bonhum_StoryPlaceNameVariant(models.Model):
     name = models.CharField(max_length=150, null=False)

@@ -138,7 +138,10 @@
                                               {% endfor %}
                                           {% endif %}
                                           {% if segment.place %}
-                                            Where: {{ segment.place }}
+                                            Where:
+                                              <a href="{{ segment.place.get_absolute_url }}">
+                                                {{ segment.place.name }}
+                                              </a>
                                           {% endif %}
                                         </td>
                                       </tr>

@@ -5,8 +5,8 @@
 ##############################################
 
 # MODIFICATIONS
-# - added import path for SearchCharacters and SearchSources
-# - added SearchCharacters and SearchSources in ret
+# - added import path for SearchCharacters, SearchSources and SearchPlaces
+# - added SearchCharacters, SearchSources and SearchPlaces in ret
 
 from digipal.views import search
 
@@ -17,10 +17,11 @@ def get_search_types(request=None):
     from digipal.views.content_type.search_graphs import SearchGraphs
     from digipal_project.customisations.digipal.views.content_type.search_characters import SearchCharacters
     from digipal_project.customisations.digipal.views.content_type.search_sources import SearchSources
+    from digipal_project.customisations.digipal.views.content_type.search_places import SearchPlaces
     search_hands = SearchHands()
     from digipal.utils import is_model_visible
     ret = [search_model for search_model in [SearchManuscripts(), search_hands, SearchScribes(),
-    SearchCharacters(), SearchSources(),
+    SearchCharacters(), SearchSources(), SearchPlaces(),
     SearchGraphs(search_hands)] if is_model_visible(search_model.get_model(), request or True)]
 
     return ret

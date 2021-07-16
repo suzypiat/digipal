@@ -132,7 +132,7 @@ ADMIN_MENU_ORDER = (
 
 # MODELS EXPOSURE
 MODELS_PRIVATE = ['itempart', 'image', 'graph', 'scribe', 'textcontentxml',
-                  'bonhum_storycharacter', 'bonhum_source']
+                  'bonhum_storycharacter', 'bonhum_source', 'bonhum_storyplace']
 MODELS_PUBLIC = MODELS_PRIVATE
 
 
@@ -510,6 +510,36 @@ FACETED_SEARCH['types'].append({
          'type': 'ggrid', 'template': 'source_grid_grouped',
          'params': {'authors': get_source_grid_authors, 'works': get_source_grid_works}}
     ]
+})
+
+FACETED_SEARCH['types'].append({
+    'disabled': False,
+    'key': 'places',
+    'label': 'Place',
+    'model': 'digipal_project.models.Bonhum_StoryPlace',
+    'fields': [
+        {'key': 'url', 'label': 'Address', 'label_col': ' ',
+         'path': 'get_absolute_url',
+         'type': 'url', 'viewable': True},
+
+        {'key': 'name', 'label': 'Name',
+         'path': 'name',
+         'type': 'title', 'viewable': True, 'search': True},
+
+        {'key': 'variants', 'label': 'Alias',
+         'path': 'bonhum_storyplacenamevariant_set.all.name',
+         'type': 'title', 'viewable': True, 'search': True, 'multivalued': True},
+
+        {'key': 'type', 'label': 'Type',
+         'path': 'type.name',
+         'type': 'title', 'viewable': True, 'search': True, 'count': True},
+
+        {'key': 'nature', 'label': 'Nature',
+         'path': 'nature.name',
+         'type': 'title', 'viewable': True, 'search': True, 'count': True}
+    ],
+    'filter_order': ['type', 'nature'],
+    'column_order': ['url', 'name', 'variants', 'type', 'nature']
 })
 
 
