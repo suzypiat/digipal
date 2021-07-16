@@ -3,6 +3,7 @@ from digipal.views.content_type.search_content_type import SearchContentType, ge
 from digipal_text.models import TextContentXML
 from digipal_project.models import Bonhum_Source, Bonhum_TextSource
 from django.db.models import Q
+from mezzanine.conf import settings
 import re
 
 class FilterSources(forms.Form):
@@ -26,6 +27,11 @@ class SearchSources(SearchContentType):
         source = Bonhum_Source.objects.get(id=context['id'])
         context['source'] = source
 
+        # We get the buttons used to annotate sources in the texts
+        TE_buttons = settings.TEXT_EDITOR_OPTIONS_CUSTOM['buttons']
+        categories = TE_buttons['btnSource']['categories']
+        items = [ item for category in categories for item in category['items'] ]
+
         from bs4 import BeautifulSoup
         text_content_xmls = TextContentXML.objects.filter(
                                 text_content__text__id__in=source.texts.values_list('id')
@@ -40,29 +46,39 @@ class SearchSources(SearchContentType):
             spans = soup.find_all('span', attrs={ 'data-dpt': 'quote',
                                                    'data-dpt-corresp': re.compile(ur'.*?#'
                                                    + str(source.id) + ur'\b.*?')})
+            nb_annotations = 0
             annotations = {}
-            # For each <quote> annotation found in the text_content_xml
             for span in spans:
                 content = span.get_text()
+                ana = span.attrs.get('data-dpt-ana')
+                label = filter(lambda item: item['attributes']['ana'] == ana, items)[0]['label']
+                label += ' (direct)' if ana[:8] == '#SOUR-EV' else ' (indirect)'
                 # We get all the references in the annotation
                 n = str(span.attrs.get('data-dpt-n'))
                 # We get the specific references concerning the source
                 references_in_tcx = re.findall(source.reference + ur' \((.*?)\)|' + source.reference, n)[0]
                 # If the source has been annotated without a reference,
-                # we add the text segment with the label "no reference"
+                # we add the text segment with the key "No reference"
                 if len(references_in_tcx) == 0:
-                    annotations.setdefault('No reference', []).append(content)
+                    annotations.setdefault('No reference', []).append({
+                        'content': content, 'label': label
+                    })
+                    nb_annotations += 1
                 # Else, we get each reference and add the related text segment
                 else:
                     for reference in references_in_tcx.split(' ; '):
-                        annotations.setdefault(reference, []).append(content)
+                        annotations.setdefault(reference, []).append({
+                            'content': content, 'label': label
+                        })
+                        nb_annotations += 1
             # We check if there are references in the database that have not
             # been used to annotate, and we add them
             for reference in references_in_db:
-                if len(reference) > 0 and reference not in annotations:
+                if len(reference) > 0 and reference not in annotations.keys():
                     annotations[reference] = []
             texts.append({
                 'text_content_xml': tcx,
+                'nb_annotations': nb_annotations,
                 'annotations': annotations
             })
 

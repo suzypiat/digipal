@@ -4,87 +4,90 @@
 
 {% block meta_title %}Source: {{ source.title }}{% endblock %}
 {% block record_title %}
-    Source: {{ source.title }}
-    {% include "digipal/admin_edit.html" with instance=source %}
+  Source: {{ source.title }}
+  {% include "digipal/admin_edit.html" with instance=source %}
 {% endblock %}
 
 {% block record_tabs %}
-    <li class="{% if not tabid %}active in{% endif %}">
-        <a href="{{ source.get_absolute_url }}" data-address-bar="1" data-target="#data" data-toggle="tab">Information</a>
+  <li class="{% if not tabid %}active in{% endif %}">
+    <a href="{{ source.get_absolute_url }}" data-address-bar="1" data-target="#data" data-toggle="tab">Information</a>
+  </li>
+  {% if cansee.textcontentxml %}
+    <li class="{% if tabid == "texts" %}active in{% endif %} {% if texts|length > 0 %}{% else %}disabled{% endif %}">
+      <a href="{{ source.get_absolute_url }}texts/" data-address-bar="1" data-target="#texts" data-toggle="tab">Texts ({{ texts|length }})</a>
     </li>
-    {% if cansee.textcontentxml %}
-        <li class="{% if tabid == "texts" %}active in{% endif %} {% if texts|length > 0 %}{% else %}disabled{% endif %}">
-            <a href="{{ source.get_absolute_url }}texts/" data-address-bar="1" data-target="#texts" data-toggle="tab">Texts ({{ texts|length }})</a>
-        </li>
-    {% endif %}
+  {% endif %}
 {% endblock %}
 
 {% block details %}
-    <div class='tabbable'>
+  <div class='tabbable'>
+    <div id='record-tab-content' class='tab-content'>
 
-        <div id='record-tab-content' class='tab-content'>
-            <div class='tab-pane fade {% if not tabid %}active in{% endif %}' id='data'>
+      <div class='tab-pane fade {% if not tabid %}active in{% endif %}' id='data'>
+        <dl class="bs dl-horizontal">
+          <dt>Title</dt>
+          <dd>{{ source.title }}</dd>
+          <dt>Authors</dt>
+          <dd>
+            {% for author in source.authors.all %}
+              {{ author.name }}
+              {% if author.get_viaf_url %}
+                <a class="btn btn-default btn-xs" href="{{ author.get_viaf_url }}"
+                title="Link to VIAF page" target="_blank">VIAF</a>
+              {% endif %}
+              <br>
+            {% endfor %}
+          </dd>
+          <dt>Type</dt>
+          <dd>{{ source.type }}</dd>
+        </dl>
+      </div>
 
-                <dl class="bs dl-horizontal">
-                    <dt>Title</dt>
-                    <dd>{{ source.title }}</dd>
-                    <dt>Authors</dt>
-                    <dd>
-                        {% for author in source.authors.all %}
-                          {{ author.name }}
-                          {% if author.get_viaf_url %}
-                            <a class="btn btn-default btn-xs" href="{{ author.get_viaf_url }}"
-                            title="Link to VIAF page" target="_blank">VIAF</a>
-                          {% endif %}
-                          <br>
-                        {% endfor %}
-                    </dd>
-                    <dt>Type</dt>
-                    <dd>{{ source.type }}</dd>
-                </dl>
-            </div>
-
-            {% if cansee.textcontentxml %}
-                <div class='tab-pane fade {% if tabid == "texts" or url = "texts" %}active in{% endif %}' id='texts'>
-                    {% if texts|length > 0 %}
-                        <ul class="list-group">
-                            {% for txt in texts %}
-                                <li class="list-group-item">
-                                  <a style="margin: 10px;" href="{{ txt.text_content_xml.get_absolute_url }}">
-                                      {{ txt.text_content_xml.text_content.text.title }}
-                                      ({{ txt.text_content_xml.text_content.type|lower }})
-                                  </a>
-                                  <table width=100% style="border-collapse: separate; border-spacing: 10px;">
-                                    {% for reference, segments in txt.annotations.items %}
-                                      <tr>
-                                        <td class="text-center" style="width: 150px; padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px;">
-                                          {{ reference }}
-                                        </td>
-                                        <td>
-                                          {% if segments|length > 0 %}
-                                            {% for segment in segments %}
-                                              <span class="list-group-item">
-                                                <a href="{{ txt.text_content_xml.get_absolute_url }}">
-                                                  {{ segment }}
-                                                </a>
-                                              </span>
-                                            {% endfor %}
-                                          {% else %}
-                                            <span class="list-group-item">No annotation</span>
-                                          {% endif%}
-                                        </td>
-                                      </tr>
-                                    {% endfor %}
-                                  </table>
-                                </li>
+      {% if cansee.textcontentxml %}
+        <div class='tab-pane fade {% if tabid == "texts" or url = "texts" %}active in{% endif %}' id='texts'>
+          {% if texts|length > 0 %}
+            <ul class="list-group">
+              {% for txt in texts %}
+                <li class="list-group-item">
+                  <a style="margin-left: 10px;" href="{{ txt.text_content_xml.get_absolute_url }}">
+                    {{ txt.text_content_xml.text_content.text.title }}
+                    ({{ txt.text_content_xml.text_content.type|lower }})
+                  </a>
+                  ({{ txt.nb_annotations }})
+                  <table width=100% style="border-collapse: separate; border-spacing: 10px;">
+                    {% for reference, segments in txt.annotations.items %}
+                      <tr>
+                        <td class="text-center" style="width: 150px; padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px;">
+                          {{ reference }} ({{ segments|length }})
+                        </td>
+                        <td>
+                          {% if segments|length > 0 %}
+                            {% for segment in segments %}
+                              <span class="list-group-item">
+                                <a href="{{ txt.text_content_xml.get_absolute_url }}">
+                                  {{ segment.content }}
+                                </a>
+                                <span class="pull-right">
+                                  {{ segment.label }}
+                                </span>
+                              </span>
                             {% endfor %}
-                        </ul>
-                    {% else %}
-                        {% include "digipal/empty_tab.html" with type="text" %}
-                    {% endif %}
-                </div>
-            {% endif %}
-
+                          {% else %}
+                            <span class="list-group-item">No annotation</span>
+                          {% endif%}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </table>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            {% include "digipal/empty_tab.html" with type="text" %}
+          {% endif %}
         </div>
+      {% endif %}
+
     </div>
+  </div>
 {% endblock %}
