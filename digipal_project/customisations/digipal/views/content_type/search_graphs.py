@@ -51,6 +51,7 @@ class FilterGraphs(forms.Form):
 # - get_form: redefinition of the method in order to use the new FilterGraphs class
 # - label: changed "Graphs" to "Iconography"
 # - label_singular: changed "Graph" to "Iconography"
+# - added method get_model to return "Graph" and not "Iconograph", since the label has been overwritten
 
 from digipal.views.content_type.search_graphs import SearchGraphs
 
@@ -76,6 +77,12 @@ def label_singular(self):
     return 'Iconography'
 
 SearchGraphs.label_singular = label_singular
+
+
+def get_model(self):
+    return Graph
+
+SearchGraphs.get_model = get_model
 
 ##################################################
 ### END                                        ###

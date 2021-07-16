@@ -7,7 +7,6 @@ from django.conf.urls import patterns, url
 # digipal views
 from digipal_project.customisations.digipal.views.search import *
 from digipal_project.customisations.digipal.views.annotation import *
-from digipal_project.customisations.digipal.views.content_type.search_content_type import *
 from digipal_project.customisations.digipal.views.content_type.search_scribes import *
 from digipal_project.customisations.digipal.views.content_type.search_graphs import *
 
