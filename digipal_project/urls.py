@@ -1,8 +1,10 @@
 from digipal.urls_project import *
 from django.conf.urls import patterns, url
 
-# import * from custom views to make sure the redefinition
-# of original methods is taken into account
+# import * from customisations to take the redefinition of original methods into account
+
+# digipal api
+from digipal_project.customisations.digipal.api.generic import *
 
 # digipal views
 from digipal_project.customisations.digipal.views.search import *
