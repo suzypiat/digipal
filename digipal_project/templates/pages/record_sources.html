@@ -8,6 +8,11 @@
   {% include "digipal/admin_edit.html" with instance=source %}
 {% endblock %}
 
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{{ STATIC_URL }}digipal_project/pages/css/record.css"/>
+{% endblock %}
+
 {% block record_tabs %}
   <li class="{% if not tabid %}active in{% endif %}">
     <a href="{{ source.get_absolute_url }}" data-address-bar="1" data-target="#data" data-toggle="tab">Information</a>
@@ -44,20 +49,20 @@
       </div>
 
       {% if cansee.textcontentxml %}
-        <div class='tab-pane fade {% if tabid == "texts" or url = "texts" %}active in{% endif %}' id='texts'>
+        <div class='record_sources_texts tab-pane fade {% if tabid == "texts" or url = "texts" %}active in{% endif %}' id='texts'>
           {% if texts|length > 0 %}
             <ul class="list-group">
               {% for txt in texts %}
                 <li class="list-group-item">
-                  <a style="margin-left: 10px;" href="{{ txt.text_content_xml.get_absolute_url }}">
+                  <a href="{{ txt.text_content_xml.get_absolute_url }}">
                     {{ txt.text_content_xml.text_content.text.title }}
                     ({{ txt.text_content_xml.text_content.type|lower }})
                   </a>
                   ({{ txt.nb_annotations }})
-                  <table width=100% style="border-collapse: separate; border-spacing: 10px;">
+                  <table>
                     {% for reference, segments in txt.annotations.items %}
                       <tr>
-                        <td class="text-center" style="width: 150px; padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px;">
+                        <td>
                           {{ reference }} ({{ segments|length }})
                         </td>
                         <td>

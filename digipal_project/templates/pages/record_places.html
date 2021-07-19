@@ -8,6 +8,11 @@
   {% include "digipal/admin_edit.html" with instance=place %}
 {% endblock %}
 
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{{ STATIC_URL }}digipal_project/pages/css/record.css"/>
+{% endblock %}
+
 {% block record_tabs %}
   <li class="{% if not tabid %}active in{% endif %}">
     <a href="{{ place.get_absolute_url }}" data-address-bar="1" data-target="#data" data-toggle="tab">Information</a>
@@ -45,21 +50,19 @@
       </div>
 
       {% if cansee.textcontentxml %}
-        <div class='tab-pane fade {% if tabid == "texts" or url = "texts" %}active in{% endif %}' id='texts'>
+        <div class='record_places_texts tab-pane fade {% if tabid == "texts" or url = "texts" %}active in{% endif %}' id='texts'>
           {% if texts|length > 0 %}
             <ul class="list-group">
               {% for txt in texts %}
                 <li class="list-group-item">
-                  <a style="margin-left: 10px;" href="{{ txt.text_content_xml.get_absolute_url }}">
+                  <a href="{{ txt.text_content_xml.get_absolute_url }}">
                     {{ txt.text_content_xml.text_content.text.title }}
                     ({{ txt.text_content_xml.text_content.type|lower }})
                   </a>
                   ({{ txt.annotations|length }})
                   <span class="list-group">
                     {% for annotation in txt.annotations %}
-                      <span class="list-group-item" style="margin-left: 10px; margin-right: 10px;
-                        {% if annotation == txt.annotations|first %}margin-top: 10px;{% endif %}
-                        {% if annotation == txt.annotations|last %}margin-bottom: 10px;{% endif %}">
+                      <span class="list-group-item">
                         <a href="{{ txt.text_content_xml.get_absolute_url }}">
                           {{ annotation.content }}
                         </a>

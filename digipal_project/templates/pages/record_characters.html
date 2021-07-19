@@ -4,184 +4,189 @@
 
 {% block meta_title %}Character: {{ character.name }}{% endblock %}
 {% block record_title %}
-    Character: {{ character.name }}
-    {% include "digipal/admin_edit.html" with instance=character %}
+  Character: {{ character.name }}
+  {% include "digipal/admin_edit.html" with instance=character %}
+{% endblock %}
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{{ STATIC_URL }}digipal_project/pages/css/record.css"/>
 {% endblock %}
 
 {% block record_tabs %}
-    <li class="{% if not tabid %}active in{% endif %}">
-        <a href="{{ character.get_absolute_url }}" data-address-bar="1" data-target="#data" data-toggle="tab">Information</a>
+  <li class="{% if not tabid %}active in{% endif %}">
+    <a href="{{ character.get_absolute_url }}" data-address-bar="1" data-target="#data" data-toggle="tab">Information</a>
+  </li>
+  {% if cansee.textcontentxml %}
+    <li class="{% if tabid == "texts" %}active in{% endif %} {% if text_content_xmls.count > 0 %}{% else %}disabled{% endif %}">
+      <a href="{{ character.get_absolute_url }}texts/" data-address-bar="1" data-target="#texts" data-toggle="tab">Texts ({{ text_content_xmls.count }})</a>
     </li>
-    {% if cansee.textcontentxml %}
-        <li class="{% if tabid == "texts" %}active in{% endif %} {% if text_content_xmls.count > 0 %}{% else %}disabled{% endif %}">
-            <a href="{{ character.get_absolute_url }}texts/" data-address-bar="1" data-target="#texts" data-toggle="tab">Texts ({{ text_content_xmls.count }})</a>
-        </li>
-    {% endif %}
-    <li class="{% if tabid == "characteristics" %}active in{% endif %}">
-        <a href="{{ character.get_absolute_url }}characteristics/" data-address-bar="1" data-target="#characteristics" data-toggle="tab">Characteristics</a>
+  {% endif %}
+  <li class="{% if tabid == "characteristics" %}active in{% endif %}">
+    <a href="{{ character.get_absolute_url }}characteristics/" data-address-bar="1" data-target="#characteristics" data-toggle="tab">Characteristics</a>
+  </li>
+  {% if cansee.image %}
+    <li class="{% if tabid == "graphs" %}active in{% endif %} {% if graphs.count > 0 %}{% else %}disabled{% endif %}">
+      <a href="{{ character.get_absolute_url }}graphs/" data-address-bar="1" data-target="#graphs" data-toggle="tab">Images ({{ graphs.count }})</a>
     </li>
-    {% if cansee.image %}
-        <li class="{% if tabid == "graphs" %}active in{% endif %} {% if graphs.count > 0 %}{% else %}disabled{% endif %}">
-            <a href="{{ character.get_absolute_url }}graphs/" data-address-bar="1" data-target="#graphs" data-toggle="tab">Images ({{ graphs.count }})</a>
-        </li>
-    {% endif %}
+  {% endif %}
 {% endblock %}
 
 {% block details %}
-    <div class='tabbable'>
+  <div class='tabbable'>
+    <div id='record-tab-content' class='tab-content'>
 
-        <div id='record-tab-content' class='tab-content'>
-            <div class='tab-pane fade {% if not tabid %}active in{% endif %}' id='data'>
+      <div class='tab-pane fade {% if not tabid %}active in{% endif %}' id='data'>
+        <dl class="bs dl-horizontal">
+          <dt>Name</dt>
+          <dd>
+            {{ character.name }}
+            {% if character.get_viaf_url %}
+              <a class="btn btn-default btn-xs" href="{{ character.get_viaf_url }}"
+              title="Link to VIAF page" target="_blank">VIAF</a>
+            {% endif %}
+          </dd>
+          <dt>Alias</dt>
+          <dd>
+            {% for alias in character.bonhum_storycharacternamevariant_set.all %}
+              {{ alias.name }} ({{ alias.language|lower }})
+              <br>
+            {% endfor %}
+          </dd>
+          <dt>Age</dt>
+          <dd>{{ character.age }}</dd>
+          <dt>Gender</dt>
+          <dd>{{ character.gender }}</dd>
+          <dt>Religion</dt>
+          <dd>{{ character.religion }}</dd>
+          <dt>Type</dt>
+          <dd>{{ character.type }}</dd>
+          <dt>Titles</dt>
+          <dd>
+            {% for title in character.titles.all %}
+              {{ title }}
+              <br>
+            {% endfor %}
+          </dd>
+          <dt>Professions</dt>
+          <dd>
+            {% for occupation in character.occupations.all %}
+              {{ occupation }}
+              <br>
+            {% endfor %}
+          </dd>
+          <dt>Traits</dt>
+          <dd>
+            {% for trait in character.traits.all %}
+              {{ trait }}
+              <br>
+            {% endfor %}
+          </dd>
+          <dt>Place</dt>
+          <dd>{{ character.geographical_origin }}</dd>
+        </dl>
+      </div>
 
-                <dl class="bs dl-horizontal">
-                    <dt>Name</dt>
-                    <dd>
-                      {{ character.name }}
-                      {% if character.get_viaf_url %}
-                        <a class="btn btn-default btn-xs" href="{{ character.get_viaf_url }}"
-                        title="Link to VIAF page" target="_blank">VIAF</a>
-                      {% endif %}
-                    </dd>
-                    <dt>Alias</dt>
-                    <dd>
-                        {% for alias in character.bonhum_storycharacternamevariant_set.all %}
-                          {{ alias.name }} ({{ alias.language|lower }})
-                          <br>
-                        {% endfor %}
-                    </dd>
-                    <dt>Age</dt>
-                    <dd>{{ character.age }}</dd>
-                    <dt>Gender</dt>
-                    <dd>{{ character.gender }}</dd>
-                    <dt>Religion</dt>
-                    <dd>{{ character.religion }}</dd>
-                    <dt>Type</dt>
-                    <dd>{{ character.type }}</dd>
-                    <dt>Titles</dt>
-                    <dd>
-                        {% for title in character.titles.all %}
-                          {{ title }}
-                          <br>
-                        {% endfor %}
-                    </dd>
-                    <dt>Professions</dt>
-                    <dd>
-                        {% for occupation in character.occupations.all %}
-                          {{ occupation }}
-                          <br>
-                        {% endfor %}
-                    </dd>
-                    <dt>Traits</dt>
-                    <dd>
-                        {% for trait in character.traits.all %}
-                          {{ trait }}
-                          <br>
-                        {% endfor %}
-                    </dd>
-                    <dt>Place</dt>
-                    <dd>{{ character.geographical_origin }}</dd>
-                </dl>
-            </div>
+      {% include "pages/tab_texts.html" %}
 
-            {% include "pages/tab_texts.html" %}
-
-            <div class='tab-pane fade {% if tabid == "characteristics" or url = "characteristics" %}active in{% endif %}' id='characteristics'>
-              {% for characteristic in characteristics %}
-                <div style="padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px;">
-                  <span style="margin: 10px; font-weight: bold;">
-                    <a data-toggle="collapse"
-                       href="#{{ characteristic.label|lower|cut:' '}}_panel"
-                       title="Show/hide content"
-                       aria-expanded="true" aria-controls="{{ characteristic.label|lower|cut:' '}}_panel">
-                       {{ characteristic.label }} ({{ characteristic.nb }})
-                       <span class="glyphicon glyphicon-chevron-down"></span>
-                    </a>
-                  </span>
-                  <div class="characteristic_content collapse active" id="{{ characteristic.label|lower|cut:' '}}_panel">
-                    <table width=100% style="border-collapse: separate; border-spacing: 10px;">
-                      {% for key, code in characteristic.codes.items %}
-                        <tr>
-                          <td class="text-center" style="width: 150px; padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px;">
-                            {{ code.label }} ({{ code.nb }})
-                          </td>
-                          <td>
-                            {% if code.annotations.items|length > 0 %}
-                              {% for text_xml, segments in code.annotations.items %}
-                                <span class="list-group-item">
-                                  <a href="{{ text_xml.get_absolute_url }}">
-                                      {{ text_xml.text_content.text.title }}
-                                      ({{ text_xml.text_content.type|lower }})
-                                  </a>
-                                  ({{ segments|length }})
-                                  {% for segment in segments %}
-                                  <span class="list-group-item" style="{% if segment == segments.0 %}margin-top: 10px; border-top-left-radius: 4px; border-top-right-radius: 4px;{% endif %}">
-                                    <table style="width: 100%;">
-                                      <tr>
-                                        <td>
-                                          <a href="{{ text_xml.get_absolute_url }}">
-                                              {{ segment.content }}
+      <div class='record_characters_characteristics tab-pane fade {% if tabid == "characteristics" or url = "characteristics" %}active in{% endif %}' id='characteristics'>
+        {% for characteristic in characteristics %}
+          <div>
+            <span>
+              <a data-toggle="collapse"
+                 href="#{{ characteristic.label|lower|cut:' '}}_panel"
+                 title="Show/hide content"
+                 aria-expanded="true" aria-controls="{{ characteristic.label|lower|cut:' '}}_panel">
+                 {{ characteristic.label }} ({{ characteristic.nb }})
+                 <span class="glyphicon glyphicon-chevron-down"></span>
+              </a>
+            </span>
+            <div class="characteristic_content collapse active" id="{{ characteristic.label|lower|cut:' '}}_panel">
+              <table>
+                {% for key, code in characteristic.codes.items %}
+                  <tr>
+                    <td>
+                      {{ code.label }} ({{ code.nb }})
+                    </td>
+                    <td>
+                      {% if code.annotations.items|length > 0 %}
+                        {% for text_xml, segments in code.annotations.items %}
+                          <span class="list-group-item">
+                            <a href="{{ text_xml.get_absolute_url }}">
+                              {{ text_xml.text_content.text.title }}
+                              ({{ text_xml.text_content.type|lower }})
+                            </a>
+                            ({{ segments|length }})
+                            {% for segment in segments %}
+                              <span class="list-group-item">
+                                <table>
+                                  <tr>
+                                    <td>
+                                      <a href="{{ text_xml.get_absolute_url }}">
+                                        {{ segment.content }}
+                                      </a>
+                                    </td>
+                                    <td>
+                                      {% if segment.level %}
+                                        {{ segment.level }}
+                                      {% endif %}
+                                    </td>
+                                    <td>
+                                      {% if segment.in_relation_with|length > 0 %}
+                                        With:
+                                          {% for relation in segment.in_relation_with %}
+                                            <a href="{{ relation.get_absolute_url }}">
+                                              {{ relation.name }}
+                                            </a>
+                                            {% if forloop.counter != segment.in_relation_with|length %} ; {% endif %}
+                                          {% endfor %}
+                                      {% endif %}
+                                      {% if segment.place %}
+                                        Where:
+                                          <a href="{{ segment.place.get_absolute_url }}">
+                                            {{ segment.place.name }}
                                           </a>
-                                        </td>
-                                        <td style="width: 15%; padding-left: 20px;">
-                                          {% if segment.level %}
-                                              {{ segment.level }}
-                                          {% endif %}
-                                        </td>
-                                        <td style="width: 15%; padding-left: 20px;">
-                                          {% if segment.in_relation_with|length > 0 %}
-                                            With:
-                                              {% for relation in segment.in_relation_with %}
-                                                <a href="{{ relation.get_absolute_url }}">
-                                                  {{ relation.name }}
-                                                </a>
-                                                {% if forloop.counter != segment.in_relation_with|length %} ; {% endif %}
-                                              {% endfor %}
-                                          {% endif %}
-                                          {% if segment.place %}
-                                            Where:
-                                              <a href="{{ segment.place.get_absolute_url }}">
-                                                {{ segment.place.name }}
-                                              </a>
-                                          {% endif %}
-                                        </td>
-                                      </tr>
-                                    </table>
-                                  </span>
-                                  {% endfor%}
-                                </span>
-                              {% endfor%}
-                            {% else %}
-                              <span class="list-group-item">No annotation</span>
-                            {% endif %}
-                          </td>
-                        </tr>
-                      {% endfor%}
-                    </table>
-                  </div>
-                </div>
+                                      {% endif %}
+                                    </td>
+                                  </tr>
+                                </table>
+                              </span>
+                            {% endfor%}
+                          </span>
+                        {% endfor%}
+                      {% else %}
+                        <span class="list-group-item">No annotation</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor%}
+              </table>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class='tab-pane fade {% if tabid == "graphs" or url = "graphs" %}active in{% endif %}' id='graphs'>
+        {% if graphs.count %}
+          <div class="row">
+            <div class="col-md-12">
+              {% for graph in graphs %}
+                {% annotation_img graph.annotation lazy=1 a_title=graph.get_long_label a_data_placement="bottom" a_data_toggle="tooltip" a_data_container="body" wrap=graph link=graph %}
               {% endfor %}
             </div>
+          </div>
+          <p><em>Graphs are listed in no particular order</em></p>
+        {% else %}
+          {% include "digipal/empty_tab.html" with type="graph" %}
+        {% endif %}
+      </div>
 
-            <div class='tab-pane fade {% if tabid == "graphs" or url = "graphs" %}active in{% endif %}' id='graphs'>
-                {% if graphs.count %}
-                    <div class="row">
-                        <div class="col-md-12">
-                            {% for graph in graphs %}
-                                {% annotation_img graph.annotation lazy=1 a_title=graph.get_long_label a_data_placement="bottom" a_data_toggle="tooltip" a_data_container="body" wrap=graph link=graph %}
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <p><em>Graphs are listed in no particular order</em></p>
-                {% else %}
-                    {% include "digipal/empty_tab.html" with type="graph" %}
-                {% endif %}
-            </div>
-
-        </div>
     </div>
+  </div>
 {% endblock %}
 
 {% block extra_js %}
+  {{ block.super }}
   <script type="text/javascript">
     $('.characteristic_content').on('show.bs.collapse', function() {
       $(`a[href="#${$(this).attr('id')}"] span.glyphicon`).removeClass('glyphicon-chevron-down')
