@@ -234,13 +234,13 @@
           <desc>Status</desc>
           <interp xml:id="PROS-EV-ST-C">Single</interp>
           <interp xml:id="PROS-EV-ST-M">Married</interp>
-          <interp xml:id="PROS-EV-ST-V">Widowed</interp>
+          <interp xml:id="PROS-EV-ST-V">Widower/Widow</interp>
         </interGrp>
         <interp xml:id="PROS-EV-PHY">Physical Aspect</interp>
         <interGrp type="psychology" xml:id="PROS-EV-PSY">
           <desc>Psychology</desc>
           <interp xml:id="PROS-EV-PSY-BON">Happiness</interp>
-          <interp xml:id="PROS-EV-PSY-MAL">Hardship</interp>
+          <interp xml:id="PROS-EV-PSY-MAL">Unhappiness</interp>
         </interGrp>
         <interGrp type="socio_economic_status" xml:id="PROS-EV-NSOCIO-EC">
           <desc>Socio Economic Status</desc>
@@ -250,15 +250,15 @@
             <interp xml:id="PROS-EV-NSOCIO-EC-S-D">Decline</interp>
           </interGrp>
           <interp xml:id="PROS-EV-NSOCIO-EC-HAB">Clothes</interp>
-          <interp xml:id="PROS-EV-NSOCIO-EC-HABIT">House</interp>
+          <interp xml:id="PROS-EV-NSOCIO-EC-HABIT">Building Estate</interp>
           <interp xml:id="PROS-EV-NSOCIO-EC-PROPR">Properties</interp>
         </interGrp>
         <interGrp type="culture" xml:id="PROS-EV-CUL">
           <desc>Culture</desc>
           <interGrp type="language_level" xml:id="PROS-EV-CUL-NLANG">
-            <desc>Language Level</desc>
-            <interp xml:id="PROS-EV-CUL-NLANG-H">High</interp>
-            <interp xml:id="PROS-EV-CUL-NLANG-B">Low</interp>
+            <desc>Level of Language</desc>
+            <interp xml:id="PROS-EV-CUL-NLANG-H">High Level of Language</interp>
+            <interp xml:id="PROS-EV-CUL-NLANG-B">Low Level of Language</interp>
           </interGrp>
         </interGrp>
         <interGrp type="relation" xml:id="PROS-EV-REL">
@@ -266,8 +266,8 @@
           <interp xml:id="PROS-EV-REL-AVEC">Relation With</interp>
           <interGrp type="type" xml:id="PROS-EV-REL-TY">
             <desc>Type</desc>
-            <interGrp type="family" xml:id="PROS-EV-REL-TY-FAM">
-              <desc>Family</desc>
+            <interGrp type="familial" xml:id="PROS-EV-REL-TY-FAM">
+              <desc>Familial</desc>
               <interp xml:id="PROS-EV-REL-TY-FAM-ENF">Child</interp>
               <interp xml:id="PROS-EV-REL-TY-FAM-PTSENF">Grandchild</interp>
               <interp xml:id="PROS-EV-REL-TY-FAM-PAR">Parent</interp>
@@ -278,7 +278,7 @@
               <interp xml:id="PROS-EV-REL-TY-FAM-NIEC">Niece</interp>
               <interp xml:id="PROS-EV-REL-TY-FAM-FRA">Sibling</interp>
               <interp xml:id="PROS-EV-REL-TY-FAM-MAR">Marriage</interp>
-              <interp xml:id="PROS-EV-REL-TY-FAM-PARR">Godfather</interp>
+              <interp xml:id="PROS-EV-REL-TY-FAM-PARR">Godparent</interp>
             </interGrp>
             <interGrp type="social" xml:id="PROS-EV-REL-TY-SOC">
               <desc>Social</desc>
@@ -317,7 +317,7 @@
           <interp xml:id="LIT-FON-CONS">Consolation</interp>
           <interGrp type="knowledge" xml:id="LIT-FON-CONN">
             <desc>Knowledge</desc>
-            <interp xml:id="LIT-FON-CONN-SOI">Self Knowledge</interp>
+            <interp xml:id="LIT-FON-CONN-SOI">Self Awareness</interp>
             <interp xml:id="LIT-FON-CONN-MON">World Knowledge</interp>
           </interGrp>
           <interp xml:id="LIT-FON-DIV">Entertainment</interp>
@@ -325,7 +325,7 @@
           <interp xml:id="LIT-FON-META">Metaliterary</interp>
           <interGrp type="socio_politic" xml:id="LIT-FON-SOCIOPOL">
             <desc>Socio-politic</desc>
-            <interp xml:id="LIT-FON-SOCIOPOL-CIV">Civic Dimension</interp>
+            <interp xml:id="LIT-FON-SOCIOPOL-CIV">Civic Function</interp>
             <interp xml:id="LIT-FON-SOCIOPOL-INTERPERS">Interpersonal</interp>
           </interGrp>
         </interGrp>
@@ -359,7 +359,7 @@
       <classCode scheme="ann-source">
         <interGrp type="direct" xml:id="SOUR-EV">
           <desc>Direct Source</desc>
-          <interp xml:id="SOUR-EV-LEX">Lexicon</interp>
+          <interp xml:id="SOUR-EV-LEX">Lexical</interp>
           <interp xml:id="SOUR-EV-CONT">Content</interp>
           <interp xml:id="SOUR-EV-AUT">Author Name</interp>
           <interp xml:id="SOUR-EV-TIT">Title</interp>
@@ -367,7 +367,7 @@
         </interGrp>
         <interGrp type="indirect" xml:id="SOUR-IND">
           <desc>Indirect Source</desc>
-          <interp xml:id="SOUR-IND-LEX">Lexicon</interp>
+          <interp xml:id="SOUR-IND-LEX">Lexical</interp>
           <interp xml:id="SOUR-IND-CONT">Content</interp>
           <interp xml:id="SOUR-IND-AUT">Author Name</interp>
           <interp xml:id="SOUR-IND-TIT">Title</interp>

@@ -450,12 +450,15 @@ def get_tei_from_text_response(response, object_type, object_id, text_id, conten
     from digipal.models import Text
     from digipal_project.models import Bonhum_StoryCharacter, Bonhum_Source, \
     Bonhum_StoryPlace, Bonhum_TextCollaborator
+    from bs4 import BeautifulSoup
     text = Text.objects.filter(id=text_id).first()
     characters = Bonhum_StoryCharacter.objects.filter(texts__id=text_id)
     sources = Bonhum_Source.objects.filter(texts__id=text_id).distinct()
     places_ids = []
-    for place_ref in re.findall(ur'<span data-dpt="placeName" data-dpt-ref="(.*?)" data-dpt-ana=".*?">', ret):
-        place_id = place_ref.split(' ')[0][1:]
+    soup = BeautifulSoup(ret, 'lxml')
+    place_spans = soup.find_all('span', attrs={ 'data-dpt': 'placeName' })
+    for span in place_spans:
+        place_id = span.attrs.get('data-dpt-ref').split(' ')[0][1:]
         if place_id not in places_ids:
             places_ids.append(place_id)
     places = Bonhum_StoryPlace.objects.filter(id__in=places_ids)
