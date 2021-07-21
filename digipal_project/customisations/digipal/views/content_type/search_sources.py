@@ -49,6 +49,9 @@ class SearchSources(SearchContentType):
             nb_annotations = 0
             annotations = {}
             for span in spans:
+                url = tcx.get_absolute_url()
+                url += '?' if ('?' not in url) else '&'
+                url += 'annotation=%s' % span.attrs.get('data-dpt-id')
                 content = span.get_text()
                 ana = span.attrs.get('data-dpt-ana')
                 label = filter(lambda item: item['attributes']['ana'] == ana, items)[0]['label']
@@ -61,14 +64,14 @@ class SearchSources(SearchContentType):
                 # we add the text segment with the key "No reference"
                 if len(references_in_tcx) == 0:
                     annotations.setdefault('No reference', []).append({
-                        'content': content, 'label': label
+                        'content': content, 'label': label, 'url': url
                     })
                     nb_annotations += 1
                 # Else, we get each reference and add the related text segment
                 else:
                     for reference in references_in_tcx.split(' ; '):
                         annotations.setdefault(reference, []).append({
-                            'content': content, 'label': label
+                            'content': content, 'label': label, 'url': url
                         })
                         nb_annotations += 1
             # We check if there are references in the database that have not

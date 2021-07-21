@@ -54,7 +54,7 @@
             <ul class="list-group">
               {% for txt in texts %}
                 <li class="list-group-item">
-                  <a href="{{ txt.text_content_xml.get_absolute_url }}">
+                  <a href="{{ txt.text_content_xml.get_absolute_url }}" target="_blank">
                     {{ txt.text_content_xml.text_content.text.title }}
                     ({{ txt.text_content_xml.text_content.type|lower }})
                   </a>
@@ -69,7 +69,7 @@
                           {% if segments|length > 0 %}
                             {% for segment in segments %}
                               <span class="list-group-item">
-                                <a href="{{ txt.text_content_xml.get_absolute_url }}">
+                                <a href="{{ segment.url }}" target="_blank">
                                   {{ segment.content }}
                                 </a>
                                 <span class="pull-right">

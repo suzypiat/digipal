@@ -140,10 +140,13 @@ class SearchCharacters(SearchContentType):
             # For each <persName>, <placeName> and <date> annotation
             spans = persname_spans + place_spans + date_spans
             for span in spans:
+                url = tcx.get_absolute_url()
+                url += '?' if ('?' not in url) else '&'
+                url += 'annotation=%s' % span.attrs.get('data-dpt-id')
                 tag = span.attrs.get('data-dpt')
                 code = span.attrs.get('data-dpt-ana') if tag != 'persName' else 'person_name'
                 content = span.get_text()
-                data = { 'content': content }
+                data = { 'content': content, 'url': url }
                 # If the annotation is <placeName>, we extract the first id
                 # in the ref attribute and get the matching place in database
                 if tag == 'placeName':
@@ -162,6 +165,9 @@ class SearchCharacters(SearchContentType):
             # For each <rs> annotation (with the character as subject or object)
             spans = rs_subject_spans + rs_object_spans
             for span in spans:
+                url = tcx.get_absolute_url()
+                url += '?' if ('?' not in url) else '&'
+                url += 'annotation=%s' % span.attrs.get('data-dpt-id')
                 ana = span.attrs.get('data-dpt-ana')
                 ref = span.attrs.get('data-dpt-ref').split(' ')
                 content = span.get_text()
@@ -207,7 +213,8 @@ class SearchCharacters(SearchContentType):
                     # If the character is subject, we add the text segment for each code;
                     # if the character is object, we add it only if the code is for a relation
                     if not is_object or code[:12] == '#PROS-EV-REL':
-                        data = { 'content': content, 'in_relation_with': in_relation_with }
+                        data = { 'content': content, 'url': url,
+                                 'in_relation_with': in_relation_with }
                         if code in ana_types:
                             data['level'] = level
                         for category in characteristics:
@@ -219,7 +226,8 @@ class SearchCharacters(SearchContentType):
                         # is specified, we also add the text segment to the type "Unspecified"
                         if code in ana_levels and len(ana_types) == 0:
                             characteristics[8]['codes']['#PROS-EV-REL-TY-SOC']['annotations'].setdefault(tcx, []).append({
-                                'content': content, 'in_relation_with': in_relation_with, 'level': level
+                                'content': content, 'url': url, 'level': level,
+                                'in_relation_with': in_relation_with
                             })
                             characteristics[8]['codes']['#PROS-EV-REL-TY-SOC']['nb'] += 1
                             characteristics[8]['nb'] += 1

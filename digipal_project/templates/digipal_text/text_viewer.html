@@ -460,24 +460,29 @@
         });
       </script>
 
-
       <script>
         jQuery(document).ready(function($) {
 
-            // IMPORTANT
-            // We let the text-viewer load FIRST, in order to get its height
-            // and assign it to the column dedicated to images AFTER
             $(window).on('load', function() {
+              // IMPORTANT: we let the text-viewer load FIRST, in order to get
+              // its height and assign it to the column dedicated to images AFTER
               let height = $('#text-viewer').height();
               $('#images_col').css('height', height);
               $('#images_col').css('max-height', height);
               $('#images_col').show();
+              // If the user comes from a record page and has clicked on an annotation,
+              // we get the id of the annotation, highlight it and scroll to it
+              let span_id = window.ps.getQSArgs(window.location.href, true).annotation;
+              if (span_id) {
+                let span = $(`.mce-content-body span[data-dpt-id=${span_id}]`);
+                $(span).css('background-color', 'gold');
+                $('.mce-content-body').scrollTop($(span).position().top);
+              }
             });
 
-            // IMPORTANT
-            // We let the text-viewer be resized FIRST, in order to get its new height
-            // and assign it to the column dedicated to images AFTER
             $(window).resize(function() {
+              // IMPORTANT: we let the text-viewer be resized FIRST, in order to get
+              // its new height and assign it to the column dedicated to images AFTER
               let height = $('#text-viewer').height();
               $('#images_col').css('height', height);
               $('#images_col').css('max-height', height);
@@ -632,6 +637,18 @@
               filterSelect(input_name);
             });
 
+            // We generate a unique id for person, source, place and time annotations
+            // (when the user clicks on an annotation in a record page to see it in
+            // the text editor, the annotation is highlighted thanks to its id)
+            function generateRandomId() {
+              let items = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+              let id = '';
+              for (let i = 0; i < 6; ++i) {
+                id += items[Math.floor(Math.random() * items.length)];
+              }
+              return id;
+            }
+
             // When the user clicks on the button "btnPerson", the related modal is shown;
             // the user has to choose a person from the list and to select one or several items
             // inside the modal for the annotation to be done.
@@ -725,6 +742,7 @@
                   if (selected_items.length > 1) {
                     options.attributes.ana = selected_items.map(item => item.attributes.ana).join(' ');
                   }
+                  options.attributes.id = generateRandomId();
                   utils.addSpan(options);
                 }
               });
@@ -804,6 +822,7 @@
                     // n="REFERENCE_SOURCE" -> n="OV-MET (XIII, 568-571 ; XIII, 415) ; DANT-INF (XXX, 13-21) ; VIRG-AEN"
                     options.attributes.n = options.attributes.n.replace('REFERENCE_SOURCE', n_content.join(' ; '));
                   }
+                  options.attributes.id = generateRandomId();
                   utils.addSpan(options);
                 }
               });
@@ -840,6 +859,7 @@
                     // ref="#1 #ID_PERSON" -> ref="#1 #2"|ref="#1 #2 #n"
                     options.attributes.ref = options.attributes.ref.replace('#ID_PERSON', person_ids.map(id => `#${id}`).join(' '));
                   }
+                  options.attributes.id = generateRandomId();
                   utils.addSpan(options);
                 }
               });
@@ -870,6 +890,7 @@
                   else {
                     delete options.attributes.ref;
                   }
+                  options.attributes.id = generateRandomId();
                   utils.addSpan(options);
                 }
               });

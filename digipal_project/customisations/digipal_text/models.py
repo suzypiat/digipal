@@ -126,14 +126,7 @@ def get_absolute_url(self, unset=False, qs='', metas=None,
             ret += '&east=image/sync/location'
         elif self.edition:
             ret += '?' if ('?' not in ret) else '&'
-            ret += 'center=%s/whole/' % self.type.slug
-            if 0 and location_type:
-                ret += '/%s' % location_type
-                if location:
-                    ret += '/%s' % location
-            if 0 and metas:
-                from digipal.utils import urlencode
-                ret += (';' + urlencode(metas, True)).replace('=', ':')
+            ret += 'center=%s/whole' % self.type.slug
     if location_type:
         ret += '?' if ('?' not in ret) else '&'
         ret += 'above=location/%s' % location_type

@@ -29,7 +29,7 @@ class SearchPlaces(SearchContentType):
 
         context['characters'] = {
             'by_geographical_origin': sorted(place.bonhum_storycharacter_set.all(),
-                                      key=lambda c: c.name),
+                                      key=lambda character: character.name),
             'by_text': []
         }
 
@@ -43,10 +43,12 @@ class SearchPlaces(SearchContentType):
             spans = soup.find_all('span', attrs={ 'data-dpt': 'placeName',
                                                    'data-dpt-ref': re.compile(ur'^#'
                                                    + str(place.id) + ur'\b.*?')})
-
             if len(spans) > 0:
                 annotations = []
                 for span in spans:
+                    url = tcx.get_absolute_url()
+                    url += '?' if ('?' not in url) else '&'
+                    url += 'annotation=%s' % span.attrs.get('data-dpt-id')
                     content = span.get_text()
                     in_relation_with = []
                     ref = span.attrs.get('data-dpt-ref').split(' ')
@@ -58,7 +60,8 @@ class SearchPlaces(SearchContentType):
                         in_relation_with = [ Bonhum_StoryCharacter.objects.get(id=id) for id in ref ]
                         context['characters']['by_text'] += in_relation_with
                     annotations.append({
-                        'content': content, 'in_relation_with': in_relation_with
+                        'content': content, 'url': url,
+                        'in_relation_with': in_relation_with
                     })
                 texts.append({
                     'text_content_xml': tcx,
@@ -67,7 +70,7 @@ class SearchPlaces(SearchContentType):
 
         context['texts'] = texts
         context['characters']['by_text'] = sorted(set(context['characters']['by_text']),
-                                           key=lambda c: c.name)
+                                           key=lambda character: character.name)
         context['nb_characters'] = len(set(context['characters']['by_geographical_origin']
                                    + context['characters']['by_text']))
 

@@ -55,7 +55,7 @@
             <ul class="list-group">
               {% for txt in texts %}
                 <li class="list-group-item">
-                  <a href="{{ txt.text_content_xml.get_absolute_url }}">
+                  <a href="{{ txt.text_content_xml.get_absolute_url }}" target="_blank">
                     {{ txt.text_content_xml.text_content.text.title }}
                     ({{ txt.text_content_xml.text_content.type|lower }})
                   </a>
@@ -63,14 +63,14 @@
                   <span class="list-group">
                     {% for annotation in txt.annotations %}
                       <span class="list-group-item">
-                        <a href="{{ txt.text_content_xml.get_absolute_url }}">
+                        <a href="{{ annotation.url }}" target="_blank">
                           {{ annotation.content }}
                         </a>
                         {% if annotation.in_relation_with|length > 0 %}
                           <span class="pull-right">
                             In relation with:
                               {% for relation in annotation.in_relation_with %}
-                                <a href="{{ relation.get_absolute_url }}">
+                                <a href="{{ relation.get_absolute_url }}" target="_blank">
                                   {{ relation.name }}
                                 </a>
                                 {% if forloop.counter != annotation.in_relation_with|length %} ; {% endif %}
@@ -98,7 +98,7 @@
                 {% if characters.by_geographical_origin|length > 0 %}
                   {% for character in characters.by_geographical_origin %}
                     <li class="list-group-item">
-                      <a href="{{ character.get_absolute_url }}">
+                      <a href="{{ character.get_absolute_url }}" target="_blank">
                         {{ character.name }}
                       </a>
                     </li>
@@ -116,7 +116,7 @@
                 {% if characters.by_text|length > 0 %}
                   {% for character in characters.by_text %}
                     <li class="list-group-item">
-                      <a href="{{ character.get_absolute_url }}">
+                      <a href="{{ character.get_absolute_url }}" target="_blank">
                         {{ character.name }}
                       </a>
                     </li>
