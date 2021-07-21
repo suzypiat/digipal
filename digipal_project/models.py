@@ -7,6 +7,13 @@ from digipal.models import Language, Text, Person, CurrentItem, ItemPart, Image,
     Allograph, Character, Graph, get_list_as_string
 
 
+def model_get_admin_url(self):
+    from django.core.urlresolvers import reverse
+    info = (self._meta.app_label, self._meta.model_name)
+    ret = reverse('admin:%s_%s_change' % info, args=(self.pk,))
+    return ret
+
+
 #########################
 #                       #
 #   Story Place         #
@@ -73,6 +80,9 @@ class Bonhum_StoryPlace(models.Model):
     def get_absolute_url(self):
         ret = '/%s/%s/%s/' % ('digipal', 'places', self.id)
         return ret
+
+    def get_admin_url(self):
+        return model_get_admin_url(self)
 
 
 class Bonhum_StoryPlaceNameVariant(models.Model):
@@ -224,6 +234,9 @@ class Bonhum_StoryCharacter(models.Model):
         ret = '/%s/%s/%s/' % ('digipal', 'characters', self.id)
         return ret
 
+    def get_admin_url(self):
+        return model_get_admin_url(self)
+
     def get_graphs(self):
         motives_ids = Bonhum_MotiveStoryCharacter.objects.filter(story_character__id=self.id).values_list('id')
         graphs = Graph.objects.filter(idiograph__allograph__id__in=motives_ids)
@@ -362,6 +375,9 @@ class Bonhum_Source(models.Model):
     def get_absolute_url(self):
         ret = '/%s/%s/%s/' % ('digipal', 'sources', self.id)
         return ret
+
+    def get_admin_url(self):
+        return model_get_admin_url(self)
 
 
 class Bonhum_SourceAuthor(models.Model):
@@ -649,10 +665,6 @@ class Bonhum_Catalogue(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.reference
-
-
-from digipal.models import set_additional_models_methods
-set_additional_models_methods()
 
 
 # LEAVE THIS CALL, this is to make sure the customisations are loaded
