@@ -242,11 +242,11 @@ class Bonhum_StoryCharacter(models.Model):
         graphs = Graph.objects.filter(idiograph__allograph__id__in=motives_ids)
         return graphs
 
-    def get_thumbnail(self, request=None):
+    def get_first_graph(self, request=None):
         graphs = self.get_graphs()
-        ret = graphs.first().annotation if len(graphs) > 0 else None
+        ret = graphs.first() if len(graphs) > 0 else None
         # returns None if request user doesn't have permission
-        if request and ret and ret.image.is_private_for_user(request):
+        if request and ret and ret.annotation.image.is_private_for_user(request):
             ret = None
         return ret
 

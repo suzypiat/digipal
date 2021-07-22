@@ -326,12 +326,12 @@ character = graphs.getField('character')
 character['label'] = 'Category'
 
 # Add Macro Category
-ontograph = {
-    'key': 'ontograph', 'label': 'Macro Category',
+macro_category = {
+    'key': 'macro_category', 'label': 'Macro Category',
     'path': 'idiograph.allograph.character.ontograph.name',
     'viewable': True, 'type': 'id', 'count': True, 'search': True
 }
-graphs.addField(ontograph)
+graphs.addField(macro_category)
 
 # Add Motive (motive without a story character)
 def get_graph_generic_motive(allograph):
@@ -358,8 +358,8 @@ story_character_motive = {
 graphs.addField(story_character_motive)
 
 # Remove fields hand_label, hand_date, hand_place, is_described, chartype, character_form
-# Add fields ontograph, generic_motive, story_character_motive
-graphs.options['filter_order'] = ['ontograph', 'character', 'generic_motive',
+# Add fields macro_category, generic_motive, story_character_motive
+graphs.options['filter_order'] = ['macro_category', 'character', 'generic_motive',
                                   'story_character_motive', 'repo_place', 'repo_city']
 graphs.options['column_order'] = ['url', 'repo_place', 'repo_city', 'shelfmark',
                                   'locus', 'hi_date', 'allograph', 'thumbnail']
@@ -421,7 +421,7 @@ FACETED_SEARCH['types'].append({
          'type': 'title', 'viewable': True, 'search': True, 'multivalued': True},
 
         {'key': 'thumbnail', 'label': 'Thumbnail',
-         'path': 'get_thumbnail',
+         'path': 'get_first_graph.annotation',
          'viewable': True, 'type': 'image'}
     ],
     'filter_order': ['type', 'age', 'gender', 'religion', 'place'],
