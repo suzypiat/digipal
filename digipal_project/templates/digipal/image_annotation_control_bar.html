@@ -61,10 +61,10 @@
             </span>
 
             {% comment %}
-            ------------------------------------------------------------------------
+            ------------------------------------------------------------------------------
             BONHUM - Added three buttons to filter the list of allographs (motives):
-            cf. digipal_project/static/digipal/scripts/filter-annotator-motives.js
-            ------------------------------------------------------------------------
+            cf. digipal_project/static/digipal_project/scripts/filter-annotator-motives.js
+            ------------------------------------------------------------------------------
             {% endcomment %}
             <br>
             <div>
@@ -80,12 +80,12 @@
 </div>
 
 {% comment %}
-------------------------------------------------------------------
+--------------------------------------------------------------------------
 BONHUM - Added a custom js file to filter allographs (motives):
-digipal_project/static/digipal/scripts/filter-annotator-motives.js
-------------------------------------------------------------------
+digipal_project/static/digipal_project/scripts/filter-annotator-motives.js
+--------------------------------------------------------------------------
 {% endcomment %}
 {% block extra_js %}
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}digipal/scripts/filter-annotator-motives.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}digipal_project/scripts/filter-annotator-motives.js"></script>
 {% endblock %}
