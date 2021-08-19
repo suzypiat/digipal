@@ -935,11 +935,29 @@
                   let ana = selected_items.map(item => item.attributes.ana).join(' ');
                   let options = {
                     'tag': tag,
-                    'attributes': { 'ana': ana }
+                    'attributes': {
+                      'id': generateRandomId(),
+                      'ana': ana
+                    }
                   }
                   utils.addSpan(options);
                 }
               });
+            });
+
+            // When the user clicks on a dropdown button (inside "btnLiteraryFunction"
+            // or "btnJudgment"), we add a random id to the annotation
+            $(window).on('onClickBtnDropdown', function(event, editor, definition, utils) {
+              if (!editor.selection.isCollapsed()) {
+                let options = {
+                  'tag': 'seg',
+                  'attributes': {
+                    'id': generateRandomId(),
+                    'ana': definition.ana
+                  }
+                }
+                utils.addSpan(options);
+              }
             });
 
         });

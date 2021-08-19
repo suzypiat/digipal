@@ -558,14 +558,38 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
     'buttons': {
 
         # Literary Function
-        'btnConsolationLiteraryFunction': { 'label': 'Consolation', 'tei': '<seg ana="#LIT-FON-CONS">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
-        'btnSelfAwarenessLiteraryFunction': { 'label': 'Self Awareness', 'tei': '<seg ana="#LIT-FON-CONN-SOI">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
-        'btnWorldKnowledgeLiteraryFunction': { 'label': 'World Knowledge', 'tei': '<seg ana="#LIT-FON-CONN-MON">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
-        'btnEntertainmentLiteraryFunction': { 'label': 'Entertainment', 'tei': '<seg ana="#LIT-FON-DIV">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
-        'btnThaumaturgicLiteraryFunction': { 'label': 'Thaumaturgic', 'tei': '<seg ana="#LIT-FON-THAUM">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
-        'btnMetaLiteraryLiteraryFunction': { 'label': 'Metaliterary', 'tei': '<seg ana="#LIT-FON-META">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
-        'btnCivicFunctionLiteraryFunction': { 'label': 'Civic Function', 'tei': '<seg ana="#LIT-FON-SOCIOPOL-CIV">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
-        'btnInterpersonalLiteraryFunction': { 'label': 'Interpersonal', 'tei': '<seg ana="#LIT-FON-SOCIOPOL-INTERPERS">{}</seg>', 'color': TE_COLOR_LITERARY_FUNCTION },
+        'btnConsolationLiteraryFunction': {
+            'label': 'Consolation', 'tei': '<seg ana="#LIT-FON-CONS">{}</seg>',
+            'ana': '#LIT-FON-CONS', 'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_LITERARY_FUNCTION
+        },
+        'btnSelfAwarenessLiteraryFunction': {
+            'label': 'Self Awareness', 'tei': '<seg ana="#LIT-FON-CONN-SOI">{}</seg>',
+            'ana': '#LIT-FON-CONN-SOI', 'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_LITERARY_FUNCTION
+        },
+        'btnWorldKnowledgeLiteraryFunction': {
+            'label': 'World Knowledge', 'tei': '<seg ana="#LIT-FON-CONN-MON">{}</seg>',
+            'ana': '#LIT-FON-CONN-MON', 'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_LITERARY_FUNCTION
+        },
+        'btnEntertainmentLiteraryFunction': {
+            'label': 'Entertainment', 'tei': '<seg ana="#LIT-FON-DIV">{}</seg>',
+            'ana': '#LIT-FON-DIV', 'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_LITERARY_FUNCTION
+        },
+        'btnThaumaturgicLiteraryFunction': {
+            'label': 'Thaumaturgic', 'tei': '<seg ana="#LIT-FON-THAUM">{}</seg>',
+            'ana': '#LIT-FON-THAUM', 'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_LITERARY_FUNCTION
+        },
+        'btnMetaLiteraryLiteraryFunction': {
+            'label': 'Metaliterary', 'tei': '<seg ana="#LIT-FON-META">{}</seg>',
+            'ana': '#LIT-FON-META', 'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_LITERARY_FUNCTION
+        },
+        'btnCivicFunctionLiteraryFunction': {
+            'label': 'Civic Function', 'tei': '<seg ana="#LIT-FON-SOCIOPOL-CIV">{}</seg>',
+            'ana': '#LIT-FON-SOCIOPOL-CIV', 'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_LITERARY_FUNCTION
+        },
+        'btnInterpersonalLiteraryFunction': {
+            'label': 'Interpersonal', 'tei': '<seg ana="#LIT-FON-SOCIOPOL-INTERPERS">{}</seg>',
+            'ana': '#LIT-FON-SOCIOPOL-INTERPERS', 'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_LITERARY_FUNCTION
+        },
 
         'btnLiteraryFunction': { 'label': 'Literary Function', 'buttons': [
             'btnConsolationLiteraryFunction', 'btnSelfAwarenessLiteraryFunction',
@@ -624,11 +648,26 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
         },
 
         # Judgment
-        'btnAmbiguousJudgment': { 'label': 'Ambiguous', 'tei': '<seg ana="#BOC-A">{}</seg>', 'color': TE_COLOR_JUDGMENT },
-        'btnPositiveJudgment': { 'label': 'Positive', 'tei': '<seg ana="#BOC-P">{}</seg>', 'color': TE_COLOR_JUDGMENT },
-        'btnNegativeJudgment': { 'label': 'Negative', 'tei': '<seg ana="#BOC-N">{}</seg>', 'color': TE_COLOR_JUDGMENT },
-        'btnNeutralJudgment': { 'label': 'Neutral', 'tei': '<seg ana="#BOC-NEU">{}</seg>', 'color': TE_COLOR_JUDGMENT },
-        'btnIronicJudgment': { 'label': 'Ironic', 'tei': '<seg ana="#BOC-IRO">{}</seg>', 'color': TE_COLOR_JUDGMENT },
+        'btnAmbiguousJudgment': {
+            'label': 'Ambiguous', 'tei': '<seg ana="#BOC-A">{}</seg>', 'ana': '#BOC-A',
+            'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_JUDGMENT
+        },
+        'btnPositiveJudgment': {
+            'label': 'Positive', 'tei': '<seg ana="#BOC-P">{}</seg>', 'ana': '#BOC-P',
+            'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_JUDGMENT
+        },
+        'btnNegativeJudgment': {
+            'label': 'Negative', 'tei': '<seg ana="#BOC-N">{}</seg>', 'ana': '#BOC-N',
+            'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_JUDGMENT
+        },
+        'btnNeutralJudgment': {
+            'label': 'Neutral', 'tei': '<seg ana="#BOC-NEU">{}</seg>', 'ana': '#BOC-NEU',
+            'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_JUDGMENT
+        },
+        'btnIronicJudgment': {
+            'label': 'Ironic', 'tei': '<seg ana="#BOC-IRO">{}</seg>', 'ana': '#BOC-IRO',
+            'triggerName': 'onClickBtnDropdown', 'color': TE_COLOR_JUDGMENT
+        },
 
         'btnJudgment': { 'label': 'Judgment', 'buttons': [
             'btnAmbiguousJudgment', 'btnPositiveJudgment', 'btnNegativeJudgment',
