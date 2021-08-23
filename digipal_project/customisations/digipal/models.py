@@ -3,7 +3,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from digipal.models import OntographType, Ontograph, CharacterForm, Character, \
     Allograph, AllographComponent, Text, CurrentItem, Person, Scribe, \
-    Idiograph, IdiographComponent, ItemPart, Image, Hand, Graph
+    Idiograph, IdiographComponent, ItemPart, Image, Hand, Graph, RequestLog
 from mezzanine.conf import settings
 
 
@@ -548,3 +548,21 @@ Graph._meta.get_field('display_label').max_length = 600
 ###                                   ###
 ### BONHUM - Rewriting of class Graph ###
 #########################################
+
+
+##############################################
+### BONHUM - Rewriting of class RequestLog ###
+###                                        ###
+### BEGINNING                              ###
+##############################################
+
+# MODIFICATIONS
+# - changed max_length of field request
+
+RequestLog._meta.get_field('request').max_length = 600
+
+##############################################
+### END                                    ###
+###                                        ###
+### BONHUM - Rewriting of class RequestLog ###
+##############################################
