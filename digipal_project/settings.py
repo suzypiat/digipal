@@ -141,7 +141,7 @@ from digipal.views.faceted_search.settings import FACETED_SEARCH, FacettedType, 
 # FACETED SEARCH: MANUSCRIPTS
 manuscripts = FacettedType.fromKey('manuscripts')
 
-# Change MS Date min and max
+# Change MS Date range
 hi_date = manuscripts.getField('hi_date')
 hi_date['min'] = 1330
 hi_date['max'] = 1500
@@ -154,7 +154,7 @@ manuscripts.options['column_order'] = ['url', 'repo_place', 'repo_city', 'shelfm
 # FACETED SEARCH: IMAGES
 images = FacettedType.fromKey('images')
 
-# Change MS Date min and max
+# Change MS Date range
 hi_date = images.getField('hi_date')
 hi_date['min'] = 1330
 hi_date['max'] = 1500
@@ -187,7 +187,7 @@ scriptorium['label'] = 'Workshop'
 scribe_date = scribes.getField('scribe_date')
 scribe_date['label'] = 'Date assigned to Painter'
 
-# Change Date min and max
+# Change Date range
 scribe_date['min'] = 1330
 scribe_date['max'] = 1500
 
@@ -240,6 +240,8 @@ scribes.addField(hi_date)
 scribes.options['filter_order'] = ['scribe_date', 'scriptorium', 'repo_place', 'repo_city']
 scribes.options['column_order'] = ['url', 'scribe', 'scribe_date', 'scriptorium',
                                    'repo_place', 'repo_city', 'shelfmark', 'hi_date']
+
+scribes.disableView('overview')
 
 # FACETED SEARCH: TEXTS
 texts = FacettedType.fromKey('texts')
@@ -310,6 +312,8 @@ thumbnail['transform'] = get_text_thumbnail
 texts.options['filter_order'] = ['work', 'language','text_type', 'repo_place']
 texts.options['column_order'] = ['url', 'title', 'language', 'text_type', 'edition', 'work',
                                  'hi_date', 'shelfmark', 'repo_place', 'thumbnail']
+
+texts.disableView('overview')
 
 # FACETED SEARCH: GRAPHS (= ICONOGRAPHY)
 graphs = FacettedType.fromKey('graphs')
@@ -429,6 +433,9 @@ FACETED_SEARCH['types'].append({
                      'type', 'place', 'texts', 'thumbnail']
 })
 
+characters = FacettedType.fromKey('characters')
+characters.disableView('overview')
+
 # FACETED SEARCH: SOURCES
 def get_source_work(result):
     if result:
@@ -512,6 +519,9 @@ FACETED_SEARCH['types'].append({
     ]
 })
 
+sources = FacettedType.fromKey('sources')
+sources.disableView('overview')
+
 FACETED_SEARCH['types'].append({
     'disabled': False,
     'key': 'places',
@@ -541,6 +551,14 @@ FACETED_SEARCH['types'].append({
     'filter_order': ['type', 'nature'],
     'column_order': ['url', 'name', 'variants', 'type', 'nature']
 })
+
+places = FacettedType.fromKey('places')
+places.disableView('overview')
+
+FACETED_SEARCH['visualisation']['categories'] = [
+    'hi_type', 'shelfmark', 'repo_city', 'repo_place',
+    'macro_category', 'character', 'allograph'
+]
 
 
 # TEXT_EDITOR
