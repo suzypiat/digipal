@@ -314,6 +314,7 @@ texts.options['column_order'] = ['url', 'title', 'language', 'text_type', 'editi
                                  'hi_date', 'shelfmark', 'repo_place', 'thumbnail']
 
 texts.disableView('overview')
+texts.disableView('snippet')
 
 # FACETED SEARCH: GRAPHS (= ICONOGRAPHY)
 graphs = FacettedType.fromKey('graphs')
@@ -522,6 +523,7 @@ FACETED_SEARCH['types'].append({
 sources = FacettedType.fromKey('sources')
 sources.disableView('overview')
 
+# FACETED SEARCH: PLACES
 FACETED_SEARCH['types'].append({
     'disabled': False,
     'key': 'places',
@@ -555,6 +557,7 @@ FACETED_SEARCH['types'].append({
 places = FacettedType.fromKey('places')
 places.disableView('overview')
 
+# FACETED SEARCH: VISUALISATION SETTINGS
 FACETED_SEARCH['visualisation']['categories'] = [
     'hi_type', 'shelfmark', 'repo_city', 'repo_place',
     'macro_category', 'character', 'allograph'
