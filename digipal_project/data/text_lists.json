@@ -1,0 +1,67 @@
+[
+  {
+    "pk": 1,
+    "model": "digipal_project.bonhum_contributortype",
+    "fields": {"name": "Peintre", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_project.bonhum_contributortype",
+    "fields": {"name": "Scribe", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 1,
+    "model": "digipal_project.bonhum_sourcetype",
+    "fields": {"name": "Biblique", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_project.bonhum_sourcetype",
+    "fields": {"name": "Classique", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 3,
+    "model": "digipal_project.bonhum_sourcetype",
+    "fields": {"name": "Latine/Médiévale", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 4,
+    "model": "digipal_project.bonhum_sourcetype",
+    "fields": {"name": "Romane", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 5,
+    "model": "digipal_project.bonhum_sourcetype",
+    "fields": {"name": "Romane italienne", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 1,
+    "model": "digipal_project.bonhum_texttype",
+    "fields": {"name": "Historique", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_project.bonhum_texttype",
+    "fields": {"name": "Mythologique", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 1,
+    "model": "digipal_text.textcontenttype",
+    "fields": {"name": "Transcription", "slug": "transcription", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_text.textcontenttype",
+    "fields": {"name": "Text edited", "slug": "edited", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 1,
+    "model": "digipal_text.textcontentxmlstatus",
+    "fields": {"name": "Live", "slug": "live", "sort_order": 1, "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_text.textcontentxmlstatus",
+    "fields": {"name": "Draft", "slug": "draft", "sort_order": 2, "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  }
+]

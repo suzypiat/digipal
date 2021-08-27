@@ -1,0 +1,172 @@
+[
+  {
+    "pk": 1,
+    "model": "digipal_project.bonhum_storyplacetype",
+    "fields": {"name": "Pays", "level": 0, "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_project.bonhum_storyplacetype",
+    "fields": {"name": "Région", "level": 1, "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 3,
+    "model": "digipal_project.bonhum_storyplacetype",
+    "fields": {"name": "Ville", "level": 2, "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 4,
+    "model": "digipal_project.bonhum_storyplacetype",
+    "fields": {"name": "Fleuve", "level": 0, "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 5,
+    "model": "digipal_project.bonhum_storyplacetype",
+    "fields": {"name": "Mer", "level": 0, "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 6,
+    "model": "digipal_project.bonhum_storyplacetype",
+    "fields": {"name": "Montagne", "level": 0, "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 1,
+    "model": "digipal_project.bonhum_storyplacenature",
+    "fields": {"name": "Mythologique", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_project.bonhum_storyplacenature",
+    "fields": {"name": "Réel", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 3,
+    "model": "digipal_project.bonhum_storyplacenature",
+    "fields": {"name": "Réel ancien", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 1,
+    "model": "digipal_project.bonhum_storycharactertype",
+    "fields": {"name": "Humain", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_project.bonhum_storycharactertype",
+    "fields": {"name": "Mythologique", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 3,
+    "model": "digipal_project.bonhum_storycharactertype",
+    "fields": {"name": "Animal", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 1,
+    "model": "digipal_project.bonhum_storycharactergender",
+    "fields": {"name": "Homme", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_project.bonhum_storycharactergender",
+    "fields": {"name": "Femme", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 1,
+    "model": "digipal_project.bonhum_storycharacterage",
+    "fields": {"name": "Enfant", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_project.bonhum_storycharacterage",
+    "fields": {"name": "Adolescent", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 3,
+    "model": "digipal_project.bonhum_storycharacterage",
+    "fields": {"name": "Adulte", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 4,
+    "model": "digipal_project.bonhum_storycharacterage",
+    "fields": {"name": "Vieux", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 1,
+    "model": "digipal_project.bonhum_storycharacterreligion",
+    "fields": {"name": "Chrétien", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_project.bonhum_storycharacterreligion",
+    "fields": {"name": "Musulman", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 3,
+    "model": "digipal_project.bonhum_storycharacterreligion",
+    "fields": {"name": "Juif", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 1,
+    "model": "digipal_project.bonhum_storycharactertitle",
+    "fields": {"name": "Comte/Comtesse", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_project.bonhum_storycharactertitle",
+    "fields": {"name": "Marquis/Marquise", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 3,
+    "model": "digipal_project.bonhum_storycharactertitle",
+    "fields": {"name": "Prince/Princesse", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 4,
+    "model": "digipal_project.bonhum_storycharactertitle",
+    "fields": {"name": "Duc/Duchesse", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 1,
+    "model": "digipal_project.bonhum_storycharactertrait",
+    "fields": {"name": "Noblesse", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_project.bonhum_storycharactertrait",
+    "fields": {"name": "Non noblesse", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 1,
+    "model": "digipal_project.bonhum_storycharacteroccupation",
+    "fields": {"name": "Roi/Reine", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 2,
+    "model": "digipal_project.bonhum_storycharacteroccupation",
+    "fields": {"name": "Marchand/Marchande", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 3,
+    "model": "digipal_project.bonhum_storycharacteroccupation",
+    "fields": {"name": "Banquier", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 4,
+    "model": "digipal_project.bonhum_storycharacteroccupation",
+    "fields": {"name": "Paysan/Paysanne", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 5,
+    "model": "digipal_project.bonhum_storycharacteroccupation",
+    "fields": {"name": "Boulanger/Boulangère", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 6,
+    "model": "digipal_project.bonhum_storycharacteroccupation",
+    "fields": {"name": "Moine/Bonne sœur", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  },
+  {
+    "pk": 7,
+    "model": "digipal_project.bonhum_storycharacteroccupation",
+    "fields": {"name": "Abbé/Abbesse", "modified": "2021-04-06T17:00:00.000Z", "created": "2021-04-06T17:00:00.000Z"}
+  }
+]
