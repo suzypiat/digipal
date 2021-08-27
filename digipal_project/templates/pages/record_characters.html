@@ -83,7 +83,11 @@
             {% endfor %}
           </dd>
           <dt>Place</dt>
-          <dd>{{ character.geographical_origin }}</dd>
+          <dd>
+            <a href="{{ character.geographical_origin.get_absolute_url }}" target="_blank">
+              {{ character.geographical_origin }}
+            </a>
+          </dd>
         </dl>
       </div>
 
