@@ -1,6 +1,17 @@
-Latest version: **2.2.1**, Feb 2018. See the [Change Log](https://github.com/kcl-ddh/digipal/wiki/Change-log) for more details.
+# Projet interMSH BONHum
+
+Le projet BONHum: BOccace Numérique Humaniste. Édition numérique pour une étude prosopographique et sémantique de l'humanisme de Boccace vise à mettre en lumière le rôle fondamental de Boccace (1313-1375) pour la diffusion de l'Humanisme dans l'espace culturel européen.
+
+Les nombreux ouvrages de Boccace sont bien le véhicule privilégié de la nouvelle sensibilité humaniste en Europe. Nous avons donc mis en place une collaboration scientifique internationale, des outils d'analyse et de valorisation, ainsi que la création d'une archive incrémentale de textes.
+
+Ce projet est destiné à s'élargir en termes de textes, images et partenaires.
+
+Le site web BONHUm est consultable à l'adresse [bonhum.huma-num.fr](http://bonhum.huma-num.fr/).
+
 
 # Archetype
+
+Latest version: **2.2.1**, Feb 2018. See the [Change Log](https://github.com/kcl-ddh/digipal/wiki/Change-log) for more details.
 
 Archetype (formerly known as 'The DigiPal Framework') is freely-available generalised software for the online presentation of images with structured annotations and data which allows users to search for, view, and organise detailed characteristics of handwriting or other material in both verbal and visual form. Designed primarily for the palaeographical analysis of handwriting, it was first developed for the Digital Resource and Database for Palaeography, Manuscript Studies and Diplomatic (DigiPal) project, funded by the European Research Council, and has since been extended particularly through the Models of Authority and Exon Domesday projects. Examples of its use include the following:
 - [Writing in Old English from the eleventh century (DigiPal)](http://digipal.eu)
