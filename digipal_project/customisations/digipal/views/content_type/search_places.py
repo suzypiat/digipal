@@ -4,11 +4,12 @@ get_form_field_from_queryset
 from digipal_text.models import TextContentXML
 from digipal_project.models import Bonhum_StoryPlace, Bonhum_StoryCharacter
 from django.db.models import Q
+from digipal.utils import is_staff
+from bs4 import BeautifulSoup
 import re
 
 class FilterPlaces(forms.Form):
-    place = get_form_field_from_queryset(Bonhum_StoryPlace.objects.values_list('name', flat=True).order_by('name').distinct(), 'Place')
-    type = get_form_field_from_queryset(Bonhum_StoryPlace.objects.values_list('type__name', flat=True).order_by('type__name').distinct(), 'Type', aid='type')
+    place_type = get_form_field_from_queryset(Bonhum_StoryPlace.objects.values_list('type__name', flat=True).order_by('type__name').distinct(), 'Type', aid='place_type')
     nature = get_form_field_from_queryset(Bonhum_StoryPlace.objects.values_list('nature__name', flat=True).order_by('nature__name').distinct(), 'Nature', aid='nature')
 
 class SearchPlaces(SearchContentType):
@@ -22,6 +23,13 @@ class SearchPlaces(SearchContentType):
         ''' returns a list of django field names necessary to sort the results '''
         return ['name']
 
+    def get_headings(self):
+        return [
+            {'label': 'Name', 'key': 'name', 'is_sortable': True},
+            {'label': 'Type', 'key': 'type', 'is_sortable': True},
+            {'label': 'Nature', 'key': 'nature', 'is_sortable': True}
+        ]
+
     def set_record_view_context(self, context, request):
         super(SearchPlaces, self).set_record_view_context(context, request)
         place = Bonhum_StoryPlace.objects.get(id=context['id'])
@@ -33,16 +41,15 @@ class SearchPlaces(SearchContentType):
             'by_text': []
         }
 
-        from bs4 import BeautifulSoup
-        text_content_xmls = TextContentXML.objects.all()
+        text_content_xmls = TextContentXML.objects.all() if is_staff(request) else TextContentXML.get_public_only()
         texts = []
-        for tcx in text_content_xmls:
+        for tcx in text_content_xmls.filter(content__isnull=False):
             soup = BeautifulSoup(tcx.content, 'lxml')
             # We get the <placeName> annotations related to the place
             # (i.e. when the ref attribute starts with the place id)
             spans = soup.find_all('span', attrs={ 'data-dpt': 'placeName',
                                                    'data-dpt-ref': re.compile(ur'^#'
-                                                   + str(place.id) + ur'\b.*?')})
+                                                   + str(place.id) + ur'\b.*?') })
             if len(spans) > 0:
                 annotations = []
                 for span in spans:
@@ -95,24 +102,28 @@ class SearchPlaces(SearchContentType):
     def label_singular(self):
         return 'Place'
 
-    def _build_queryset_django(self, request, term):
+    def _build_queryset(self, request, term):
         type = self.key
         query_places = Bonhum_StoryPlace.objects.filter(
-                    Q(name__icontains=term) | \
-                    Q(type__name__icontains=term) | \
-                    Q(nature__name__icontains=term))
+            Q(name__icontains=term) | \
+            # name variants of the place
+            Q(bonhum_storyplacenamevariant__name__icontains=term) | \
+            Q(type__name__icontains=term) | \
+            Q(nature__name__icontains=term) | \
+            # name of characters whose geographical origin is the place
+            Q(bonhum_storycharacter__name__icontains=term) | \
+            # name variants of characters whose geographical origin is the place
+            Q(bonhum_storycharacter__bonhum_storycharacternamevariant__name__icontains=term)
+        )
 
-        name = request.GET.get('name', '')
-        type = request.GET.get('type', '')
+        place_type = request.GET.get('place_type', '')
         nature = request.GET.get('nature', '')
 
-        if name:
-            query_places = query_places.filter(name=name)
-        if type:
-            query_places = query_places.filter(type__name=type)
+        if place_type:
+            query_places = query_places.filter(type__name=place_type)
         if nature:
             query_places = query_places.filter(nature__name=nature)
 
-        self._queryset = query_places.distinct().order_by('name')
+        self._queryset = list(query_places.distinct().order_by('name').values_list('id', flat=True))
 
         return self._queryset

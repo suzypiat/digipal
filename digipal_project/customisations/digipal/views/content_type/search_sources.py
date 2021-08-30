@@ -1,15 +1,50 @@
 from django import forms
 from digipal.views.content_type.search_content_type import SearchContentType, get_form_field_from_queryset
 from digipal_text.models import TextContentXML
-from digipal_project.models import Bonhum_Source, Bonhum_TextSource
+from digipal_project.models import Bonhum_Source, Bonhum_TextSource, Bonhum_Work
+from django.forms.widgets import Select
 from django.db.models import Q
 from mezzanine.conf import settings
+from digipal.utils import is_staff
+from bs4 import BeautifulSoup
 import re
 
+def get_TE_buttons_info(category_id):
+    TE_buttons = settings.TEXT_EDITOR_OPTIONS_CUSTOM['buttons']['btnSource']
+    buttons = []
+    category = next((category for category in TE_buttons['categories']
+                    if category['id'] == category_id), None)
+    if category:
+        for item in category['items']:
+            buttons.append({
+                'code': item['attributes']['ana'],
+                'label': item['label']
+            })
+    return buttons
+
 class FilterSources(forms.Form):
-    source = get_form_field_from_queryset(Bonhum_Source.objects.values_list('title', flat=True).order_by('title').distinct(), 'Source')
-    type = get_form_field_from_queryset(Bonhum_Source.objects.values_list('type__name', flat=True).order_by('type__name').distinct(), 'Type', aid='type')
+    source_type = get_form_field_from_queryset(Bonhum_Source.objects.values_list('type__name', flat=True).order_by('type__name').distinct(), 'Type', aid='source_type')
     author = get_form_field_from_queryset(Bonhum_Source.objects.values_list('authors__name', flat=True).order_by('authors__name').distinct(), 'Author', aid='author')
+    source_work = forms.ChoiceField(
+        choices=[('', 'Work')] + [(work.title, work.title) for work in Bonhum_Work.objects.all()],
+        widget=Select(attrs={'id': 'source_work', 'class': 'chzn-select',
+        'data-placeholder': 'Choose a Work'}),
+        label='', initial='Work', required=False
+    )
+    direct_typology = forms.ChoiceField(
+        choices=[('', 'Typology (direct)')] + [(button['code'], button['label'])
+                                               for button in get_TE_buttons_info('source_direct')],
+        widget=Select(attrs={'id': 'direct_typology', 'class': 'chzn-select',
+                             'data-placeholder': 'Choose a Typology'}),
+        label='', initial='Typology (direct)', required=False
+    )
+    indirect_typology = forms.ChoiceField(
+        choices=[('', 'Typology (indirect)')] + [(button['code'], button['label'])
+                                               for button in get_TE_buttons_info('source_indirect')],
+        widget=Select(attrs={'id': 'indirect_typology', 'class': 'chzn-select',
+                             'data-placeholder': 'Choose a Typology'}),
+        label='', initial='Typology (indirect)', required=False
+    )
 
 class SearchSources(SearchContentType):
 
@@ -22,6 +57,12 @@ class SearchSources(SearchContentType):
         ''' returns a list of django field names necessary to sort the results '''
         return ['title']
 
+    def get_headings(self):
+        return [
+            {'label': 'Title', 'key': 'title', 'is_sortable': True},
+            {'label': 'Type', 'key': 'type', 'is_sortable': True}
+        ]
+
     def set_record_view_context(self, context, request):
         super(SearchSources, self).set_record_view_context(context, request)
         source = Bonhum_Source.objects.get(id=context['id'])
@@ -32,20 +73,20 @@ class SearchSources(SearchContentType):
         categories = TE_buttons['btnSource']['categories']
         items = [ item for category in categories for item in category['items'] ]
 
-        from bs4 import BeautifulSoup
-        text_content_xmls = TextContentXML.objects.filter(
+        text_content_xmls = TextContentXML.objects.all() if is_staff(request) else TextContentXML.get_public_only()
+        text_content_xmls = text_content_xmls.filter(
                                 text_content__text__id__in=source.texts.values_list('id')
                             )
         texts = []
         # For each text_content_xml linked to the source
-        for tcx in text_content_xmls:
+        for tcx in text_content_xmls.filter(content__isnull=False):
             # We get the references of its links with the source
             references_in_db = Bonhum_TextSource.objects.filter(source__id=source.id).filter(text__id=tcx.text_content.text.id).values_list('canonical_reference', flat=True)
             soup = BeautifulSoup(tcx.content, 'lxml')
             # We get the <quote> annotations including the source id
             spans = soup.find_all('span', attrs={ 'data-dpt': 'quote',
                                                    'data-dpt-corresp': re.compile(ur'.*?#'
-                                                   + str(source.id) + ur'\b.*?')})
+                                                   + str(source.id) + ur'\b.*?') })
             nb_annotations = 0
             annotations = {}
             for span in spans:
@@ -108,24 +149,51 @@ class SearchSources(SearchContentType):
     def label_singular(self):
         return 'Source'
 
-    def _build_queryset_django(self, request, term):
+    # Return ids of sources annotated with a specific code
+    def get_ids_by_code(self, soup, code):
+        # We get the <quote> annotations where the ana attribute is the code
+        spans = soup.find_all('span', attrs={ 'data-dpt': 'quote', 'data-dpt-ana': code })
+        ids = []
+        # For each annotation, we get the ids of the related sources
+        # (i.e. the ids in the corresp attribute)
+        for span in spans:
+            if span.attrs.get('data-dpt-corresp'):
+                corresp = span.attrs.get('data-dpt-corresp').split(' ')
+                ids += [ int(id[1:]) for id in corresp ]
+        return ids
+
+    def _build_queryset(self, request, term):
         type = self.key
         query_sources = Bonhum_Source.objects.filter(
-                    Q(title__icontains=term) | \
-                    Q(type__name__icontains=term) | \
-                    Q(authors__name__icontains=term))
+            Q(title__icontains=term) | \
+            Q(type__name__icontains=term) | \
+            Q(authors__name__icontains=term)
+        )
 
-        title = request.GET.get('title', '')
-        type = request.GET.get('type', '')
+        source_type = request.GET.get('source_type', '')
         author = request.GET.get('author', '')
+        source_work = request.GET.get('source_work', '')
+        direct_typology_code = request.GET.get('direct_typology', '')
+        indirect_typology_code = request.GET.get('indirect_typology', '')
 
-        if title:
-            query_sources = query_sources.filter(title=title)
-        if type:
-            query_sources = query_sources.filter(type__name=type)
+        if source_type:
+            query_sources = query_sources.filter(type__name=source_type)
         if author:
             query_sources = query_sources.filter(authors__name=author)
+        if source_work:
+            query_sources = query_sources.filter(
+                Q(texts__edition__work__title=source_work) | \
+                Q(texts__item_part__work_current_item__work__title=source_work)
+            )
 
-        self._queryset = query_sources.distinct().order_by('title')
+        tcx_contents = TextContentXML.objects.filter(content__isnull=False).values_list('content', flat=True)
+        soup = BeautifulSoup(' '.join(tcx_contents), 'lxml')
+
+        if direct_typology_code:
+            query_sources = query_sources.filter(id__in=self.get_ids_by_code(soup, direct_typology_code))
+        if indirect_typology_code:
+            query_sources = query_sources.filter(id__in=self.get_ids_by_code(soup, indirect_typology_code))
+
+        self._queryset = list(query_sources.distinct().order_by('title').values_list('id', flat=True))
 
         return self._queryset

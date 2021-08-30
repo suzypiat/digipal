@@ -175,7 +175,7 @@ scribes = FacettedType.fromKey('scribes')
 scribes.options['label'] = 'Painter'
 
 # Display painters only, not scribes
-scribes.options['django_filter'] = {'type__name': 'Peintre'}
+scribes.options['condition'] = lambda r: r.type and 'scribe' not in r.type.name.lower()
 
 # Labels
 scribe = scribes.getField('scribe')
@@ -627,6 +627,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
             'color': TE_COLOR_TARGET_AUDIENCE,
             'categories': [
                 {
+                    'id': 'target_audience_gender',
                     'label': 'Gender',
                     'items': [
                         {
@@ -640,6 +641,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     ]
                 },
                 {
+                    'id': 'target_audience_social_status',
                     'label': 'Social Status',
                     'items': [
                         {
@@ -653,6 +655,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     ]
                 },
                 {
+                    'id': 'target_audience_function',
                     'label': 'Function',
                     'items': [
                         {
@@ -702,6 +705,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
             'triggerName': 'onClickBtnSource',
             'categories': [
                 {
+                    'id': 'source_direct',
                     'label': 'Direct Source',
                     'items': [
                         {
@@ -727,6 +731,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     ]
                 },
                 {
+                    'id': 'source_indirect',
                     'label': 'Indirect Source',
                     'items': [
                         {
@@ -761,6 +766,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
             'triggerName': 'onClickBtnPlace',
             'categories': [
                 {
+                    'id': 'place',
                     'label': '',
                     'items': [
                         {
@@ -787,6 +793,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
             'triggerName': 'onClickBtnTime',
             'categories': [
                 {
+                    'id': 'date',
                     'label': '',
                     'items': [
                         {
@@ -810,6 +817,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
             'color': TE_COLOR_PERSON,
             'categories': [
                 {
+                    'id': 'person_name',
                     'label': 'Person Name',
                     'items': [
                         {
@@ -819,6 +827,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     ]
                 },
                 {
+                    'id': 'person_status',
                     'label': 'Status',
                     'items': [
                         {
@@ -836,6 +845,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     ]
                 },
                 {
+                    'id': 'person_physical_aspect',
                     'label': 'Physical Aspect',
                     'items': [
                         {
@@ -845,6 +855,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     ]
                 },
                 {
+                    'id': 'person_psychology',
                     'label': 'Psychology',
                     'items': [
                         {
@@ -858,6 +869,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     ]
                 },
                 {
+                    'id': 'person_socio_economic_status',
                     'label': 'Socio Economic Status',
                     'items': [
                         {
@@ -887,6 +899,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     ]
                 },
                 {
+                    'id': 'person_culture',
                     'label': 'Culture',
                     'items': [
                         {
@@ -900,6 +913,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     ]
                 },
                 {
+                    'id': 'person_relation_with',
                     'label': 'Relation With',
                     'items': [
                         {
@@ -909,6 +923,7 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                     ]
                 },
                 {
+                    'id': 'person_familial_relationships',
                     'label': 'Family Relationship',
                     'items': [
                         {
@@ -956,12 +971,13 @@ TEXT_EDITOR_OPTIONS_CUSTOM = {
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-MAR' }
                         },
                         {
-                            'id': 'btnGodparentFamilyRelationPerson', 'label': 'Godparent', 'color': TE_COLOR_PERSON,
+                            'id': 'btnGodparentingFamilyRelationPerson', 'label': 'Godparenting', 'color': TE_COLOR_PERSON,
                             'tag': 'rs', 'attributes': { 'ref': '#ID_PERSON', 'ana': '#PROS-EV-REL-TY-FAM-PARR' }
                         }
                     ]
                 },
                 {
+                    'id': 'person_social_relationships',
                     'label': 'Social Relationship',
                     'items': [
                         {

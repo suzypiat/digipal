@@ -4,7 +4,7 @@ import os
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from digipal.models import Language, Text, Person, CurrentItem, ItemPart, Image, \
-    Allograph, Character, Graph, get_list_as_string
+    Allograph, Character, Graph, MediaPermission, get_list_as_string
 
 
 def model_get_admin_url(self):
@@ -242,12 +242,11 @@ class Bonhum_StoryCharacter(models.Model):
         graphs = Graph.objects.filter(idiograph__allograph__id__in=motives_ids)
         return graphs
 
-    def get_first_graph(self, request=None):
-        graphs = self.get_graphs()
+    def get_first_graph(self):
+        private_images = Image.filter_permissions(
+            Image.objects.all(), [MediaPermission.PERM_PRIVATE])
+        graphs = self.get_graphs().exclude(annotation__image__in=private_images)
         ret = graphs.first() if len(graphs) > 0 else None
-        # returns None if request user doesn't have permission
-        if request and ret and ret.annotation.image.is_private_for_user(request):
-            ret = None
         return ret
 
     def get_viaf_url(self):

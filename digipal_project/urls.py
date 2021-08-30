@@ -11,6 +11,7 @@ from digipal_project.customisations.digipal.views.search import *
 from digipal_project.customisations.digipal.views.annotation import *
 from digipal_project.customisations.digipal.views.content_type.search_scribes import *
 from digipal_project.customisations.digipal.views.content_type.search_graphs import *
+from digipal_project.customisations.digipal.views.content_type.search_manuscripts import *
 from digipal_project.customisations.digipal.views.faceted_search.faceted_search import *
 
 # digipal_text views

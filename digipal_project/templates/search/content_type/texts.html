@@ -1,0 +1,28 @@
+{% load mezzanine_tags pagination_tags html_escape %}
+
+<table class="table table-condensed">
+    <tr>
+        {% include "search/search_headings.html" %}
+    </tr>
+
+    {% filter tag_phrase_terms:terms %}
+        {% for tcx in records %}
+            <tr class="{% cycle 'bgColour' '' %}">
+                <td>
+                    {% if can_edit %}
+                        <a class="btn btn-default" href="/admin/digipal/text/{{ tcx.text_content.text.id }}">Edit</a>
+                    {% endif %}
+                    <a class="btn btn-default" href="{{ tcx.get_absolute_url }}">View</a>
+                </td>
+                <td>{{ tcx.text_content.text.title|truncatewords:12 }}</td>
+                <td>{{ tcx.text_content.text.type.name }}</td>
+                {% if tcx.text_content.text.edition %}
+                  <td>{{ tcx.text_content.text.edition.work.title|truncatewords:5 }}</td>
+                {% elif tcx.text_content.text.item_part %}
+                  <td>{{ tcx.text_content.text.item_part.work_current_item.work.title|truncatewords:5 }}</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    {% endfilter %}
+
+</table>

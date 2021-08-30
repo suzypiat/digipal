@@ -1,0 +1,24 @@
+{% load mezzanine_tags pagination_tags html_escape %}
+
+<table class="table table-condensed">
+    <tr>
+        {% include "search/search_headings.html" %}
+    </tr>
+
+    {% filter tag_phrase_terms:terms %}
+        {% for place in records %}
+            <tr class="{% cycle 'bgColour' '' %}">
+                <td>
+                    {% if can_edit %}
+                        <a class="btn btn-default" href="{{ place.get_admin_url }}">Edit</a>
+                    {% endif %}
+                    <a class="btn btn-default" href="{% filter add_query_params:request.META.QUERY_STRING %}{{ place.get_absolute_url }}?result_type={{template_type}}{% endfilter %}">View</a>
+                </td>
+                <td>{{ place.name }}</td>
+                <td>{{ place.type.name }}</td>
+                <td>{{ place.nature.name }}</td>
+            </tr>
+        {% endfor %}
+    {% endfilter %}
+
+</table>
