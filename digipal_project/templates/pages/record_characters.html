@@ -54,13 +54,13 @@
             {% endfor %}
           </dd>
           <dt>Age</dt>
-          <dd>{{ character.age }}</dd>
+          <dd>{{ character.age|default:'Unspecified' }}</dd>
           <dt>Gender</dt>
-          <dd>{{ character.gender }}</dd>
+          <dd>{{ character.gender|default:'Unspecified' }}</dd>
           <dt>Religion</dt>
-          <dd>{{ character.religion }}</dd>
+          <dd>{{ character.religion|default:'Unspecified' }}</dd>
           <dt>Type</dt>
-          <dd>{{ character.type }}</dd>
+          <dd>{{ character.type|default:'Unspecified' }}</dd>
           <dt>Titles</dt>
           <dd>
             {% for title in character.titles.all %}
@@ -84,9 +84,13 @@
           </dd>
           <dt>Place</dt>
           <dd>
-            <a href="{{ character.geographical_origin.get_absolute_url }}" target="_blank">
-              {{ character.geographical_origin }}
-            </a>
+            {% if character.geographical_origin %}
+              <a href="{{ character.geographical_origin.get_absolute_url }}" target="_blank">
+                {{ character.geographical_origin }}
+              </a>
+            {% else %}
+              Unspecified
+            {% endif %}
           </dd>
         </dl>
       </div>

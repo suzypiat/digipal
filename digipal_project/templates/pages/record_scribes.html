@@ -70,19 +70,28 @@
 
         <div id='record-tab-content' class='tab-content'>
             <div class='tab-pane fade {% if not tabid %}active in{% endif %}' id='data'>
-                <h3>Date and Place</h3>
+                {% comment %}
+                  -------------------
+                  BONHUM - Removed h3
+                  -------------------
+                  <h3>Date and Place</h3>
+                {% endcomment %}
 
                 <dl class="bs dl-horizontal">
-                    <dt>Date</dt>
-                    <dd>{{ scribe.date }}</dd>
                     {% comment %}
-                      --------------------------------------------
+                      ---------------------------------------------
                       BONHUM - Changed 'Scriptorium' to 'Workshop'
-                      --------------------------------------------
+                      and added a default for 'Date' and 'Workshop'
+                      ---------------------------------------------
+                      <dt>Date</dt>
+                      <dd>{{ scribe.date }}</dd>
                       <dt>Scriptorium</dt>
+                      <dd>{{ scribe.scriptorium }}</dd>
                     {% endcomment %}
+                    <dt>Date</dt>
+                    <dd>{{ scribe.date|default:'Unspecified' }}</dd>
                     <dt>Workshop</dt>
-                    <dd>{{ scribe.scriptorium }}</dd>
+                    <dd>{{ scribe.scriptorium|default:'Unspecified' }}</dd>
                 </dl>
             </div>
 
