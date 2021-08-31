@@ -65,8 +65,8 @@ def _build_queryset(self, request, term):
     self.query_phrase = term.strip()
     query_manuscripts = ItemPart.objects.filter(
         Q(locus__contains=term) | \
-        Q(current_item__shelfmark__icontains=term) | \
-        Q(current_item__repository__name__icontains=term) | \
+        Q(work_current_item__current_item__shelfmark__icontains=term) | \
+        Q(work_current_item__current_item__repository__name__icontains=term) | \
         Q(historical_items__catalogue_number__icontains=term) | \
         Q(historical_items__description__description__icontains=term) | \
         # name of painters who worked on this item part
@@ -103,7 +103,7 @@ def _build_queryset(self, request, term):
     if repository:
         repository_place = repository.split(',')[0]
         repository_name = repository.split(', ')[1]
-        query_manuscripts = query_manuscripts.filter(current_item__repository__name=repository_name, current_item__repository__place__name=repository_place)
+        query_manuscripts = query_manuscripts.filter(work_current_item__current_item__repository__name=repository_name, work_current_item__current_item__repository__place__name=repository_place)
 
     if scribe_name:
         query_manuscripts=query_manuscripts.filter(hands__scribe__name=scribe_name)

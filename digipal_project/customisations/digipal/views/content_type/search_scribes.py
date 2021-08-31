@@ -12,7 +12,7 @@ from django.db.models import Q
 
 # MODIFICATIONS
 # - added a filter on field scribe to display only painters, not scribes
-# - renamed fields scriptorium, chartype and character
+# - renamed fields scribe, scriptorium, chartype and character
 # - added field allograph
 # - removed fields component and feature
 
@@ -79,7 +79,6 @@ def _build_queryset(self, request, term):
         Q(hands__item_part__work_current_item__current_item__shelfmark__icontains=term) | \
         Q(hands__item_part__work_current_item__current_item__repository__name__icontains=term) | \
         Q(hands__item_part__historical_items__catalogue_number__icontains=term) | \
-        Q(hands__item_part__work_current_item__current_item__repository__name__icontains=term) | \
         # name of motives used by the painter
         Q(idiographs__allograph__name__icontains=term) | \
         # name variants of characters with motives used by the painter
@@ -109,7 +108,7 @@ def _build_queryset(self, request, term):
     if repository:
         repository_place = repository.split(',')[0]
         repository_name = repository.split(', ')[1]
-        query_scribes = query_scribes.filter(hands__item_part__current_item__repository__name=repository_name, hands__item_part__current_item__repository__place__name=repository_place)
+        query_scribes = query_scribes.filter(hands__item_part__work_current_item__current_item__repository__name=repository_name, hands__item_part__work_current_item__current_item__repository__place__name=repository_place)
 
     if chartype:
         query_scribes = query_scribes.filter(idiographs__allograph__character__ontograph__ontograph_type__name=chartype)

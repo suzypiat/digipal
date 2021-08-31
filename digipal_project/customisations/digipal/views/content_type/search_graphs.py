@@ -153,10 +153,10 @@ def _build_queryset(self, request, term):
                 Q(idiograph__allograph__name__icontains=term) | \
                 # name variants of characters with motives
                 Q(idiograph__allograph__bonhum_motivestorycharacter__story_character__bonhum_storycharacternamevariant__name__icontains=term) | \
-                # name of motive components
-                Q(idiograph__allograph__allograph_components__component__name__icontains=term) | \
-                # name of motive features
-                Q(idiograph__allograph__allograph_components__features__name__icontains=term)
+                # name of components
+                Q(graph_components__component__name__icontains=term) | \
+                # name of features
+                Q(graph_components__features__name__icontains=term)
             )
         else:
             graphs = Graph.objects.all()

@@ -135,7 +135,7 @@ class SearchTexts(SearchContentType):
     def label_singular(self):
         return 'Text'
 
-    # Return ids of texts containing at least one annotation with a specific code
+    # Return ids of texts containing at least one annotation with specific tag and code
     def get_ids_by_code(self, tag, code):
         tcxs = TextContentXML.objects.filter(content__isnull=False)
         ids = []
