@@ -282,28 +282,13 @@ CurrentItem.add_to_class('works', models.ManyToManyField('digipal_project.Bonhum
 
 
 # Gets all the item parts related to this current item
-# and returns a list of links
+# and returns a table of links
 def get_item_parts(self):
-    item_parts = []
-    from django.db import connection
-    condition = self.id
-    if self.id:
-        cursor = connection.cursor()
-        select = u'''
-                select ip.id, ip.display_label
-                from digipal_itempart ip
-                join digipal_project_bonhum_workcurrentitem wci
-                on ip.work_current_item_id = wci.id
-                where wci.current_item_id = %s
-                ''' % condition
-        cursor.execute(select)
-        for item_part in list(cursor.fetchall()):
-            item_parts.append(item_part)
-        cursor.close()
+    item_parts = ItemPart.objects.filter(work_current_item__current_item__id=self.id)
 
     def get_item_part_with_link(item_part):
-        url = u'/admin/digipal/itempart/%s/' % item_part[0]
-        result = u'<tr><td><a href="%s" target="_blank">%s</a></td></tr>' % (escape(url), item_part[1])
+        url = u'/admin/digipal/itempart/%s/' % item_part.id
+        result = u'<tr><td><a href="%s" target="_blank">%s</a></td></tr>' % (escape(url), item_part.display_label)
         return result
 
     if len(item_parts) != 0:
