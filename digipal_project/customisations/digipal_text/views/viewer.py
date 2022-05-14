@@ -187,15 +187,15 @@ def text_viewer_view(request, object_type, object_id=0, text_id=0,
         text_images = Image.sort_query_set_by_locus(Image.filter_permissions_from_request(Text.objects.filter(id=text_id).first().images, request, True))
         text_images_thumbnails = [
             {
-                'id': image.id, 'locus': image.locus,
-                'thumbnail': Image.thumbnail_with_link(image, None, 400)
+                'id': image.id, 'locus': image.locus, 'url': image.get_absolute_url(),
+                'thumbnail': image.thumbnail(None, 400)
             } for image in text_images
         ]
         item_part_images = Image.sort_query_set_by_locus(Image.filter_permissions_from_request(Image.objects.filter(item_part__id=object_id), request, True))
         item_part_images_thumbnails = [
             {
-                'id': image.id, 'locus': image.locus,
-                'thumbnail': Image.thumbnail_with_link(image, None, 400)
+                'id': image.id, 'locus': image.locus, 'url': image.get_absolute_url(),
+                'thumbnail': image.thumbnail(None, 400)
             } for image in item_part_images
         ]
         context['text_images'] = text_images_thumbnails
@@ -204,8 +204,8 @@ def text_viewer_view(request, object_type, object_id=0, text_id=0,
         text_images = Image.sort_query_set_by_locus(Image.filter_permissions_from_request(Text.objects.filter(id=text_id).first().images, request, True))
         text_images_thumbnails = [
             {
-                'id': image.id, 'locus': image.locus,
-                'thumbnail': Image.thumbnail_with_link(image, None, 400)
+                'id': image.id, 'locus': image.locus, 'url': image.get_absolute_url(),
+                'thumbnail': image.thumbnail(None, 400)
             } for image in text_images
         ]
         context['text_images'] = text_images_thumbnails

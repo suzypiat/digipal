@@ -2,7 +2,7 @@
     <div class="centered">
         <div class="panel panel-thumb">
             <span class="folio-image-wrapper">
-                {{ image.thumbnail }}
+                <a href="{{ image.url }}" target="_blank">{{ image.thumbnail }}</a>
                 <br><br>
                 <span>
                   {% if image.locus %}
