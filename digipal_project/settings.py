@@ -326,6 +326,9 @@ graphs.options['label_plural'] = 'Iconography'
 # Labels
 allograph = graphs.getField('allograph')
 allograph['label'] = 'Motive'
+allograph['type'] = 'title'
+allograph['search'] = True
+allograph['sort_fct'] = lambda r: u'%s, %s' % (r.character.name, r.name)
 
 character = graphs.getField('character')
 character['label'] = 'Category'
