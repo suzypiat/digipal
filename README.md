@@ -8,6 +8,32 @@ Ce projet est destiné à s'élargir en termes de textes, images et partenaires.
 
 Le site web BONHUm est consultable à l'adresse [bonhum.huma-num.fr](http://bonhum.huma-num.fr/).
 
+## Redémarrage
+
+### Manuel
+
+```bash
+sudo /usr/bin/supervisord -c /home/digipal/build/supervisord.conf
+```
+
+### Automatique
+
+Le fichier `/home/digipal/build/bonhum.service` doit être placé dans `/etc/systemd/system/bonhum.service`.
+
+```bash
+# Attribuer les permissions
+sudo chown root:root /etc/systemd/system/bonhum.service
+# Recharger systemd
+sudo systemctl daemon-reload
+# Démarrer le service
+sudo systemctl start bonhum.service
+# Vérifier son état
+sudo systemctl status bonhum.service
+# Activer le démarrage automatique
+sudo systemctl enable bonhum.service
+# Vérifier
+sudo systemctl is-enabled bonhum.service
+```
 
 # Archetype
 
