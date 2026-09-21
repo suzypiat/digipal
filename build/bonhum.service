@@ -1,0 +1,12 @@
+# /etc/systemd/system/bonhum.service
+
+[Unit]
+Description=BoNHum
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/supervisord -c /home/digipal/build/supervisord.conf
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
